@@ -1,0 +1,370 @@
+{
+	"info": {
+		"_postman_id": "e3d21a40-9248-47e3-8949-a1de2ddb40bb",
+		"name": "Calendue",
+		"description": "This is the specification for the Calendue API. Import the development environment to make requests to the localhost server.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Calendar",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}/calendar/get",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"calendar",
+								"get"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This retrives the calendar from the server. The server will return the calendar for the current user based on their session cookies. Accepts filter params as 'courses[0][uuid]=<course UUID>' to show course 0.\n\nReturns a JSON representation of the calendar:\n\ni.e.\n\n`\n{\n\t\"<date>\": [<assignment>],\n\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],\n\t...\n}\n`",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bd1db1c9-ee80-496b-80a3-2cb76361933c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e20a284e-7614-47b7-bea0-3bc7342de7b1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "testuser",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "testpassword",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: Login accepts a `username` and `password` param.\n\nRedirect with code 303 to `/` upon success.\nRender failure with status code 401 if credentials are incorrect."
+		},
+		{
+			"name": "Scrape",
+			"item": [
+				{
+					"name": "Scrape",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "fcfba16d-1b88-48e4-b021-f2f854d15ddc",
+									"type": "text"
+								},
+								{
+									"key": "url",
+									"value": "https://www.gradescope.com",
+									"type": "text"
+								},
+								{
+									"key": "document",
+									"value": "<HTML></HTML>",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/scrape",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"scrape"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: The Scrape endpoint is for the scraper. The `document` param provided is the HTML DOM of the page being scraped, the `url` param is the web address of the page being scraped as seen from the client and the `token` param is a UUID of the extension. This token can be used to lookup the account for the user responsible for the scraper.\n\nReturns status code 200 upon success.\n\nReturns JSON:\n\ni.e.\n```\n{\n\t\"courses\": [\n\t\t{\"uuid\": <course UUID>},\n\t\t{\"url\": <url>}\n\t]\n}\n```",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8799bc52-28ae-4738-a66c-1be0e7a9b229",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e39d4647-fd06-4f42-ba51-8aaecb8697ef",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "New Course",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "fcfba16d-1b88-48e4-b021-f2f854d15ddc",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text"
+								},
+								{
+									"key": "term_id",
+									"value": "2525",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course/new",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: Adds a new course to the user's schedule. Accepts a `token` param for the extension the user is using as in the scraper. Also accepts the `title` param (the chosen title of the course), and `term_id` param which is the selected term for the user.\n\nReturns 201 upon success.\nReturns 400 if input fails validation (if `title` is blank, `term_id` is not found, or `token` is not found).",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "67f8d911-aaff-4e83-8a54-ce1a787fab78",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a57a0b4-9941-4ddc-8e34-fd288dffa315",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "New Term",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term/new",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: Creates a new term for the user. Accepts a `title` param, `start_date` param and `end_date` param.\n\nReturns 201 upon success."
+		},
+		{
+			"name": "Get Assignment",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}/assignment/{{assignmentIdentifier}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"assignment",
+								"{{assignmentIdentifier}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "GET Request: Gets an Assignment based on its `assignment_id` param. Must ensure authorization and if not authorized, returns 401 status code.\n\nUpon success, returns 200.\n\nIf assignment is not found, returns 404."
+		},
+		{
+			"name": "Mark Assignment Complete",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "time_spent",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "PUT Request: Marks the assignment as complete. Accepts `assignment_id` param for the assignment ID and a `time_spent` param for the time spent on the assignment.\n\nReturns 404 if the assignment is not found or 200 if successful.\n\nReturns 400 for validation error (if `time_spent` is blank)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ac8257ba-230d-410f-ae94-f3bbe5ba8f84",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1269b2e6-1b71-402e-b513-1b23606ef5af",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get Assignment Scores",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}/assignment/{{assignmentIdentifier}}/scores",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"assignment",
+								"{{assignmentIdentifier}}",
+								"scores"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "GET Request: Gets the all-time assignment score distribution for the assignment given by the `assignment_id` param. \n\nReturns 200 upon success and 404 if the assignment is not found with the provided ID.\n\nReturns JSON:\n\n{\n\t\"scores\": []\n}"
+		}
+	]
+}
