@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Server" type="Application" factoryName="Application" nameIsGenerated="true">
+    <envs>
+      <env name="JDBC_DATABASE_URL" value="jdbc:postgresql:calendue" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.github.jhu_oose11.calendue.Server" />
+    <module name="calendue" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.github.jhu_oose11.calendue.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
