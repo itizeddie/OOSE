@@ -16,7 +16,6 @@ else
       sleep 10 &&
       newman run 'docs/Calendue.postman_collection.json' --environment 'docs/Development.postman_environment.json' --timeout 60000 &&
       kill %1
-      exit 0
     fi
   fi
 fi
