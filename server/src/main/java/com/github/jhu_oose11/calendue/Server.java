@@ -8,10 +8,8 @@ import io.javalin.Javalin;
 import io.javalin.JavalinEvent;
 import io.javalin.staticfiles.Location;
 import org.postgresql.ds.PGSimpleDataSource;
-import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 import static io.javalin.apibuilder.ApiBuilder.delete;
 import static io.javalin.apibuilder.ApiBuilder.path;

@@ -788,7 +788,14 @@
 							]
 						},
 						"url": {
-							"raw": ""
+							"raw": "{{host}}/assignment/{{assignmentIdentifier}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"assignment",
+								"{{assignmentIdentifier}}"
+							]
 						}
 					},
 					"response": []
