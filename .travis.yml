@@ -1,5 +1,11 @@
 language: java
 jdk: openjdk10
+services:
+- postgresql
+env:
+- JDBC_DATABASE_URL="jdbc:postgresql:calendue_travis"
+before_script:
+- psql -c 'create database calendue_travis;' -U postgres
 install:
 - npm install -g newman
 script:
