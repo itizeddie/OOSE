@@ -2,7 +2,6 @@
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_second_WebExtension
  */
 
-
 /**
  * Listen for clicks on the buttons, and send the appropriate message to
  * the content script in the page.
@@ -14,10 +13,8 @@ function listenForClicks() {
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
         function sendToContentScript(tabs) {
-            var content = document.documentElement.innerHTML;
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course",
-                pageContent: content
             });
         }
 
@@ -50,6 +47,7 @@ function reportExecuteScriptError(error) {
     console.error(`Failed to execute calendue content script: ${error.message}`);
 }
 
+
 /**
  * When the popup loads, inject a content script into the active tab,
  * and add a click handler.
@@ -58,4 +56,3 @@ function reportExecuteScriptError(error) {
 browser.tabs.executeScript({file: "/content_scripts/calendue.js"})
     .then(listenForClicks)
     .catch(reportExecuteScriptError);
-

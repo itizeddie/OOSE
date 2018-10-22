@@ -15,11 +15,11 @@
 
     /**
      * Listen for messages from the background script.
-     * Call "beastify()" or "reset()".
      */
     browser.runtime.onMessage.addListener((message) => {
         if (message.command === "add-course") {
-            dump(message.pageContent);
+            var content = document.documentElement.innerHTML;
+            console.log(content);
         }
     });
 
