@@ -24,7 +24,7 @@ public class CredentialsRepository {
 
     public UsernameLogin getByUsername(String username) throws SQLException, UsersRepository.NonExistingUserException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, user_id, username, password_hash, FROM credentials WHERE username = ?");
+        var statement = connection.prepareStatement("SELECT id, user_id, username, password_hash FROM credentials WHERE username = ?");
         statement.setString(1, username);
         var result = statement.executeQuery();
         if (!result.next()) throw new UsersRepository.NonExistingUserException();
