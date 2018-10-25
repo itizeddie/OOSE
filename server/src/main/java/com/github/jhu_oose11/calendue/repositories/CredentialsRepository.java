@@ -1,8 +1,6 @@
 package com.github.jhu_oose11.calendue.repositories;
 
-import com.github.jhu_oose11.calendue.models.User;
 import com.github.jhu_oose11.calendue.models.UsernameLogin;
-import org.mindrot.jbcrypt.BCrypt;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
