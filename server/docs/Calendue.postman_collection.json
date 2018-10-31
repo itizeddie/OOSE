@@ -7,34 +7,453 @@
 	},
 	"item": [
 		{
-			"name": "Get Calendar",
+			"name": "New Account",
 			"item": [
 				{
 					"name": "Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "727605ba-d54b-43e2-b4cd-387b648280e7",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c261dbf0-c5c1-4d05-9984-283444407aaa",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/accounts?email=blah@blah.com`,",
+									"    method: 'GET'",
+									"}",
+									"",
+									"pm.sendRequest(request, function(err, res) {",
+									"    if (res.code == 200) {",
+									"        request = {",
+									"            url:`${pm.variables.get(\"host\")}/accounts/${res.json()}`,",
+									"            method: 'DELETE'",
+									"        }",
+									"    ",
+									"        pm.sendRequest(request);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.com",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "{{host}}/calendar/get",
+							"raw": "{{host}}/accounts",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"calendar",
-								"get"
+								"accounts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "username",
+											"value": "test_user",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "12345",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "blah@blah.com",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{host}}/accounts",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"accounts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 16 Oct 2018 19:37:42 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "Javalin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "No Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Email cannot be blank.'\", () => pm.response.to.have.body(\"Email cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Username cannot be blank.'\", () => pm.response.to.have.body(\"Username cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Password cannot be blank.'\", () => pm.response.to.have.body(\"Password cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Email cannot be blank.'\", () => pm.response.to.have.body(\"Email cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Username cannot be blank.'\", () => pm.response.to.have.body(\"Username cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.co",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Short Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Password must be at least 5 characters'\", () => pm.response.to.have.body(\"Password must be at least 5 characters\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.co",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
 							]
 						}
 					},
 					"response": []
 				}
 			],
-			"description": "This retrives the calendar from the server. The server will return the calendar for the current user based on their session cookies. Accepts filter params as 'courses[0][uuid]=<course UUID>' to show course 0.\n\nReturns a JSON representation of the calendar:\n\ni.e.\n\n`\n{\n\t\"<date>\": [<assignment>],\n\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],\n\t...\n}\n`",
+			"description": "Creates a new account.\n\nAccepts `email`, `username`, and `password` params for the user.\n\nReturns status code `201` upon success with the user ID as the response content.\n\nReturns status code `400` upon validation failure with the error message as the content.\n\nValidations are: 1) Email, Username, and Password cannot be blank, 2) Password must be >= 5 characters",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "bd1db1c9-ee80-496b-80a3-2cb76361933c",
+						"id": "c4a65e63-b293-445f-aa3e-4b215861f213",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -44,7 +463,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e20a284e-7614-47b7-bea0-3bc7342de7b1",
+						"id": "ea436e46-ea69-484d-9fac-3b95c3d548ac",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -90,6 +509,65 @@
 				}
 			],
 			"description": "POST Request: Login accepts a `username` and `password` param.\n\nRedirect with code 303 to `/` upon success.\nRender failure with status code 401 if credentials are incorrect."
+		},
+		{
+			"name": "Get Calendar",
+			"item": [
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "70e21b2b-142b-4de6-8728-dfdcb92d5162",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}/calendar/get",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"calendar",
+								"get"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This retrives the calendar from the server. The server will return the calendar for the current user based on their session cookies. Accepts filter params as 'courses[0][uuid]=<course UUID>' to show course 0.\n\nReturns a JSON representation of the calendar:\n\ni.e.\n\n`\n{\n\t\"<date>\": [<assignment>],\n\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],\n\t...\n}\n`",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bd1db1c9-ee80-496b-80a3-2cb76361933c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e20a284e-7614-47b7-bea0-3bc7342de7b1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		},
 		{
 			"name": "Scrape",
@@ -310,7 +788,14 @@
 							]
 						},
 						"url": {
-							"raw": ""
+							"raw": "{{host}}/assignment/{{assignmentIdentifier}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"assignment",
+								"{{assignmentIdentifier}}"
+							]
 						}
 					},
 					"response": []

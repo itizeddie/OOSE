@@ -1,0 +1,4 @@
+*.sw*
+server/target
+server/.idea/workspace.xml
+.DS_Store
