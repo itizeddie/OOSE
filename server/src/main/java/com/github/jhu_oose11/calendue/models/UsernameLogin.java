@@ -1,11 +1,6 @@
 package com.github.jhu_oose11.calendue.models;
 
-import com.github.jhu_oose11.calendue.Server;
-import com.github.jhu_oose11.calendue.repositories.UsersRepository;
-import io.javalin.UnauthorizedResponse;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.sql.SQLException;
 
 public class UsernameLogin extends LoginCredential {
     private int id = 0;

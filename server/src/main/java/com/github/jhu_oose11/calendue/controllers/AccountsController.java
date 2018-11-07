@@ -10,28 +10,34 @@ import io.javalin.BadRequestResponse;
 import io.javalin.Context;
 import io.javalin.NotFoundResponse;
 
+import java.io.IOException;
 import java.sql.SQLException;
+
+import static com.github.jhu_oose11.calendue.controllers.Helpers.Validator.validateNotBlank;
 
 public class AccountsController {
     private final static int MIN_PASSWORD_LENGTH = 5;
 
     public static void newAccount(Context ctx) throws UsersRepository.NonExistingUserException {
-        ensureNewParamsValid(ctx);
-        String email = ctx.formParam("email");
-        User user = new User(email);
-        try {
-            Server.getUsersRepository().create(user);
+        if (newParamsValid(ctx)) {
+            String email = ctx.formParam("email");
+            User user = new User(email);
+            try {
+                Server.getUsersRepository().create(user);
 
-            user = Server.getUsersRepository().getByEmail(email);
+                user = Server.getUsersRepository().getByEmail(email);
 
-            UsernameLogin credential = new UsernameLogin(user.getId(), ctx.formParam("username"), ctx.formParam("password"));
-            Server.getCredentialsRepository().create(credential);
+                UsernameLogin credential = new UsernameLogin(user.getId(), ctx.formParam("username"), ctx.formParam("password"));
+                Server.getCredentialsRepository().create(credential);
 
-            ctx.status(201);
-        } catch (SQLException e) {
-            if (e.getSQLState().equals("23505")) {
-                throw new BadRequestResponse("Email is already taken");
+                ctx.status(201);
+            } catch (SQLException e) {
+                if (e.getSQLState().equals("23505")) {
+                    throw new BadRequestResponse("Email is already taken");
+                }
             }
+        } else {
+            throw new BadRequestResponse();
         }
     }
 
@@ -58,7 +64,7 @@ public class AccountsController {
         return Validator.validateNotBlank(ctx,"email");
     }
 
-    private static void ensureNewParamsValid(Context ctx) {
+    private static boolean newParamsValid(Context ctx) {
         String[] fields = {"email", "username", "password"};
 
         String field = Validator.validateNotBlank(ctx, fields);
@@ -69,5 +75,7 @@ public class AccountsController {
         if (!Validator.validateLength(ctx, "password", true, MIN_PASSWORD_LENGTH-1)) {
             throw new BadRequestResponse("Password must be at least 5 characters");
         }
+
+        return true;
     }
 }
