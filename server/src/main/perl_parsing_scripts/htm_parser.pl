@@ -10,7 +10,7 @@
 use strict;
 use warnings; 
 use v5.10;
-
+    my $ERROR = -1; 
     my $fileToParse = $ARGV[0];
     open my $input, '<', $fileToParse	or die "Can't read the file I want to parse: $!";
     open my $output, '>', "$fileToParse.parsed" or die "Can't write new file: $!";
@@ -22,7 +22,12 @@ use v5.10;
     #split allLines by line \n
     my @splitLines = split(/\n/, $allLines[0]); 
     #Expected tag for files that are formated with formatHtm.pl
-    my $formatTag = "Formated with formatHtm.pl"; 
+    my $formatTag = 	"Formated with formatHtm.pl"; 
+    ## Final regex patterns
+    my $REGEXDUE =	 "submissionTimeChart--dueDate";
+    my $REGEXRELEASE =	 "submissionTimeChart--releaseDate";
+    my $REGEXNOGRADES =	 "submissionStatus--text";
+    my $REGEXGRADES = 	 "submissionStatus--score";
 
     my $courseNumber; 
 
@@ -45,20 +50,24 @@ use v5.10;
     } 
 
     $courseNumber = getCourseNumber(@splitLines); 
+    if($courseNumber eq $ERROR) { die "Can't read couse number: $!";}
     print $output "$courseNumber\n";
     my $temp; 
     foreach my $line (@splitLines) {
 
-	if($temp = getAssignment($line, @splitLines, $lineCount) ne 0) {$assignmentNames[$assignmentCount];}
-	if($temp = getGrades($line, @splitLines, $lineCount) ne 0) {	$assignmentGrades[$assignmentCount];}
-	if($temp = getRelease($line, @splitLines, $lineCount) ne 0) { 	$assignmentRelease[$assignmentCount];}
-	if($temp = getDue($line, @splitLines, $lineCount) ne 0) {	$assignmentDue[$assignmentCount++];}
+	if(($temp =  getAssignment($lineCount, $line, @splitLines)) ne $ERROR)
+	    {$assignmentNames[$assignmentCount] = $temp;$assignmentCount++;}
+	elsif(($temp = getGrades($lineCount, $line, @splitLines)) ne $ERROR)
+	   {$assignmentGrades[$assignmentCount] = $temp;$assignmentCount;}
+	elsif(($temp = getRelease($lineCount, $line, @splitLines)) ne $ERROR) { 
+	    $assignmentRelease[$assignmentCount] = $temp;$assignmentCount;}
+	elsif(($temp = getDue($lineCount, $line, @splitLines)) ne $ERROR) {
+       	    $assignmentDue[$assignmentCount] = $temp;$assignmentCount;}
 
 	$lineCount++; 
     }
-
     for( my $i = 0; $i < $assignmentCount; $i++) {
-	print $output "$assignmentNames[$i] $assignmentGrades[$i] $assignmentRelease[$i] $assignmentDue[$i]\n";
+	print $output "$assignmentNames[$i]\n";# $assignmentGrades[$i+1]\n";# $assignmentRelease[$i] $assignmentDue[$i]\n";
     } 
     close $output; 
     
@@ -78,13 +87,15 @@ use v5.10;
     ##
     sub getCourseNumber {
     	my @lotsOfLines = @_;
+	my $regexPattern = "[0-9]{3}.[0-9]{3}(\/[0-9]{3})?";
 	foreach my $line (@lotsOfLines) {
-	    if ($line =~ /[0-9]{3}.[0-9]{3}(\/[0-9]{3})?/) {
-	   
+	    if ($line =~ /$regexPattern/) { 
 		#Returning $line gives the line with the course number now try and only get the numbers
-	 	return $line=~ s/([a-z])//;
+		my ($justCourse) = $line =~ /$regexPattern/i;	
+		return $&;
 	    }
     	}
+	return $ERROR; 
     }
 
     ##
@@ -93,9 +104,24 @@ use v5.10;
     #if so then the Assignemnt name is the word after View. 
     #OR
     #if not then the next line is the assignment name. 
+    #
+    # I KNOW THIS IS RETURN WHAT I WANT IT TO . IE ONLY THE ASSIGNMENT NAME
     ##
     sub getAssignment {
-    	return 0;
+    	my($count, $line, @completeHtm) = @_; 
+	#print "$_[0] is the count";
+	my $primaryRegexPattern = "table--primaryLink"; 
+	my $assignmentSubmittedPattern = "a aria-label=\"View";     
+	    if ($line =~/$primaryRegexPattern/) {
+		if($completeHtm[$count+1] =~ /$assignmentSubmittedPattern/) {
+		    my ($justAssignment) = $completeHtm[$count+1] =~ /View [A-Za-z0-9]+/i;
+		    return substr($&, 5);
+		} else {
+		    my ($justAssignment) = $completeHtm[$count+1] =~ /[A-Za-z0-9 ]+/i;
+		    return $&;
+		}
+	    }		
+	return $ERROR;
     }
 
     ##
@@ -103,19 +129,51 @@ use v5.10;
     #next line is the grade or word No Submission
     ##
     sub getGrades {
-	return 0;
+	my($count, $line, @completeHtm) = @_; 
+	
+	return getInfo($count, "grades", $line, @completeHtm); 
+    }
+    ##
+    #Returns a due Date if param 1 is 'due'
+    #returns a release date if param 1 is 'release'
+    ##
+    sub getInfo {
+	my($count, $type, $line, @completeHtm) = @_;
+	my $primaryRegexPattern;
+	if( $type eq "due") {
+	    $primaryRegexPattern = $REGEXDUE;
+	}elsif( $type eq "release") {
+	    $primaryRegexPattern = $REGEXRELEASE;
+	
+	}elsif($type eq "grades") {
+		$primaryRegexPattern = $REGEXGRADES; 
+
+	} else { return $ERROR; }
+	if ($line =~/$REGEXNOGRADES/) {		return 0;}
+	if ($line =~/$primaryRegexPattern/) {
+	    my($result) = $completeHtm[$count+1] =~ /[^<>]/i;
+		return $&;
+
+	}
+
+	
     }
     ##
     #submissionTimeChart--releaseDate
     #next line will hold the release date
     ##
     sub getRelease{
-	return 0;
+
+	my($count, $line, @completeHtm) = @_;
+
+	return getInfo($count, "release", $line, @completeHtm); 
     }
     ##
     #submissionTimeChart--dueDate
     ##
     sub getDue {
-	return 0;
+	my($count, $line, @completeHtm) = @_;
+
+	return getInfo($count, "due", $line, @completeHtm);
     }
 
