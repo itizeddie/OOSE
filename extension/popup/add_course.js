@@ -7,14 +7,31 @@
  * the content script in the page.
  */
 function listenForClicks() {
+
+
     document.addEventListener("click", (e) => {
 
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
-        function sendToContentScript(tabs) {
+        function sendCourseInfoToContentScript(tabs) {
             browser.tabs.sendMessage(tabs[0].id, {
-                command: "add-course",
+                command: "add-course"
+            });
+        }
+
+        /**
+         * Get username and password and send a "create-account" message to the content script in the active tab.
+         */
+        function sendSignupInfoToContentScript(tabs) {
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "create-account",
+                username: username,
+                email: email,
+                password: password
             });
         }
 
@@ -27,11 +44,18 @@ function listenForClicks() {
 
         /**
          * Get the active tab,
-         * then call "sendToContentScript()".
+         * then call "sendCourseInfoToContentScript()".
          */
-        if (e.target.classList.contains("add-course")) {
+        var clickedItem = e.target.classList;
+
+        if (clickedItem.contains("add-course")) {
             browser.tabs.query({active: true, currentWindow: true})
-                .then(sendToContentScript)
+                .then(sendCourseInfoToContentScript)
+                .catch(reportError);
+        }
+        if (clickedItem.contains("sign-up")) {
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendSignupInfoToContentScript)
                 .catch(reportError);
         }
     });
@@ -42,7 +66,10 @@ function listenForClicks() {
  * Display the popup's error message, and hide the normal UI.
  */
 function reportExecuteScriptError(error) {
-    document.querySelector("#popup-content").classList.add("hidden");
+    var elem = document.querySelectorAll("#popup-content, #login-content");
+    elem.forEach(elem => {
+        elem.classList.add("hidden");
+    });
     document.querySelector("#error-content").classList.remove("hidden");
     console.error(`Failed to execute calendue content script: ${error.message}`);
 }
