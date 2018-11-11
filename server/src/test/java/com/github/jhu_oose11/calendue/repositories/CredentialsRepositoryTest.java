@@ -27,7 +27,7 @@ class CredentialsRepositoryTest {
             repo = new CredentialsRepository(database);
             usersRepo = new UsersRepository(database);
 
-            testData.put("email", "test@testing.com");
+            testData.put("email", "test123456@testing.com");
             testData.put("username", "testing_username");
             testData.put("password", "12345");
         }
