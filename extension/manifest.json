@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "Calendue",
+  "version": "1.0",
+
+  "description": "Send course and assignment data to Calendue.",
+
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+
+  "permissions": [
+    "activeTab",
+    "*://gradescope.com/*",
+    "*://localhost/*"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/icon-36.png",
+    "default_title": "Calendue",
+    "default_popup": "popup/add_course.html"
+  }
+}
