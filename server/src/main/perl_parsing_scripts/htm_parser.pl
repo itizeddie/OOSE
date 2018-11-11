@@ -10,6 +10,7 @@
 use strict;
 use warnings; 
 use v5.10;
+
     my $ERROR = -1; 
     my $fileToParse = $ARGV[0];
     open my $input, '<', $fileToParse	or die "Can't read the file I want to parse: $!";
@@ -68,9 +69,25 @@ use v5.10;
 
 	$lineCount++; 
     }
+    ##
+    #These two checks are only needed for Release and Due
+    #dates because some assignments can not have a Release
+    #and Due date like Final, Quizes, and Midterms
+    ##
+    for(my $i = 1; $i < $assignmentCount+1; $i++) {
+    	if (!defined $assignmentRelease[$i]) {
+	    $assignmentRelease[$i] = 'na';
+	}
+	if (!defined $assignmentDue[$i]) {
+	    $assignmentDue[$i] = 'na';
+	}
+    }
+    ##
+    #Printing to output file to be read in by java and placed into database
+    ##	
     for( my $i = 0; $i < $assignmentCount; $i++) {
 
-	print $output "$assignmentNames[$i], $assignmentGrades[$i+1]\n";# $assignmentRelease[$i] $assignmentDue[$i]\n";
+	print $output "$assignmentNames[$i], $assignmentGrades[$i+1], $assignmentRelease[$i+1], $assignmentDue[$i+1]\n";
 
     } 
     close $output; 
@@ -140,49 +157,33 @@ use v5.10;
 	    my($result) = $completeHtm[$count+1] =~ /[0-9]*.?[0-9]*\s\/\s[0-9]*.?[0-9]*/gi;
 	    return $&;
 	} else {return $ERROR; }
-	#return getInfo($count, "grades", $line, @completeHtm); 
     }
-    ##
-    #Returns a due Date if param 1 is 'due'
-    #returns a release date if param 1 is 'release'
-    ##
-    sub getInfo {
-	my($count, $type, $line, @completeHtm) = @_;
-	my $primaryRegexPattern;
-	if( $type eq "due") {
-	    $primaryRegexPattern = $REGEXDUE;
-	}elsif( $type eq "release") {
-	    $primaryRegexPattern = $REGEXRELEASE;
-	
-	}elsif($type eq "grades") {
-		$primaryRegexPattern = $REGEXGRADES; 
 
-	} else { return $ERROR; }
-	if ($line =~/$REGEXNOGRADES/) {		return 0;}
-	if ($line =~/$primaryRegexPattern/) {
-	    my($result) = $completeHtm[$count+1] =~ /[^<>]/i;
-		return $&;
 
-	}
-
-	
-    }
     ##
     #submissionTimeChart--releaseDate
     #next line will hold the release date
     ##
-    sub getRelease{
-
+    sub getRelease {
 	my($count, $line, @completeHtm) = @_;
-
-	return getInfo($count, "release", $line, @completeHtm); 
+	if($line =~/$REGEXRELEASE/){
+	    my($result) = $completeHtm[$count+1] =~ /[A-Z][a-z]{2} [0-9]{2}/gi;
+	    return $&;
+	} else {return $ERROR; }
     }
+
+
+
     ##
     #submissionTimeChart--dueDate
     ##
     sub getDue {
 	my($count, $line, @completeHtm) = @_;
-
-	return getInfo($count, "due", $line, @completeHtm);
+	if($line =~/$REGEXDUE/){
+	    my($result) = $completeHtm[$count+1] =~ /[A-Z][a-z]{2} [0-9]{2}/gi;
+	    return $&;
+	} else {return $ERROR; }
     }
+
+
 
