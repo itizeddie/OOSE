@@ -10,141 +10,6 @@
 			"name": "New Account",
 			"item": [
 				{
-					"name": "Success",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "727605ba-d54b-43e2-b4cd-387b648280e7",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "c261dbf0-c5c1-4d05-9984-283444407aaa",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/accounts?email=blah@blah.com`,",
-									"    method: 'GET'",
-									"}",
-									"",
-									"pm.sendRequest(request, function(err, res) {",
-									"    if (res.code == 200) {",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/accounts/${res.json()}`,",
-									"            method: 'DELETE'",
-									"        }",
-									"    ",
-									"        pm.sendRequest(request);",
-									"    }",
-									"});",
-									"",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "username",
-									"value": "test_user",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "12345",
-									"type": "text"
-								},
-								{
-									"key": "email",
-									"value": "blah@blah.com",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/accounts",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"accounts"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Successful Request",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "username",
-											"value": "test_user",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "12345",
-											"type": "text"
-										},
-										{
-											"key": "email",
-											"value": "blah@blah.com",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{host}}/accounts",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"accounts"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "plain",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 16 Oct 2018 19:37:42 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "Javalin"
-								},
-								{
-									"key": "Content-Type",
-									"value": "text/plain"
-								},
-								{
-									"key": "Content-Length",
-									"value": "0"
-								}
-							],
-							"cookie": [],
-							"body": null
-						}
-					]
-				},
-				{
 					"name": "No Email",
 					"event": [
 						{
@@ -446,6 +311,191 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "727605ba-d54b-43e2-b4cd-387b648280e7",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c261dbf0-c5c1-4d05-9984-283444407aaa",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/accounts?email=blah@blah.com`,",
+									"    method: 'GET'",
+									"}",
+									"",
+									"pm.sendRequest(request, function(err, res) {",
+									"    if (res.code == 200) {",
+									"        request = {",
+									"            url:`${pm.variables.get(\"host\")}/accounts/${res.json()}`,",
+									"            method: 'DELETE'",
+									"        }",
+									"    ",
+									"        pm.sendRequest(request);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "username",
+											"value": "test_user",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "12345",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "blah@blah.com",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{host}}/accounts",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"accounts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 16 Oct 2018 19:37:42 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "Javalin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Email Unique",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9c3c93c-b2e4-4b7f-8c1a-b7fb23568c58",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Email is already taken'\", () => pm.response.to.have.body(\"Email is already taken\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "blah@blah.co",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/accounts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Creates a new account.\n\nAccepts `email`, `username`, and `password` params for the user.\n\nReturns status code `201` upon success with the user ID as the response content.\n\nReturns status code `400` upon validation failure with the error message as the content.\n\nValidations are: 1) Email, Username, and Password cannot be blank, 2) Password must be >= 5 characters",
@@ -476,7 +526,117 @@
 			"name": "Login",
 			"item": [
 				{
-					"name": "Login",
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c4d9bbb8-5e42-4107-b9c5-e5390fc3d576",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/login?username=test_user&password=12345`,",
+									"    method: 'POST'",
+									"}",
+									"",
+									"pm.sendRequest(request);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4cfa9f8-9036-4f24-8abc-4602c5fc9eed",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Content has flash message\", () => pm.expect(pm.response.text()).to.include(\"been logged out\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/logout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0648a0a6-1fc9-45d5-9fe6-fef2ad2ab248",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Username cannot be blank\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "password",
+									"value": "12345",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0648a0a6-1fc9-45d5-9fe6-fef2ad2ab248",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Password cannot be blank\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -485,12 +645,118 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "testuser",
+									"value": "12345",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Credentials",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c52aed9-c1bd-4d91-9160-aa5b611b5926",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "39067e9c-e442-444d-a440-e0c066f31820",
+								"exec": [
+									"pm.test(\"Status code is 401\", () => pm.response.to.have.status(401));",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Invalid Username or Password\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "invalid_creds",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "testpassword",
+									"value": "12345",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c52aed9-c1bd-4d91-9160-aa5b611b5926",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "39067e9c-e442-444d-a440-e0c066f31820",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345",
 									"type": "text"
 								}
 							]
@@ -509,6 +775,507 @@
 				}
 			],
 			"description": "POST Request: Login accepts a `username` and `password` param.\n\nRedirect with code 303 to `/` upon success.\nRender failure with status code 401 if credentials are incorrect."
+		},
+		{
+			"name": "New Term",
+			"item": [
+				{
+					"name": "No Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Title cannot be blank.'\", () => pm.response.to.have.body(\"Title cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No Start Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Start Date cannot be blank.'\", () => pm.response.to.have.body(\"Start Date cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No End Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'End Date cannot be blank.'\", () => pm.response.to.have.body(\"End Date cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Title cannot be blank.'\", () => pm.response.to.have.body(\"Title cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank Start Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Start Date cannot be blank.'\", () => pm.response.to.have.body(\"Start Date cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank End Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'End Date cannot be blank.'\", () => pm.response.to.have.body(\"End Date cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End Date Before Start Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'End Date cannot be before Start Date.'\", () => pm.response.to.have.body(\"End Date cannot be before Start Date.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-10-09",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b1a45943-33b9-4f94-bcf5-7b7dad63850a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "start_date",
+									"value": "2018-10-10",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2018-12-20",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Fall 2018",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/term",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"term"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: Creates a new term for the user. Accepts a `title` param, `start_date` param and `end_date` param.\n\nReturns 201 upon success.\nReturns 400 upon input validation.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1a7398e0-d496-41de-95b5-4094a6ccc410",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d28604d4-d2a3-4309-864a-bd8c885f1efe",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "New Course",
+			"item": [
+				{
+					"name": "Success",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text"
+								},
+								{
+									"key": "term_id",
+									"value": "2525",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course/new",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "POST Request: Adds a new course to the user's schedule. Accepts the `title` param (the chosen title of the course), and `term_id` param which is the selected term for the user.\n\nReturns 201 upon success.\nReturns 400 if input fails validation (if `title` is blank, `term_id` is not found, or `token` is not found).",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "67f8d911-aaff-4e83-8a54-ce1a787fab78",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a57a0b4-9941-4ddc-8e34-fd288dffa315",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		},
 		{
 			"name": "Get Calendar",
@@ -633,116 +1400,6 @@
 					}
 				}
 			]
-		},
-		{
-			"name": "New Course",
-			"item": [
-				{
-					"name": "Success",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "token",
-									"value": "fcfba16d-1b88-48e4-b021-f2f854d15ddc",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "term_id",
-									"value": "2525",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/course/new",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"course",
-								"new"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"description": "POST Request: Adds a new course to the user's schedule. Accepts a `token` param for the extension the user is using as in the scraper. Also accepts the `title` param (the chosen title of the course), and `term_id` param which is the selected term for the user.\n\nReturns 201 upon success.\nReturns 400 if input fails validation (if `title` is blank, `term_id` is not found, or `token` is not found).",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "67f8d911-aaff-4e83-8a54-ce1a787fab78",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "2a57a0b4-9941-4ddc-8e34-fd288dffa315",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "New Term",
-			"item": [
-				{
-					"name": "Success",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "start_date",
-									"value": "2018-10-10",
-									"type": "text"
-								},
-								{
-									"key": "end_date",
-									"value": "2018-12-20",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "Fall 2018",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/term/new",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"term",
-								"new"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"description": "POST Request: Creates a new term for the user. Accepts a `title` param, `start_date` param and `end_date` param.\n\nReturns 201 upon success."
 		},
 		{
 			"name": "Get Assignment",

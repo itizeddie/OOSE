@@ -28,7 +28,7 @@ class UsersRepositoryTest {
             database = postgresDatabase;
             repo = new UsersRepository(database);
 
-            testData.put("email", "test@testing.com");
+            testData.put("email", "test123456@testi1234ng.com");
         }
     }
 
