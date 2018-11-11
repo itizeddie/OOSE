@@ -11,7 +11,8 @@
 
   "permissions": [
     "activeTab",
-    "*://gradescope.com/*"
+    "*://gradescope.com/*",
+    "*://localhost/*"
   ],
 
   "browser_action": {
