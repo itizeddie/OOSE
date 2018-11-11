@@ -7,8 +7,14 @@ public class Strings {
     and replacing underscores with spaces.
      */
     public static String humanize(String string) {
-        char firstChar = string.toUpperCase().charAt(0);
         string = string.replace('_', ' ');
-        return firstChar + string.substring(1);
+
+        StringBuilder capitalized = new StringBuilder();
+        String[] words = string.split("\\s");
+        for (String word : words) {
+            capitalized.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+        }
+
+        return capitalized.toString().trim();
     }
 }
