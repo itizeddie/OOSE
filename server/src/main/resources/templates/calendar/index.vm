@@ -1,8 +1,13 @@
-#parse("/templates/layout.vm")
+#parse("/templates/webpage.vm")
 #set( $css_name = "webpage" )
 #@mainContent($css_name)
 <div class="topnav">
     <a class="active" href="#home">Calendue</a>
-    <input type="text" placeholder="Search class..">
+    <div class="search-container">
+        <form action="/action_page.php">
+          <input type="text" placeholder="Search.." name="search">
+          <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
+      </div>
 </div>
 #end
