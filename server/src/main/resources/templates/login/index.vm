@@ -1,5 +1,6 @@
 #parse("/templates/layout.vm")
-#@mainContent()
+#set( $css_name = "login" )
+#@mainContent($css_name)
 <h2>Calendue Login</h2>
 <form action="/login" method="post">
     <div class="container">
