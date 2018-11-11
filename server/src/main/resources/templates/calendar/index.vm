@@ -1,9 +1,8 @@
-#parse("/templates/webpage.vm")
-#@mainContent()
-<body>
-    <div class="topnav">
-        <a class="active" href="#home">Calendue</a>
-        <input type="text" placeholder="Search class..">
-    </div>
-</body>
+#parse("/templates/layout.vm")
+#set( $css_name = "webpage" )
+#@mainContent($css_name)
+<div class="topnav">
+    <a class="active" href="#home">Calendue</a>
+    <input type="text" placeholder="Search class..">
+</div>
 #end
