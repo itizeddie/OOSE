@@ -3,15 +3,15 @@
  */
 
 (function() {
-    // /**
-    //  * Check and set a global guard variable.
-    //  * If this content script is injected into the same page again,
-    //  * it will do nothing next time.
-    //  */
-    // if (window.hasRun) {
-    //     return;
-    // }
-    // window.hasRun = true;
+    /**
+     * Check and set a global guard variable.
+     * If this content script is injected into the same page again,
+     * it will do nothing next time.
+     */
+    if (window.hasRun) {
+        return;
+    }
+    window.hasRun = true;
 
     /**
      * Sends the account data to the server to create the account using a POST request.
