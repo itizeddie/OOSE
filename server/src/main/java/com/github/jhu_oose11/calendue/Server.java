@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jhu_oose11.calendue.controllers.AccountsController;
 import com.github.jhu_oose11.calendue.controllers.CalendarController;
 import com.github.jhu_oose11.calendue.controllers.LoginController;
+import com.github.jhu_oose11.calendue.controllers.TermsController;
 import com.github.jhu_oose11.calendue.repositories.CredentialsRepository;
+import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import com.github.jhu_oose11.calendue.repositories.UsersRepository;
 import io.javalin.Javalin;
 import io.javalin.JavalinEvent;
@@ -20,6 +22,7 @@ public class Server {
     private static DataSource database;
     private static UsersRepository usersRepository;
     private static CredentialsRepository credentialsRepository;
+    private static TermsRepository termsRepository;
 
     public static void main(String[] args) {
         Javalin.create()
@@ -45,6 +48,13 @@ public class Server {
                         post(LoginController::login);
                     });
                     path("logout", () -> get(LoginController::logout));
+                    path("term", () -> {
+                        post(TermsController::newTerm);
+                        path(":term_id", () -> {
+                            delete(TermsController::deleteTerm);
+                            get(TermsController::getTerm);
+                        });
+                    });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
                     if (System.getenv("JDBC_DATABASE_URL") != null) {
@@ -54,8 +64,10 @@ public class Server {
                     }
                     usersRepository = new UsersRepository(database);
                     credentialsRepository = new CredentialsRepository(database);
+                    termsRepository = new TermsRepository(database);
                 })
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
+                .exception(TermsRepository.NonExistingTermException.class, (e, ctx) -> ctx.status(404))
                 .start(System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : 7000);
     }
 
@@ -70,4 +82,6 @@ public class Server {
     public static CredentialsRepository getCredentialsRepository() {
         return credentialsRepository;
     }
+
+    public static TermsRepository getTermsRepository() { return termsRepository; }
 }

@@ -58,12 +58,14 @@ use v5.10;
 
 	if(($temp =  getAssignment($lineCount, $line, @splitLines)) ne $ERROR)
 	    {$assignmentNames[$assignmentCount] = $temp;$assignmentCount++;}
+
 	elsif(($temp = getGrades($lineCount,$line, @splitLines)) ne $ERROR)
 	   {$assignmentGrades[$assignmentCount] = $temp;}
 	elsif(($temp = getRelease($lineCount, $line, @splitLines)) ne $ERROR) { 
 	    $assignmentRelease[$assignmentCount] = $temp;}
 	elsif(($temp = getDue($lineCount, $line, @splitLines)) ne $ERROR) {
        	    $assignmentDue[$assignmentCount] = $temp;}
+
 
 	$lineCount++; 
     }
@@ -84,7 +86,9 @@ use v5.10;
     #Printing to output file to be read in by java and placed into database
     ##	
     for( my $i = 0; $i < $assignmentCount; $i++) {
+
 	print $output "$assignmentNames[$i], $assignmentGrades[$i+1], $assignmentRelease[$i+1], $assignmentDue[$i+1]\n";
+
     } 
     close $output; 
     
@@ -146,6 +150,7 @@ use v5.10;
     #next line is the grade or word No Submission
     ##
     sub getGrades {
+
 	my($count, $line, @completeHtm) = @_;
 	if($line =~/$REGEXNOGRADES/) {return 0;}
 	elsif($line =~/$REGEXGRADES/){

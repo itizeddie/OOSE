@@ -27,7 +27,7 @@ class CredentialsRepositoryTest {
             repo = new CredentialsRepository(database);
             usersRepo = new UsersRepository(database);
 
-            testData.put("email", "test@testing.com");
+            testData.put("email", "test123456@testing.com");
             testData.put("username", "testing_username");
             testData.put("password", "12345");
         }
@@ -82,7 +82,20 @@ class CredentialsRepositoryTest {
     }
 
     @Test
-    void create() {
+    void create() throws SQLException {
+        User testUser = (User)(testData.get("user"));
+        String testUsername = (String) testData.get("username");
+        String testPassword = (String) testData.get("password");
+        UsernameLogin credential = new UsernameLogin(testUser.getId(), testUsername, testPassword);
+        repo.create(credential);
 
+        assertEquals(credential.getUsername(), testUsername);
+
+        try {
+            credential = repo.getByUsername(testUsername);
+            assertEquals(credential.getUsername(), testUsername);
+        } catch (UsersRepository.NonExistingUserException e) {
+            fail(e.getMessage());
+        }
     }
 }
