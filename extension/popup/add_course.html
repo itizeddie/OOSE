@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="add_course.css"/>
+</head>
+
+<body>
+<div id="calendue-title">Calendue</div>
+
+<div id="login-content">
+        <form id="login-form">
+        <div id="create-account">
+            <label for="username"><b>Username</b></label>
+            <input type="text" placeholder="Enter username" id="username" required>
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter email" id="email" required>
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="At least 5 characters" id="password" required>
+            <div class="button sign-up">Sign up</div>
+            Log in
+        </div>
+        </form>
+</div>
+
+<div id="popup-content" class="hidden">
+    <div id="add-course">Search page for course?</div>
+    <div class="button add-course">Confirm</div>
+    <div class="button logout">Logout</div>
+</div>
+<div id="error-content" class="hidden">
+    <p>Can't add course.</p><p>Calendue currently only works for GradeScope.</p>
+</div>
+<div id="success-message" class="hidden">
+    <p>Added course.</p>
+</div>
+<script src="add_course.js"></script>
+</body>
+
+</html>
