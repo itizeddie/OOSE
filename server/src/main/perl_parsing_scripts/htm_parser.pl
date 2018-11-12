@@ -1,24 +1,20 @@
-#!/usr/local/bin/perl -w
 
-#
-# This program parses through a .htm file. 
-#
-# Note: you must use formatHtm.pl on the htm
-# 	you wish to format otherwise parsing is 
-# 	not guarenteed to be correct. 
+
 
 use strict;
 use warnings; 
 use v5.10;
 
     my $ERROR = -1; 
-    my $fileToParse = $ARGV[0];
-    open my $input, '<', $fileToParse	or die "Can't read the file I want to parse: $!";
-    open my $output, '>', "$fileToParse.parsed" or die "Can't write new file: $!";
+    #my $fileToParse = <STDIN>;
+    #$ARGV[0];
+    #open my $input, '<', $fileToParse	or die "Can't read the file I want to parse: $!";
+    #open my $output, '>', "$fileToParse.parsed" or die "Can't write new file: $!";
 
     #slup of all lines of input file
-    my @allLines = do { local $/; <$input> }; 
-    close $input; 
+    my @allLines = <STDIN>;
+     #do { local $/; <$input> };
+    #close $input;
 
     #split allLines by line \n
     my @splitLines = split(/\n/, $allLines[0]); 
@@ -52,7 +48,7 @@ use v5.10;
 
     $courseNumber = getCourseNumber(@splitLines); 
     if($courseNumber eq $ERROR) { die "Can't read couse number: $!";}
-    print $output "$courseNumber\n";
+    print "$courseNumber\n";
     my $temp; 
     foreach my $line (@splitLines) {
 
@@ -87,10 +83,10 @@ use v5.10;
     ##	
     for( my $i = 0; $i < $assignmentCount; $i++) {
 
-	print $output "$assignmentNames[$i], $assignmentGrades[$i+1], $assignmentRelease[$i+1], $assignmentDue[$i+1]\n";
+	print  "$assignmentNames[$i], $assignmentGrades[$i+1], $assignmentRelease[$i+1], $assignmentDue[$i+1]\n";
 
     } 
-    close $output; 
+    #close $output;
     
     exit; 
 
