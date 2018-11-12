@@ -15,17 +15,6 @@
 
     console.log("hostname= "+ window.location.hostname);
 
-    //function checkURL () {
-        if(window.location.hostname!=="www.gradescope.com"){
-            console.log("notongradescope function");
-            let t = document.createTextNode("Not on gradescope");
-            document.body.appendChild(t);
-        }
-        else{
-            console.log("on");
-        }
-
-   // }
 
     /**
      * Sends the account data to the server to create the account using a POST request.
