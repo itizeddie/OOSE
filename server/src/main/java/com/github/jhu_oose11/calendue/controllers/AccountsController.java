@@ -26,7 +26,6 @@ public class AccountsController {
 
             UsernameLogin credential = new UsernameLogin(user.getId(), ctx.formParam("username"), ctx.formParam("password"));
             Server.getCredentialsRepository().create(credential);
-
             ctx.status(201);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {

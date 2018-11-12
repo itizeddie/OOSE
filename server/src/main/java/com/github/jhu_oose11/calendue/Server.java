@@ -1,10 +1,7 @@
 package com.github.jhu_oose11.calendue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.jhu_oose11.calendue.controllers.AccountsController;
-import com.github.jhu_oose11.calendue.controllers.CalendarController;
-import com.github.jhu_oose11.calendue.controllers.LoginController;
-import com.github.jhu_oose11.calendue.controllers.TermsController;
+import com.github.jhu_oose11.calendue.controllers.*;
 import com.github.jhu_oose11.calendue.repositories.CredentialsRepository;
 import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import com.github.jhu_oose11.calendue.repositories.UsersRepository;
@@ -42,6 +39,9 @@ public class Server {
                         post(AccountsController::newAccount);
                         get(AccountsController::getAccount);
                         path(":user_id", () -> delete(AccountsController::deleteAccount));
+                    });
+                    path("scrape", () -> {
+                        post(ScrapeController::main);
                     });
                     path("login", () -> {
                         get(LoginController::loginView);
