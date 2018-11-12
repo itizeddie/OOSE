@@ -17,7 +17,12 @@ function listenForClicks() {
         function sendCourseInfoToContentScript(tabs) {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
-            });
+            }).then(function() {
+                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
+                setTimeout(function(){
+                    document.getElementById("course-added-notification").remove()
+                }, 2000);
+            });;
         }
 
         /**
