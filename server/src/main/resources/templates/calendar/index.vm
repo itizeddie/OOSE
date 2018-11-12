@@ -1,5 +1,5 @@
-#parse("/templates/webpage.vm")
-#set( $css_name = "webpage" )
+#parse("/templates/layout.vm")
+#set( $css_name = "calendar" )
 #@mainContent($css_name)
 <div class="topnav">
     <a class="active" href="#home">Calendue</a>
