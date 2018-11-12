@@ -82,6 +82,8 @@ html {
     display: inline-block;
     font-size: 30px;
     padding: 20px;
+    border: solid;
+    border-width: medium;
 }
 
 body {
