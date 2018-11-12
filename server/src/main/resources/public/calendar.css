@@ -77,6 +77,13 @@ html {
   font-size: 62.5%;
 }
 
+.stat {
+    background-color: grey;
+    display: inline-block;
+    font-size: 30px;
+    padding: 20px;
+}
+
 body {
   font-size: 1.6rem;
   font-family: "Source Sans Pro", sans-serif;
