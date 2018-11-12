@@ -43,8 +43,10 @@ function listenForClicks() {
             });
         }
 
+        /**
+         * checks the URL and reloads the login page if the active tab is on gradescope.
+         */
         function sendCheckURLToContentScript(tabs) {
-            console.log("hello");
             browser.tabs.sendMessage(tabs[0].id, {
                 command: tabs[0].url
             }).then(function() {
