@@ -113,7 +113,7 @@ function listenForClicks() {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: tabs[0].url
             }).then(function() {
-                if (tabs[0].url === "https://www.gradescope.com/") {
+                if (tabs[0].url.toString().includes("gradescope")) {
                     document.querySelector("#login-content").classList.remove("hidden");
                     document.querySelector("#check-URL-content").classList.add("hidden");
                 }
