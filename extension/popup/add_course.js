@@ -2,18 +2,6 @@
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_second_WebExtension
  */
 
-const hidePage = `body > :not(.hidden) {
-                    display: none;
-                  }`;
-
-function checkURL() {
-    console.log("hostname add course.js= "+ window.location.hostname);
-
-    if (window.location.hostname !== "www.gradescope.com") {
-        console.log("notongradescope add_course,js function");
-    }
-}
-
 /**
  * Listen for clicks on the buttons, and send the appropriate message to
  * the content script in the page.
@@ -65,7 +53,6 @@ function listenForClicks() {
                     document.querySelector("#check-URL-content").classList.add("hidden");
                 }
             });
-            //else console.log("nope add_course,js function");
         }
 
         /**
