@@ -107,6 +107,20 @@ function listenForClicks() {
         }
 
         /**
+         * checks the URL and reloads the login page if the active tab is on gradescope.
+         */
+        function sendCheckURLToContentScript(tabs) {
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: tabs[0].url
+            }).then(function() {
+                if (tabs[0].url === "https://www.gradescope.com/") {
+                    document.querySelector("#login-content").classList.remove("hidden");
+                    document.querySelector("#check-URL-content").classList.add("hidden");
+                }
+            });
+        }
+
+        /**
          * Log the error to the console.
          */
         function reportError(error) {
@@ -127,6 +141,12 @@ function listenForClicks() {
         if (clickedItem.contains("sign-up")) {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendSignupInfoToContentScript)
+                .catch(reportError);
+        }
+        if (clickedItem.contains("reload")) {
+            console.log("contained");
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendCheckURLToContentScript)
                 .catch(reportError);
         }
     });

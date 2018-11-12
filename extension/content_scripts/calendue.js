@@ -13,6 +13,9 @@
     }
     window.hasRun = true;
 
+    console.log("hostname= "+ window.location.hostname);
+
+
     /**
      * Sends the account data to the server to create the account using a POST request.
      * @param username  the provided username of the user
