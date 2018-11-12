@@ -55,13 +55,16 @@ function listenForClicks() {
             });
         }
 
-        function sendCheckURLToContentScript() {
-            //console.log("hi");
-            //if (window.location.hostname === "www.gradescope.com") {
-                console.log("on... add_course,js function");
-                document.querySelector("#login-content").classList.remove("hidden");
-                document.querySelector("#check-URL-content").classList.add("hidden");
-            //}
+        function sendCheckURLToContentScript(tabs) {
+            console.log("hello");
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: tabs[0].url
+            }).then(function() {
+                if (tabs[0].url === "https://www.gradescope.com/") {
+                    document.querySelector("#login-content").classList.remove("hidden");
+                    document.querySelector("#check-URL-content").classList.add("hidden");
+                }
+            });
             //else console.log("nope add_course,js function");
         }
 
