@@ -13,13 +13,13 @@ public class ScrapeController {
         try {
             formatedHtm = runPerl(ctx.formParam("document"), "formatHtm.pl");
             parsedHtm = runPerl(formatedHtm, "htm_parser.pl");
+            //System.out.print(formatedHtm);
             System.out.print(parsedHtm);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public static String runPerl(String file, String perlscript) throws IOException {
-        File dir = new File ("C:\\Users\\itizh\\IdeaProjects\\2018-group-11\\server");
         ProcessBuilder pb = new ProcessBuilder("perl", System.getProperty("user.dir")+"\\src\\main\\perl_parsing_scripts\\"+perlscript);
         StringBuilder returnString = new StringBuilder();
         try {

@@ -1,11 +1,777 @@
 Formated with formatHtm.pl
 <>
-< words >
-< >
-< >
-< >
-< more words >
-< >
-< even more words >
-< >
-< fin >
+<head>
+<title>
+<Gradescope | 601.421/621 Dashboard>
+</title>
+<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0">
+<script data-apikey="77b51cafdf55184c5c33ee25bd688c71" src="//d2wy8f7a9ursnm.cloudfront.net/bugsnag-3.min.js">
+</script>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/logo/logo_bars_48-7d44e5ee05bdb7275955018f74ef43014a0c879c3794297b66c9d9321ca2a964.png">
+<link rel="stylesheet" media="all" href="/assets/application2-6610c93d3f88572a7425472bd56baa6a20673c37152ab39da6be0089af07f6e7.css" debug="false">
+<script src="/assets/application-6d7648dbc290ffd72a120b973473a18e487ca70b4ca34102372b479e6bd099a1.js" debug="false">
+</script>
+<script src="/packs/manifest-70f0d9335dfb209e5110.js">
+</script>
+<script src="/packs/vendor-2ff5bcae842ca1ffd0ea.js">
+</script>
+<style id="inert-style">
+<
+>
+<[inert] {
+>
+<  pointer-events: none;
+>
+<  cursor: default;
+>
+<}
+>
+<
+>
+<[inert], [inert] * {
+>
+<  user-select: none;
+>
+<  -webkit-user-select: none;
+>
+<  -moz-user-select: none;
+>
+<  -ms-user-select: none;
+>
+<}
+>
+<>
+</style>
+<script src="/packs/global_components-a9c1604a0dbe47ff9042.js">
+</script>
+<meta name="csrf-param" content="authenticity_token">
+<
+>
+<>
+<meta name="csrf-token" content="7IKETl8jqTiENtmg9vF9kUbH3kTF7IbYAfd9+rX1XyZjGKB5oeqpuZfkgwMGu4Eojew6USjbodEMex3jnhvKsw==">
+<meta name="pinterest" content="nopin">
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
+</script>
+<![endif]-->
+</head>
+<body data-action="show" data-controller="courses" class="js-focus-ring">
+<script type="text/javascript">
+<if (typeof Bugsnag !== 'undefined') {
+>
+<  Bugsnag.releaseStage = "production";
+>
+<  Bugsnag.notifyReleaseStages = ["staging", "production"]; Bugsnag.user = {name: "EDDIE HEREDIA", email: "eheredi1@jhu.edu"};}>
+</script>
+<a class="sr-only sr-only-focusable btn modal--btnPrimary skipLink" href="#main-content">
+<Skip to content>
+</a>
+<nav class="l-sidebar">
+<div class="sidebar--content">
+<div class="sidebar--logoHeader">
+<div class="logo">
+<a aria-label="back to home" href="/">
+<svg xmlns="http://www.w3.org/2000/svg" width="29" height="26" viewBox="0 0 29 26">
+<g fill-rule="evenodd">
+<path d="M0 14.763h5.915V25.5H0zM15.057 0h5.915v25.5h-5.915zM7.528 8.589h5.915V25.5H7.528zM22.585 6.174H28.5V25.5h-5.915z">
+</path>
+</g>
+</svg>
+<
+>
+<>
+<div aria-hidden="true" class="logo--text">
+<gradescope>
+</div>
+</a>
+</div>
+<div aria-label="Show Menu" class="collapseIcon js-toggleSidebar js-interactiveElement" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+<i aria-hidden="true" class="fa fa-chevron-left collapseIcon--leftArrow">
+</i>
+<i aria-hidden="true" class="fa fa-bars collapseIcon--hamburger">
+</i>
+<i aria-hidden="true" class="fa fa-chevron-right collapseIcon--rightArrow">
+</i>
+</div>
+</div>
+<div class="sidebar--collapsedHomeIcon" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Back to Home">
+<a aria-label="back to home" href="/">
+<svg xmlns="http://www.w3.org/2000/svg" width="29" height="26" viewBox="0 0 29 26">
+<g fill-rule="evenodd">
+<path d="M0 14.763h5.915V25.5H0zM15.057 0h5.915v25.5h-5.915zM7.528 8.589h5.915V25.5H7.528zM22.585 6.174H28.5V25.5h-5.915z">
+</path>
+</g>
+</svg>
+<
+>
+<>
+</a>
+</div>
+<h1 class="sidebar--title">
+<a href="/courses/21316">
+<601.421/621>
+</a>
+</h1>
+<div class="sidebar--subtitle">
+<Object-Oriented Software Engineering>
+</div>
+<ul class="sidebar--menu">
+<li class="sidebar--menuItem">
+<a aria-label="Dashboard" href="/courses/21316" class="active">
+<div class="sidebar--menuItemIcon">
+<i class="fa fa-tasks">
+</i>
+</div>
+<div class="sidebar--menuItemLabel">
+<Dashboard>
+</div>
+</a>
+</li>
+<li class="sidebar--menuItem">
+<a aria-label="Regrade Requests" href="/courses/21316/regrade_requests">
+<div class="sidebar--menuItemIcon">
+<i class="fa fa-repeat">
+</i>
+</div>
+<div class="sidebar--menuItemLabel">
+<Regrade Requests>
+</div>
+</a>
+</li>
+</ul>
+<h2 class="sidebar--menuHeader">
+<Instructors>
+</h2>
+<ul class="sidebar--menu sidebar--menu-hiddenWhenCollapsed js-sidebarRoster">
+<li class="sidebar--menuItem" id="sidebar-instructor-135319">
+<div class="sidebar--menuItemIcon">
+<div class="fa-stack-container">
+<span class="fa-stack fa-lg">
+<i class="fa fa-circle-thin fa-stack-2x">
+</i>
+<i class="fa fa-user fa-stack-1x sidebar-roster-img">
+</i>
+</span>
+</div>
+</div>
+<div class="sidebar--menuItemLabel">
+<Scott Smith>
+</div>
+</li>
+<li class="sidebar--menuItem" id="sidebar-instructor-206404">
+<div class="sidebar--menuItemIcon">
+<div class="fa-stack-container">
+<span class="fa-stack fa-lg">
+<i class="fa fa-circle-thin fa-stack-2x">
+</i>
+<i class="fa fa-user fa-stack-1x sidebar-roster-img">
+</i>
+</span>
+</div>
+</div>
+<div class="sidebar--menuItemLabel">
+<Leandro Facchinetti>
+</div>
+</li>
+</ul>
+<div class="sidebar--userProfileMenuMobile">
+<h2 class="sidebar--menuHeader">
+<More>
+</h2>
+<a class="sidebar--userProfileMenuMobileLink js-openHelpCenter" href="/help">
+<i aria-hidden="true" class="fa fa-question-circle">
+</i>
+< Help>
+</a>
+<a class="sidebar--userProfileMenuMobileLink" href="/pricing">
+<i aria-hidden="true" class="fa fa-arrow-circle-up">
+</i>
+< Pricing>
+</a>
+<a class="sidebar--userProfileMenuMobileLink" href="/about">
+<i aria-hidden="true" class="fa fa-info-circle">
+</i>
+< About Us>
+</a>
+<a class="sidebar--userProfileMenuMobileLink" href="/account/edit">
+<i aria-hidden="true" class="fa fa-user">
+</i>
+< Edit Account>
+</a>
+<a class="sidebar--userProfileMenuMobileLink" href="/logout">
+<i aria-hidden="true" class="fa fa-power-off">
+</i>
+< Log Out>
+</a>
+</div>
+</div>
+<div aria-label="toggle more options" class="sidebar--userProfile" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+<div aria-hidden="true" class="sidebar--userProfileIcon" role="presentation">
+<div class="fa-stack-container">
+<span class="fa-stack fa-lg">
+<i aria-hidden="true" class="fa fa-circle-thin fa-stack-2x">
+</i>
+<i aria-hidden="true" class="fa fa-user fa-stack-1x">
+</i>
+</span>
+</div>
+</div>
+<div class="sidebar--userProfileName">
+<Account>
+</div>
+<div class="sidebar--userProfileMenuToggle">
+<i aria-label="toggle account menu" class="fa fa-angle-up">
+</i>
+</div>
+</div>
+<div class="modal modal-helpCenter">
+<div data-url="/help/contents" id="help-center">
+</div>
+</div>
+</nav>
+<nav class="l-mobileTopNav">
+<div aria-expanded="false" aria-label="expand sidebar" class="collapseIcon js-toggleSidebarMobile collapseIcon-is-collapsed">
+<i aria-hidden="true" class="fa fa-chevron-left collapseIcon--leftArrow">
+</i>
+<i aria-hidden="true" class="fa fa-bars collapseIcon--hamburger">
+</i>
+<i aria-hidden="true" class="fa fa-chevron-right collapseIcon--rightArrow">
+</i>
+</div>
+<div class="logo">
+<a aria-label="back to home" href="/">
+<svg xmlns="http://www.w3.org/2000/svg" width="29" height="26" viewBox="0 0 29 26">
+<g fill-rule="evenodd">
+<path d="M0 14.763h5.915V25.5H0zM15.057 0h5.915v25.5h-5.915zM7.528 8.589h5.915V25.5H7.528zM22.585 6.174H28.5V25.5h-5.915z">
+</path>
+</g>
+</svg>
+<
+>
+<>
+<div class="logo--text">
+<gradescope>
+</div>
+</a>
+</div>
+</nav>
+<div class="l-mainWrapper">
+<div class="sidebar--mobileOverlay">
+</div>
+<main class="l-main" id="main-content" tabindex="-1">
+<div class="l-header">
+</div>
+<div class="l-contentWrapper">
+<div class="l-content">
+<header class="courseHeader">
+<h1 class="courseHeader--title">
+<601.421/621>
+</h1>
+<div class="courseHeader--term">
+<Fall 2018>
+</div>
+</header>
+<section>
+<div id="assignments-student-table_wrapper" class="dataTables_wrapper no-footer">
+<table class="table dataTable no-footer" id="assignments-student-table" role="grid" style="width: 716px;">
+<caption class="sr-only">
+<Assignments List>
+</caption>
+<thead>
+<tr role="row">
+<th role="columnheader" scope="col" class="sorting" tabindex="0" aria-controls="assignments-student-table" rowspan="1" colspan="1" style="width: 319px;" aria-label="Name: activate to sort column ascending">
+<Name>
+</th>
+<th role="columnheader" scope="col" class="sorting" tabindex="0" aria-controls="assignments-student-table" rowspan="1" colspan="1" style="width: 147px;" aria-label="Status: activate to sort column ascending">
+<Status>
+</th>
+<th class="table--complexHeader sorting-right sorting_desc" role="columnheader" scope="col" tabindex="0" aria-controls="assignments-student-table" rowspan="1" colspan="1" style="width: 218px;" aria-label="ReleasedDue (EST): activate to sort column ascending">
+<div aria-label="Due Date">
+<span aria-hidden="true" class="table--cell-hiddenOnMobile">
+<Released>
+</span>
+<span>
+<Due (>
+<abbr title="Eastern Time (US &amp; Canada)">
+<EST>
+</abbr>
+<)>
+</span>
+</div>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr role="row" class="odd">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 6 - Design Patterns" href="/courses/21316/assignments/119769/submissions/11117259">
+<Assignment 6 - Design Patterns>
+</a>
+</th>
+<td class="submissionStatus submissionStatus-complete">
+<div aria-hidden="true" class="submissionStatus--bullet" role="presentation">
+</div>
+<div class="submissionStatus--text">
+<Submitted>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  November 01" class="submissionTimeChart--releaseDate">
+<Nov 01>
+</span>
+<span aria-label="Due at November 07 at 11:59PM" class="submissionTimeChart--dueDate">
+<Nov 07 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  November 10 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Nov 10 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="even">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 5 - Refactoring" href="/courses/21316/assignments/115219/submissions/10831655">
+<Assignment 5 - Refactoring>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<30.0 / 50.0>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  October 22" class="submissionTimeChart--releaseDate">
+<Oct 22>
+</span>
+<span aria-label="Due at October 31 at 11:59PM" class="submissionTimeChart--dueDate">
+<Oct 31 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  November 03 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Nov 03 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="odd">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 4 - Design Principles" href="/courses/21316/assignments/108627/submissions/10030003">
+<Assignment 4 - Design Principles>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<70.0 / 70.0>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  October 08" class="submissionTimeChart--releaseDate">
+<Oct 08>
+</span>
+<span aria-label="Due at October 12 at 11:59PM" class="submissionTimeChart--dueDate">
+<Oct 12 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  October 15 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Oct 15 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="even">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 3 - Design" href="/courses/21316/assignments/104778/submissions/9611478">
+<Assignment 3 - Design>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<40.0 / 40.0>
+</div>
+<div>
+<10 Hours, 23 Minutes Late>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  September 28" class="submissionTimeChart--releaseDate">
+<Sep 28>
+</span>
+<span aria-label="Due at October 01 at 11:59PM" class="submissionTimeChart--dueDate">
+<Oct 01 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  October 04 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Oct 04 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="odd">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 2 · Part 2 · Git" href="/courses/21316/assignments/98752/submissions/9435776">
+<Assignment 2 · Part 2 · Git>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<13.0 / 25.0>
+</div>
+<div>
+<1 Day, 23 Hours Late>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  September 14" class="submissionTimeChart--releaseDate">
+<Sep 14>
+</span>
+<span aria-label="Due at September 24 at 11:59PM" class="submissionTimeChart--dueDate">
+<Sep 24 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  September 27 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Sep 27 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="even">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 2 · Lights Out · Part 1 · JavaScript · Client" href="/courses/21316/assignments/98754/submissions/9396260">
+<Assignment 2 · Lights Out · Part 1 · JavaScript · Client>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<4.0 / 50.0>
+</div>
+<div>
+<23 Hours, 57 Minutes Late>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  September 14" class="submissionTimeChart--releaseDate">
+<Sep 14>
+</span>
+<span aria-label="Due at September 24 at 11:59PM" class="submissionTimeChart--dueDate">
+<Sep 24 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  September 27 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Sep 27 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+<tr role="row" class="odd">
+<th class="table--primaryLink" role="rowheader" scope="row">
+<a aria-label="View Assignment 1 · Lights Out · Part 1 · Server" href="/courses/21316/assignments/91726/submissions/9208143">
+<Assignment 1 · Lights Out · Part 1 · Server>
+</a>
+</th>
+<td class="submissionStatus">
+<div class="submissionStatus--score">
+<33.5 / 36.0>
+</div>
+<div>
+<2 Days, 8 Hours Late>
+</div>
+</td>
+<td class="sorting_1 sorting_2">
+<div class="submissionTimeChart submissionTimeChart-">
+<div class="progressBar--caption">
+<span aria-label="Released at  August 30" class="submissionTimeChart--releaseDate">
+<Aug 30>
+</span>
+<span aria-label="Due at September 17 at 11:59PM" class="submissionTimeChart--dueDate">
+<Sep 17 at 11:59PM>
+</span>
+<br>
+<span aria-label="Late Due Date at  September 20 at 11:59PM" class="submissionTimeChart--dueDate">
+<Late Due Date: Sep 20 at 11:59PM>
+</span>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<div class="modal" id="submit-fixed-length-modal">
+<div class="modal-header modal--heading">
+<h1>
+<Submit Assignment>
+</h1>
+</div>
+<div class="modal-subtitle modal--subheading">
+<span class="modal-subtitle-icon modal--subheadingIcon">
+<i class="fa fa-info-circle">
+</i>
+</span>
+<span class="modal-subtitle-text">
+<Upload a PDF containing your responses to the assignment.>
+</span>
+</div>
+<div class="modal-body modal--body">
+<div class="msg warning msg-warning late-submission-warning">
+<This submission will be marked late. Please refer to your course's policy for handling late
+>
+<work.>
+</div>
+<form id="submit-fixed-length-form" enctype="multipart/form-data" action="/courses/21316" accept-charset="UTF-8" method="post">
+<input name="utf8" type="hidden" value="✓">
+<input type="hidden" name="authenticity_token" value="7IKETl8jqTiENtmg9vF9kUbH3kTF7IbYAfd9+rX1XyZjGKB5oeqpuZfkgwMGu4Eojew6USjbodEMex3jnhvKsw==">
+<div class="form-group form-file-upload fileUpload">
+<label for="submission_pdf_attachment">
+<label class="file-upload-label form-label form--label-header">
+<span>
+<File>
+</span>
+</label>
+<input required="required" name="pdf_attachment" class="fileUpload--input " tabindex="-1" aria-hidden="true" type="file" id="submission_pdf_attachment">
+<i class="fa fa-file-text-o">
+</i>
+<span class="file-upload-prompt fileUpload--prompt">
+<Please select a file>
+</span>
+<span class="btnContainer">
+<span class="btn file-upload-btn btn-fileUpload js-interactiveElement" role="button" tabindex="0">
+<Select PDF>
+</span>
+</span>
+</label>
+</div>
+<div class="btnContainer">
+<input type="submit" name="commit" value="Upload PDF" id="submit" class="btn btn-primary modal--btnPrimary">
+<button class="btn btn-cancel modal--btnCancel" type="button">
+<Cancel>
+</button>
+</div>
+</form>
+</div>
+</div>
+<dialog aria-describedby="submit-variable-length-modal-subheading" aria-labelledby="submit-variable-length-modal-heading" aria-modal="true" class="modal modal-withFooter" id="submit-variable-length-modal" open="true" role="dialog" tabindex="-1">
+<div role="document">
+<h1 class="modal--heading" id="submit-variable-length-modal-heading">
+<Submit Assignment>
+</h1>
+<div class="modal-subtitle modal--subheading">
+<span class="modal-subtitle-icon modal--subheadingIcon">
+<i aria-hidden="true" class="fa fa-info-circle">
+</i>
+</span>
+<span class="modal-subtitle-text" id="submit-variable-length-modal-subheading">
+<Submit images for each question, or a single PDF.>
+</span>
+</div>
+<div class="modal-body modal--body">
+<div class="msg error msg-error">
+<The outline for this assignment has not been set up yet. Notify your instructor to fix this problem.>
+</div>
+<div class="msg warning msg-warning late-submission-warning">
+<This submission will be marked late. Please refer to your course's policy for handling
+>
+<late work.>
+</div>
+<p class="u-instructionText">
+<Attach one or more image files for your answer to each question.
+>
+<You can also submit a single PDF, and then select the pages corresponding to each question
+>
+<in the next step.>
+</p>
+<div class="linkGallery" id="submit-links-container">
+<a class="submit-variable-length-choice linkGallery--link" id="submit-variable-length-images">
+<i aria-hidden="true" class="fa fa-image">
+</i>
+<div class="submit-variable-length-text linkGallery--linkText">
+<Submit Images>
+</div>
+</a>
+<button class="submit-variable-length-choice btn-link linkGallery--link" id="submit-variable-length-pdf">
+<i aria-hidden="true" class="fa fa-file-pdf-o">
+</i>
+<div class="submit-variable-length-text linkGallery--linkText">
+<Submit PDF>
+</div>
+</button>
+</div>
+</div>
+<div class="modal--footer modal--footer-closeButton js-closeModal js-interactiveElement" role="button" tabindex="0">
+<span aria-hidden="true" class="fa-stack modal--footerIcon">
+<i class="fa fa-circle-thin fa-stack-2x">
+</i>
+<i class="fa fa-times fa-stack-1x">
+</i>
+</span>
+<span class="text modal--footerText">
+<Close>
+</span>
+</div>
+</div>
+</dialog>
+<dialog aria-describedby="submit-code-modal-subheading" aria-labelledby="submit-code-modal-heading" aria-modal="true" class="modal" id="submit-code-modal" open="true" role="dialog" tabindex="-1">
+<div role="document">
+<h1 class="modal--heading" id="submit-code-modal-heading">
+<Submit Programming Assignment>
+</h1>
+<div class="modal-subtitle modal--subheading">
+<span class="modal-subtitle-icon modal--subheadingIcon">
+<i aria-hidden="true" class="fa fa-info-circle">
+</i>
+</span>
+<span class="modal-subtitle-text" id="submit-code-modal-subheading">
+<Upload all files for your submission>
+</span>
+</div>
+<div class="modal-body modal--body">
+<div class="msg warning msg-warning late-submission-warning">
+<This submission will be marked late. Please refer to your course's policy for handling late
+>
+<work.>
+</div>
+<form id="submit-code-form" autocomplete="off" enctype="multipart/form-data" action="/courses/21316" accept-charset="UTF-8" method="post">
+<input name="utf8" type="hidden" value="✓">
+<input type="hidden" name="authenticity_token" value="7IKETl8jqTiENtmg9vF9kUbH3kTF7IbYAfd9+rX1XyZjGKB5oeqpuZfkgwMGu4Eojew6USjbodEMex3jnhvKsw==">
+<div class="js-submissionMethodSwitcher">
+</div>
+<div class="fileUploadArea">
+<div aria-label="Select to upload files" class="form-file-drop-area js-interactiveElement" role="button" tabindex="0">
+<div class="form-file-drop-area-header">
+<Drag &amp; Drop>
+</div>
+<div class="form-file-drop-area-text">
+<Any file(s) including .zip. Click to browse.>
+</div>
+</div>
+<div class="form-file-drop-message">
+<Add files via Drag &amp; Drop or >
+<button class="btn btn-link btn-tealLink form-file-drop-browse" type="button">
+<Browse Files.>
+</button>
+</div>
+<div class="form-file-previews-container">
+<div class="form-file-previews-header">
+<div class="form-file-preview-filename">
+<Name>
+</div>
+<div class="form-file-preview-file-size">
+<Size>
+</div>
+<div class="form-file-preview-file-progress-container-header">
+<Progress>
+</div>
+<div class="form-file-preview-remove-button-header">
+<i class="fa fa-times">
+</i>
+</div>
+</div>
+<div class="form-file-previews">
+</div>
+</div>
+</div>
+<div class="js-repositorySelector" data-bitbucket-authentication-path="/bitbucket_authentication/new?assignment_id=nil" data-bitbucket-is-authenticated="false" data-bitbucket-repositories-url="https://www.gradescope.com/bitbucket_projects" data-github-authentication-path="/github_authentication/new?assignment_id=nil" data-github-is-authenticated="false" data-github-repositories-url="https://www.gradescope.com/github_repositories">
+</div>
+<div class="form--group form-group js-leaderboardGroup is-hidden">
+<label class=" form-label form--label-header" for="submission_leaderboard_name">
+<Leaderboard Name>
+</label>
+<input type="text" name="submission[leaderboard_name]" id="submission_leaderboard_name" placeholder="Provide a name for the leaderboard" required="required" class=" form--textInput">
+</div>
+<div class="btnContainer">
+<button class="btn btn-primary modal--btnPrimary" id="upload-files" type="submit">
+<Upload>
+</button>
+<button class="btn btn-cancel modal--btnCancel" id="cancel" type="button">
+<Cancel>
+</button>
+</div>
+</form>
+</div>
+</div>
+</dialog>
+<div class="hidden" id="dropzone-preview-template">
+<div class="form-file-preview">
+<div class="form-file-preview-filename">
+<span data-dz-name="">
+</span>
+</div>
+<div class="form-file-preview-file-size">
+<span data-dz-size="">
+</span>
+</div>
+<div class="form-file-preview-file-progress-container">
+<div data-dz-uploadprogress="">
+</div>
+</div>
+<div class="form-file-preview-remove-button">
+<span data-dz-remove="">
+<i class="fa fa-times">
+</i>
+</span>
+</div>
+<div class="form-file-preview-error-msg">
+<div data-dz-errormessage="">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div id="jBox1" class="jBox-wrapper jBox-Tooltip jBox-Default jBox-wrapper-popover jBox-pointerPosition-bottom" style="position: absolute; display: none; opacity: 0; z-index: 10000; padding-bottom: 12px;">
+<div class="jBox-container">
+<div class="jBox-content" aria-hidden="true" role="tooltip">
+<div class="sidebar--userProfileMenu" data-jbox-content-appended="1" style="display: block;">
+<a class="popover--listItem popover--listItem-userProfileMenu js-openHelpCenter" href="/help">
+<i aria-hidden="true" class="fa fa-question-circle">
+</i>
+< Help>
+</a>
+<a class="popover--listItem popover--listItem-userProfileMenu" href="/pricing">
+<i aria-hidden="true" class="fa fa-arrow-circle-up">
+</i>
+< Pricing>
+</a>
+<a class="popover--listItem popover--listItem-userProfileMenu" href="/about">
+<i aria-hidden="true" class="fa fa-info-circle">
+</i>
+< About Us>
+</a>
+<a class="popover--listItem popover--listItem-userProfileMenu" href="/account/edit">
+<i aria-hidden="true" class="fa fa-user">
+</i>
+< Edit Account>
+</a>
+<a class="popover--listItem popover--listItem-userProfileMenu" href="/logout">
+<i aria-hidden="true" class="fa fa-power-off">
+</i>
+< Log Out>
+</a>
+</div>
+</div>
+</div>
+<div class="jBox-pointer jBox-pointer-bottom" style="left: 0px; margin-left: 20px; height: 13px;">
+</div>
+</div>
+</body>
