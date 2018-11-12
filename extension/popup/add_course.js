@@ -22,30 +22,88 @@ function listenForClicks() {
                 setTimeout(function(){
                     document.getElementById("course-added-notification").remove()
                 }, 2000);
-            });;
+            });
         }
 
         /**
          * Get username and password and send a "create-account" message to the content script in the active tab.
+         * Checks for validity of sign up.
          */
         function sendSignupInfoToContentScript(tabs) {
             var username = document.getElementById("username").value;
             var email = document.getElementById("email").value;
             var password = document.getElementById("password").value;
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "create-account",
-                username: username,
-                email: email,
-                password: password
-            }).then(function() {
-                document.querySelector("#login-content").classList.add("hidden");
-                document.querySelector("#popup-content").classList.remove("hidden");
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
-                setTimeout(function(){
-                    document.getElementById("signup-notification").remove()
-                }, 1000);
 
-            });
+            if (isValidSignup(username, email, password)) {
+                browser.tabs.sendMessage(tabs[0].id, {
+                    command: "create-account",
+                    username: username,
+                    email: email,
+                    password: password
+                }).then(function () {
+                    document.querySelector("#login-content").classList.add("hidden");
+                    document.querySelector("#popup-content").classList.remove("hidden");
+                    document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
+                    setTimeout(function () {
+                        document.getElementById("signup-notification").remove()
+                    }, 1000);
+
+                });
+            }
+        }
+
+        function isValidSignup(username, email, password) {
+            // Remove pre-existing error messages
+            var elem = document.getElementById("signup-error-msg")
+            while (typeof(elem) != 'undefined' && elem != null) {
+                elem.remove();
+                elem = document.getElementById("signup-error-msg");
+            }
+
+            if (emptyFieldExists(username, email, password)) {
+                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
+                return false;
+            } else if (isPasswordInvalid(password)) {
+                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
+                return false;
+            } else if (isEmailInvalid(email)) {
+                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function emptyFieldExists(username, email, password) {
+            if ((username.length == 0) || (email.length == 0) || (password.length == 0)) {
+                return true;
+            } else {
+                return false;
+            }
+            return false;
+        }
+
+        /**
+         * Tests if email is valid. Regex is taken from
+         * https://jsfiddle.net/ghvj4gy9/embedded/result,js/
+         * @param email
+         * @returns {boolean}
+         */
+        function isEmailInvalid(email) {
+            var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (emailRegex.test(email)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function isPasswordInvalid(password) {
+            if (password.length < 5) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         /**
