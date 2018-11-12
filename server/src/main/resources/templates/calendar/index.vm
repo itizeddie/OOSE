@@ -550,6 +550,7 @@ var trace = {
   };
 var data = [trace];
 var layout = {
+    bargroupgap: 0.1,
     xaxis: {
         range: [0, 50]
     }
