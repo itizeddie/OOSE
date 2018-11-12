@@ -2,29 +2,23 @@
 
 
 use strict;
-use warnings; 
+use warnings;
 use v5.10;
 
     my $ERROR = -1; 
-    #my $fileToParse = <STDIN>;
-    #$ARGV[0];
-    #open my $input, '<', $fileToParse	or die "Can't read the file I want to parse: $!";
-    #open my $output, '>', "$fileToParse.parsed" or die "Can't write new file: $!";
 
-    #slup of all lines of input file
     my @allLines = <STDIN>;
-     #do { local $/; <$input> };
-    #close $input;
-
-    #split allLines by line \n
-    my @splitLines = split(/\n/, $allLines[0]); 
+    #this returns allLines size.
+    #print $#allLines;
     #Expected tag for files that are formated with formatHtm.pl
-    my $formatTag = 	"Formated with formatHtm.pl"; 
+    my $formatTag = 	"Formated with formatHtm.pl";
     ## Final regex patterns
+
     my $REGEXDUE =	 "submissionTimeChart--dueDate";
     my $REGEXRELEASE =	 "submissionTimeChart--releaseDate";
     my $REGEXNOGRADES =	 "submissionStatus--text";
     my $REGEXGRADES = 	 "submissionStatus--score";
+    my @splitLines = split(/\n/, $allLines[0]);
 
     my $courseNumber; 
 
@@ -41,29 +35,27 @@ use v5.10;
     my $lineCount = 0; 
 
 
+
     ##check if input file is formated correctly
     if(!isFileFormatted($splitLines[0])){
 	die ".htm was not formatted with formatHtm.pl: $!";
-    } 
+    }
 
-    $courseNumber = getCourseNumber(@splitLines); 
-    if($courseNumber eq $ERROR) { die "Can't read couse number: $!";}
-    print "$courseNumber\n";
-    my $temp; 
+    $courseNumber = getCourseNumber(@splitLines);
+    if($courseNumber eq $ERROR) { die "Can't read course number: $!";}
+    my $temp;
+
     foreach my $line (@splitLines) {
 
-	if(($temp =  getAssignment($lineCount, $line, @splitLines)) ne $ERROR)
-	    {$assignmentNames[$assignmentCount] = $temp;$assignmentCount++;}
-
-	elsif(($temp = getGrades($lineCount,$line, @splitLines)) ne $ERROR)
-	   {$assignmentGrades[$assignmentCount] = $temp;}
-	elsif(($temp = getRelease($lineCount, $line, @splitLines)) ne $ERROR) { 
-	    $assignmentRelease[$assignmentCount] = $temp;}
-	elsif(($temp = getDue($lineCount, $line, @splitLines)) ne $ERROR) {
+	    if(($temp =  getAssignment($lineCount, $line, @splitLines)) ne $ERROR)
+	        {$assignmentNames[$assignmentCount] = $temp;$assignmentCount++;}
+	    elsif(($temp = getGrades($lineCount,$line, @splitLines)) ne $ERROR)
+	        {$assignmentGrades[$assignmentCount] = $temp;}
+	    elsif(($temp = getRelease($lineCount, $line, @splitLines)) ne $ERROR) {
+	        $assignmentRelease[$assignmentCount] = $temp;}
+	    elsif(($temp = getDue($lineCount, $line, @splitLines)) ne $ERROR) {
        	    $assignmentDue[$assignmentCount] = $temp;}
-
-
-	$lineCount++; 
+	    $lineCount++;
     }
     ##
     #These two checks are only needed for Release and Due
@@ -72,14 +64,15 @@ use v5.10;
     ##
     for(my $i = 1; $i < $assignmentCount+1; $i++) {
     	if (!defined $assignmentRelease[$i]) {
-	    $assignmentRelease[$i] = 'na';
-	}
-	if (!defined $assignmentDue[$i]) {
-	    $assignmentDue[$i] = 'na';
-	}
+	        $assignmentRelease[$i] = 'na';
+	    }
+	    if (!defined $assignmentDue[$i]) {
+	        $assignmentDue[$i] = 'na';
+	    }
     }
+
     ##
-    #Printing to output file to be read in by java and placed into database
+    #Printing to stdout file to be read in by java and placed into database
     ##	
     for( my $i = 0; $i < $assignmentCount; $i++) {
 
@@ -104,13 +97,16 @@ use v5.10;
     ##
     sub getCourseNumber {
     	my @lotsOfLines = @_;
-	my $regexPattern = "[0-9]{3}.[0-9]{3}(\/[0-9]{3})?";
-	foreach my $line (@lotsOfLines) {
-	    if ($line =~ /$regexPattern/) { 
-		#Returning $line gives the line with the course number now try and only get the numbers
-		my ($justCourse) = $line =~ /$regexPattern/i;	
-		return $&;
-	    }
+
+	    my $regexPattern = "[0-9]{3}.[0-9]{3}(\/[0-9]{3})?";
+	    foreach my $line (@lotsOfLines) {
+
+	        if ($line =~ /$regexPattern/) {
+		        #Returning $line gives the line with the course number now try and only get the numbers
+		        my ($justCourse) = $line =~ /$regexPattern/i;
+
+		        return $&;
+	        }
     	}
 	return $ERROR; 
     }

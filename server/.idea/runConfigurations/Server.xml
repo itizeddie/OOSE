@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
-      <env name="JDBC_DATABASE_URL" value="jdbc:postgresql:calendue" />
+      <env name="JDBC_DATABASE_URL" value="jdbc:postgresql://localhost/calendue?user=postgres&amp;password=E07T95H96" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.github.jhu_oose11.calendue.Server" />
     <module name="calendue" />
