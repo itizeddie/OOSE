@@ -42,8 +42,6 @@ function listenForClicks() {
                     password: password
                 }).then(function () {
                     document.querySelector("#login-content").classList.add("hidden");
-
-                    //document.querySelector("#popup-content").classList.remove("hidden");
                     document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
