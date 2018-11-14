@@ -1,13 +1,14 @@
 /** Based on code from MDN web docs tutorial
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_second_WebExtension
  */
+var isLoggedIn = false;
 
 /**
  * Listen for clicks on the buttons, and send the appropriate message to
  * the content script in the page.
  */
 function listenForClicks() {
-
+    checkLogin().then(setDisplay); // note: currently this is only called once at the loading of the extension
 
     document.addEventListener("click", (e) => {
 
@@ -165,12 +166,46 @@ function reportExecuteScriptError(error) {
     console.error(`Failed to execute calendue content script: ${error.message}`);
 }
 
+/**
+ * Checks if user is logged in by making sending an AJAX request to the server.
+ * If the page redirects to /login, the user is not logged in, so the variable isLoggedIn
+ * is set as false. Otherwise, the variable is set as false.
+ */
+async function checkLogin() {
+    // Send ajax request to attempt to access localhost:7000/
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function(){
+        // See if we are redirected to login page
+        var responseURL = xhr.responseURL;
+        if (responseURL.includes("login")) {
+            isLoggedIn = false;
+        } else {
+            isLoggedIn = true;
+        }
+    };
+
+    xhr.open("GET", "http://localhost:7000/");
+    xhr.send();
+}
+
+/**
+ * Basic function that currently reports if user is logged in or not upon.
+ */
+function setDisplay() {
+    if (isLoggedIn) {
+        document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Logged in!</div>");
+    } else {
+        document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Not logged in!</div>");
+    }
+}
 
 /**
  * When the popup loads, inject a content script into the active tab,
  * and add a click handler.
  * If we couldn't inject the script, handle the error.
  */
+checkLogin();
 browser.tabs.executeScript({file: "/content_scripts/calendue.js"})
     .then(listenForClicks)
     .catch(reportExecuteScriptError);

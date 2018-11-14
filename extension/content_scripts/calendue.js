@@ -15,6 +15,25 @@
 
     console.log("hostname= "+ window.location.hostname);
 
+    /**
+     * Sends a post request with data to the server using AJAX.
+     *
+     * @param url       the url the post request is sent to
+     * @param data      the data that is being sent
+     */
+    function sendPostRequestWithData(url, data) {
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(this.responseText);
+            }
+        };
+
+        xhr.open("POST", url);
+        xhr.send(data);
+    }
 
     /**
      * Sends the account data to the server to create the account using a POST request.
@@ -22,41 +41,22 @@
      * @param password  the provided password of the user
      * @param email     the provided email of the user
      */
-    function createAccount(username, password, email) {
+    function createAccountDataForm(username, password, email) {
         var data = new FormData();
         data.append("username", username);
         data.append("password", password);
         data.append("email", email);
 
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(this.responseText);
-            }
-        };
-
-        xhr.open("POST", "http://localhost:7000/accounts");
-        xhr.send(data);
+        return data;
     }
 
-    function sendDOMtoServer(token, url, document) {
+    function createDOMDataForm(token, url, document) {
         var data = new FormData();
         data.append("token", token);
         data.append("url", url);
         data.append("document", document);
 
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(this.responseText);
-            }
-        };
-
-        xhr.open("POST", "http://localhost:7000/scrape");
-        xhr.send(data);
+        return data;
     }
 
     /**
@@ -83,10 +83,11 @@
             var content = document.documentElement.innerHTML;
             var url = window.location.href;
             var token = create_UUID();
-            sendDOMtoServer(token, url, content);
+            sendPostRequestWithData("http://localhost:7000/scrape", createDOMDataForm(token, url, content));
             console.log(url+" "+token+" "+content);
         } else if (message.command === "create-account") {
-            createAccount(message.username, message.password, message.email);
+            sendPostRequestWithData("http://localhost:7000/accounts",
+                createAccountDataForm(message.username, message.password, message.email));
             console.log(message.username+" "+message.password+" "+message.email);
         }
     });
