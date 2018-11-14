@@ -18,10 +18,17 @@ function listenForClicks() {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
             }).then(function() {
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
-                setTimeout(function(){
-                    document.getElementById("course-added-notification").remove()
-                }, 2000);
+                if (tabs[0].url.toString().includes("gradescope.com/courses")) {
+                    document.querySelector("#login-content").insertAdjacentHTML("afterend",
+                        "<div id='course-added-notification'>Course/assignment successfully added!</div>");
+                    setTimeout(function () {
+                        document.getElementById("course-added-notification").remove()
+                    }, 2000);
+                }
+                else {
+                    document.querySelector("#login-content").classList.add("hidden");
+                    document.querySelector("#navigate-to-course-content").classList.remove("hidden");
+                }
             });
         }
 
