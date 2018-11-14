@@ -42,11 +42,16 @@ function listenForClicks() {
                     password: password
                 }).then(function () {
                     document.querySelector("#login-content").classList.add("hidden");
-                    document.querySelector("#popup-content").classList.remove("hidden");
+
+                    //document.querySelector("#popup-content").classList.remove("hidden");
                     document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
                     }, 1000);
+                    if (tabs[0].url.toString().includes("gradescope")) {
+                        document.querySelector("#popup-content").classList.remove("hidden");
+                    }
+                    else document.querySelector("#check-URL-content").classList.remove("hidden");
 
                 });
             }
@@ -114,7 +119,7 @@ function listenForClicks() {
                 command: tabs[0].url
             }).then(function() {
                 if (tabs[0].url.toString().includes("gradescope")) {
-                    document.querySelector("#login-content").classList.remove("hidden");
+                    document.querySelector("#popup-content").classList.remove("hidden");
                     document.querySelector("#check-URL-content").classList.add("hidden");
                 }
             });
@@ -144,7 +149,6 @@ function listenForClicks() {
                 .catch(reportError);
         }
         if (clickedItem.contains("reload")) {
-            console.log("contained");
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendCheckURLToContentScript)
                 .catch(reportError);
