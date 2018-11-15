@@ -42,13 +42,10 @@ function listenForClicks() {
                     email: email,
                     password: password
                 }).then(function () {
-                    //document.querySelector("#signup-content").classList.add("hidden");
-                    //document.querySelector("#popup-content").classList.remove("hidden");
-                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
+                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful! Please click extension again to add course</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
                     }, 1000);
-
                 });
             }
         }
@@ -143,7 +140,12 @@ function listenForClicks() {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendSignupInfoToContentScript)
                 .catch(reportError);
-
+        }
+        if (clickedItem.contains("login-form")) {
+            displayLoginForm();
+        }
+        if (clickedItem.contains("sign-up-form")) {
+            displaySignUpForm();
         }
         if (clickedItem.contains("reload")) {
             console.log("contained");
@@ -159,12 +161,26 @@ function listenForClicks() {
  * Display the popup's error message, and hide the normal UI.
  */
 function reportExecuteScriptError(error) {
-    var elem = document.querySelectorAll("#popup-content, #signup-content");
+    clearPopup();
+    document.querySelector("#error-content").classList.remove("hidden");
+    console.error(`Failed to execute calendue content script: ${error.message}`);
+}
+
+function clearPopup() {
+    var elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content");
     elem.forEach(elem => {
         elem.classList.add("hidden");
     });
-    document.querySelector("#error-content").classList.remove("hidden");
-    console.error(`Failed to execute calendue content script: ${error.message}`);
+}
+
+function displayLoginForm() {
+    clearPopup();
+    document.querySelector("#login-content").classList.remove("hidden");
+}
+
+function displaySignUpForm() {
+    clearPopup();
+    document.querySelector("#signup-content").classList.remove("hidden");
 }
 
 /**
@@ -197,10 +213,7 @@ async function checkLogin() {
  * Basic function that currently reports if user is logged in or not upon.
  */
 function setDisplay() {
-    var elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content");
-    elem.forEach(elem => {
-        elem.classList.add("hidden");
-    });
+    clearPopup();
     if (isLoggedIn) {
         browser.tabs.query({currentWindow: true, active: true})
             .then((tabs) => {

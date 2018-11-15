@@ -25,3 +25,8 @@ html, body {
     background-color: #e5e5e5;
     border-radius: 25px;
 }
+
+.login-form, .sign-up-form {
+    color: #6938ff;
+    cursor: pointer;
+}
