@@ -110,8 +110,9 @@
             console.log(url+" "+token+" "+content);
         } else if (message.command === "create-account") {
             createAccount(message.username, message.password, message.email);
-
             console.log(message.username+" "+message.password+" "+message.email);
+        } else if (message.command === "login") {
+            loginToServer(message.username, message.password);
         }
     });
 })();

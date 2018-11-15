@@ -50,6 +50,26 @@ function listenForClicks() {
             }
         }
 
+        /**
+         * Get username and password and send a "create-account" message to the content script in the active tab.
+         * Checks for validity of sign up.
+         */
+        function sendLoginInfoToContentScript(tabs) {
+            var username = document.getElementById("username2").value;
+            var password = document.getElementById("password2").value;
+
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "login",
+                username: username,
+                password: password
+            }).then(function () {
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Login successful! Please click extension again to add course</div>");
+                setTimeout(function () {
+                    document.getElementById("signup-notification").remove()
+                }, 1000);
+            });
+        }
+
         function isValidSignup(username, email, password) {
             // Remove pre-existing error messages
             var elem = document.getElementById("signup-error-msg")
@@ -125,10 +145,6 @@ function listenForClicks() {
             console.error(`Could not add course: ${error}`);
         }
 
-        /**
-         * Get the active tab,
-         * then call "sendCourseInfoToContentScript()".
-         */
         var clickedItem = e.target.classList;
 
         if (clickedItem.contains("add-course")) {
@@ -139,6 +155,11 @@ function listenForClicks() {
         if (clickedItem.contains("sign-up")) {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendSignupInfoToContentScript)
+                .catch(reportError);
+        }
+        if (clickedItem.contains("login")) {
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendLoginInfoToContentScript)
                 .catch(reportError);
         }
         if (clickedItem.contains("login-form")) {
