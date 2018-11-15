@@ -27,27 +27,15 @@
 
         xhr.onreadystatechange = function(){
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                //console.log("hello");
+                //console.log(this.responseText);
+            } else {
                 console.log(this.responseText);
             }
         };
 
         xhr.open("POST", url);
         xhr.send(data);
-    }
-
-    /**
-     * Sends the account data to the server to create the account using a POST request.
-     * @param username  the provided username of the user
-     * @param password  the provided password of the user
-     * @param email     the provided email of the user
-     */
-    function createAccountDataForm(username, password, email) {
-        var data = new FormData();
-        data.append("username", username);
-        data.append("password", password);
-        data.append("email", email);
-
-        return data;
     }
 
     function createDOMDataForm(token, url, document) {
@@ -74,6 +62,44 @@
         return uuid;
     }
 
+    function createAccount(username, password, email) {
+        var data = new FormData();
+        data.append("username", username);
+        data.append("password", password);
+        data.append("email", email);
+
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 201) {
+                console.log(this.responseText);
+                loginToServer(username, password);
+            }
+        };
+
+        xhr.open("POST", "http://localhost:7000/accounts");
+        xhr.send(data);
+    }
+
+    function loginToServer(username, password) {
+        var data = new FormData();
+        data.append("username", username);
+        data.append("password", password);
+
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(this.responseText);
+            }
+        };
+
+        xhr.open("POST", "http://localhost:7000/login");
+        xhr.send(data);
+    }
+
     /**
      * Listen for messages from the background script.
      */
@@ -86,10 +112,9 @@
             sendPostRequestWithData("http://localhost:7000/scrape", createDOMDataForm(token, url, content));
             console.log(url+" "+token+" "+content);
         } else if (message.command === "create-account") {
-            sendPostRequestWithData("http://localhost:7000/accounts",
-                createAccountDataForm(message.username, message.password, message.email));
+            createAccount(message.username, message.password, message.email);
+
             console.log(message.username+" "+message.password+" "+message.email);
         }
     });
-
 })();

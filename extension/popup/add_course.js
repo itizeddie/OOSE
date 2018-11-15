@@ -42,8 +42,8 @@ function listenForClicks() {
                     email: email,
                     password: password
                 }).then(function () {
-                    document.querySelector("#signup-content").classList.add("hidden");
-                    document.querySelector("#popup-content").classList.remove("hidden");
+                    //document.querySelector("#signup-content").classList.add("hidden");
+                    //document.querySelector("#popup-content").classList.remove("hidden");
                     document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
@@ -143,6 +143,7 @@ function listenForClicks() {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendSignupInfoToContentScript)
                 .catch(reportError);
+
         }
         if (clickedItem.contains("reload")) {
             console.log("contained");
@@ -196,8 +197,11 @@ async function checkLogin() {
  * Basic function that currently reports if user is logged in or not upon.
  */
 function setDisplay() {
+    var elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content");
+    elem.forEach(elem => {
+        elem.classList.add("hidden");
+    });
     if (isLoggedIn) {
-        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Logged in!</div>");
         browser.tabs.query({currentWindow: true, active: true})
             .then((tabs) => {
                 if (tabs[0].url.toString().includes("gradescope")) {
@@ -207,13 +211,8 @@ function setDisplay() {
                 }
             })
     } else {
-        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Not logged in!</div>");
         document.querySelector("#signup-content").classList.remove("hidden");
     }
-}
-function logTab() {
-
-
 }
 
 /**
