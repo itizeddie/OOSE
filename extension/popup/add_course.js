@@ -8,7 +8,7 @@ var isLoggedIn = false;
  * the content script in the page.
  */
 function listenForClicks() {
-    checkLogin().then(setDisplay); // note: currently this is only called once at the loading of the extension
+    checkLogin();   // note: currently this is only called once at the loading of the extension
 
     document.addEventListener("click", (e) => {
 
@@ -19,7 +19,7 @@ function listenForClicks() {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
             }).then(function() {
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
                 setTimeout(function(){
                     document.getElementById("course-added-notification").remove()
                 }, 2000);
@@ -42,9 +42,9 @@ function listenForClicks() {
                     email: email,
                     password: password
                 }).then(function () {
-                    document.querySelector("#login-content").classList.add("hidden");
+                    document.querySelector("#signup-content").classList.add("hidden");
                     document.querySelector("#popup-content").classList.remove("hidden");
-                    document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
+                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
                     }, 1000);
@@ -62,13 +62,13 @@ function listenForClicks() {
             }
 
             if (emptyFieldExists(username, email, password)) {
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
                 return false;
             } else if (isPasswordInvalid(password)) {
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
                 return false;
             } else if (isEmailInvalid(email)) {
-                document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
                 return false;
             } else {
                 return true;
@@ -115,7 +115,7 @@ function listenForClicks() {
                 command: tabs[0].url
             }).then(function() {
                 if (tabs[0].url.toString().includes("gradescope")) {
-                    document.querySelector("#login-content").classList.remove("hidden");
+                    document.querySelector("#signup-content").classList.remove("hidden");
                     document.querySelector("#check-URL-content").classList.add("hidden");
                 }
             });
@@ -158,7 +158,7 @@ function listenForClicks() {
  * Display the popup's error message, and hide the normal UI.
  */
 function reportExecuteScriptError(error) {
-    var elem = document.querySelectorAll("#popup-content, #login-content");
+    var elem = document.querySelectorAll("#popup-content, #signup-content");
     elem.forEach(elem => {
         elem.classList.add("hidden");
     });
@@ -169,7 +169,7 @@ function reportExecuteScriptError(error) {
 /**
  * Checks if user is logged in by making sending an AJAX request to the server.
  * If the page redirects to /login, the user is not logged in, so the variable isLoggedIn
- * is set as false. Otherwise, the variable is set as false.
+ * is set as false. Otherwise, the variable is set as true.
  */
 async function checkLogin() {
     // Send ajax request to attempt to access localhost:7000/
@@ -180,9 +180,12 @@ async function checkLogin() {
         var responseURL = xhr.responseURL;
         if (responseURL.includes("login")) {
             isLoggedIn = false;
+
         } else {
             isLoggedIn = true;
+
         }
+        setDisplay();
     };
 
     xhr.open("GET", "http://localhost:7000/");
@@ -194,10 +197,23 @@ async function checkLogin() {
  */
 function setDisplay() {
     if (isLoggedIn) {
-        document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Logged in!</div>");
+        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Logged in!</div>");
+        browser.tabs.query({currentWindow: true, active: true})
+            .then((tabs) => {
+                if (tabs[0].url.toString().includes("gradescope")) {
+                    document.querySelector("#popup-content").classList.remove("hidden");
+                } else {
+                    document.querySelector("#check-URL-content").classList.remove("hidden");
+                }
+            })
     } else {
-        document.querySelector("#login-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Not logged in!</div>");
+        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Not logged in!</div>");
+        document.querySelector("#signup-content").classList.remove("hidden");
     }
+}
+function logTab() {
+
+
 }
 
 /**
@@ -205,7 +221,6 @@ function setDisplay() {
  * and add a click handler.
  * If we couldn't inject the script, handle the error.
  */
-checkLogin();
 browser.tabs.executeScript({file: "/content_scripts/calendue.js"})
     .then(listenForClicks)
     .catch(reportExecuteScriptError);
