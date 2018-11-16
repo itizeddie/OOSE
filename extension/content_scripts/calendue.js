@@ -21,27 +21,27 @@
      * @param url       the url the post request is sent to
      * @param data      the data that is being sent
      */
-    function sendPostRequestWithData(url, data) {
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(this.responseText);
-            }
-        };
-
-        xhr.open("POST", url);
-        xhr.send(data);
-    }
-
-    function createDOMDataForm(token, url, document) {
+    function sendDOMtoServer(content, url, token, sendResponse) {
+        var response = "";
         var data = new FormData();
         data.append("token", token);
         data.append("url", url);
         data.append("document", document);
 
-        return data;
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                response = "Course assignment successfully added!";
+            } else {
+                response = "Could not send to server. Error: " + this.status + ". " + this.responseText;
+            }
+            sendResponse({ result: response });
+        };
+
+        xhr.open("POST", "http://localhost:7000/scrape");
+        xhr.send(data);
     }
 
     /**
@@ -59,7 +59,8 @@
         return uuid;
     }
 
-    function createAccount(username, password, email) {
+    function createAccount(username, password, email, sendResponse) {
+        var response = "";
         var data = new FormData();
         data.append("username", username);
         data.append("password", password);
@@ -68,18 +69,22 @@
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
-        xhr.onreadystatechange = function(){
+        xhr.onload = function(){
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 201) {
-                console.log(this.responseText);
-                loginToServer(username, password);
+                response = "Successfully created account! Please click the extension again to add assignment.";
+                loginToServer(username, password, sendResponse);
+            } else {
+                response = "Could not create account. Error: " + this.status + ". " + this.responseText;
             }
+            sendResponse({ result: response });
         };
 
         xhr.open("POST", "http://localhost:7000/accounts");
         xhr.send(data);
     }
 
-    function loginToServer(username, password) {
+    function loginToServer(username, password, sendResponse) {
+        var response = "";
         var data = new FormData();
         data.append("username", username);
         data.append("password", password);
@@ -87,10 +92,14 @@
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(this.responseText);
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log("Updated response after logging in");
+                response = "Successfully logged in! Please click the extension again to add assignment.";
+            } else {
+                response = "Could not login. Error: " + this.status + ". Invalid username or password.";
             }
+            sendResponse({ result: response });
         };
 
         xhr.open("POST", "http://localhost:7000/login");
@@ -100,19 +109,19 @@
     /**
      * Listen for messages from the background script.
      */
-    browser.runtime.onMessage.addListener((message) => {
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(message.command);
         if (message.command === "add-course") {
             var content = document.documentElement.innerHTML;
             var url = window.location.href;
             var token = create_UUID();
-            sendPostRequestWithData("http://localhost:7000/scrape", createDOMDataForm(token, url, content));
-            console.log(url+" "+token+" "+content);
+            sendDOMtoServer(content, url, token, sendResponse);
         } else if (message.command === "create-account") {
-            createAccount(message.username, message.password, message.email);
+            createAccount(message.username, message.password, message.email, sendResponse);
             console.log(message.username+" "+message.password+" "+message.email);
         } else if (message.command === "login") {
-            loginToServer(message.username, message.password);
+            loginToServer(message.username, message.password, sendResponse);
         }
+        return true;
     });
 })();

@@ -11,19 +11,22 @@ function listenForClicks() {
     checkLogin();   // note: currently this is only called once at the loading of the extension
 
     document.addEventListener("click", (e) => {
-
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
         function sendCourseInfoToContentScript(tabs) {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
-            }).then(function() {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
+            }, function(response) {
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
                 setTimeout(function(){
                     document.getElementById("course-added-notification").remove()
                 }, 2000);
             });
+        }
+
+        function formatResponseMessage(response) {
+            return JSON.stringify(response.result).replace(/\"/g, "");
         }
 
         /**
@@ -41,8 +44,8 @@ function listenForClicks() {
                     username: username,
                     email: email,
                     password: password
-                }).then(function () {
-                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful! Please click extension again to add course</div>");
+                }, function (response) {
+                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
                     setTimeout(function () {
                         document.getElementById("signup-notification").remove()
                     }, 1000);
@@ -62,8 +65,8 @@ function listenForClicks() {
                 command: "login",
                 username: username,
                 password: password
-            }).then(function () {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Login successful! Please click extension again to add course</div>");
+            }, function(response) {
+                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
                 setTimeout(function () {
                     document.getElementById("signup-notification").remove()
                 }, 1000);
