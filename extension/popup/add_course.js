@@ -8,11 +8,10 @@ var isLoggedIn = false;
  * the content script in the page.
  */
 function listenForClicks() {
-    // Hide loading icon
-    document.getElementById("loading-icon").style.display ='none';
-
+    // Checks login each time extension is loaded and displays proper page
     checkLogin();
 
+    // Event listener for clicks
     document.addEventListener("click", (e) => {
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
@@ -198,6 +197,8 @@ function clearPopup() {
     elem.forEach(elem => {
         elem.classList.add("hidden");
     });
+    // Hide loading icon
+    document.getElementById("loading-icon").style.display ='none';
 }
 
 function displayLoginForm() {
@@ -229,11 +230,19 @@ async function checkLogin() {
             isLoggedIn = true;
 
         }
+        clearTimeout(myVar);
         setDisplay();
     };
 
     xhr.open("GET", "http://localhost:7000/");
     xhr.send();
+
+    var myVar = setTimeout(function() {
+        document.getElementById("loading-icon").style.display ='none';
+        document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Error: could not reach server.</div>");
+    }, 5000);
+
+
 }
 
 /**
