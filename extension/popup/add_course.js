@@ -8,6 +8,9 @@ var isLoggedIn = false;
  * the content script in the page.
  */
 function listenForClicks() {
+    // Hide loading icon
+    document.getElementById("loading-icon").style.display ='none';
+
     checkLogin();
 
     document.addEventListener("click", (e) => {
@@ -20,19 +23,6 @@ function listenForClicks() {
             }, function(response) {
                 displayMessage(response);
             });
-        }
-
-        function displayMessage(response) {
-            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
-            checkLogin();
-            setTimeout(function(){
-                document.getElementById("course-added-notification").remove();
-
-            }, 4000);
-        }
-
-        function formatResponseMessage(response) {
-            return JSON.stringify(response.result).replace(/\"/g, "");
         }
 
         /**
@@ -125,6 +115,19 @@ function listenForClicks() {
             } else {
                 return false;
             }
+        }
+
+        function displayMessage(response) {
+            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
+            checkLogin();
+            setTimeout(function(){
+                document.getElementById("course-added-notification").remove();
+
+            }, 4000);
+        }
+
+        function formatResponseMessage(response) {
+            return JSON.stringify(response.result).replace(/\"/g, "");
         }
 
         /**
