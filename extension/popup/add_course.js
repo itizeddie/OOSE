@@ -121,8 +121,7 @@ function listenForClicks() {
             checkLogin();
             setTimeout(function(){
                 document.getElementById("course-added-notification").remove();
-
-            }, 4000);
+            }, 2000);
         }
 
         function formatResponseMessage(response) {
@@ -225,23 +224,22 @@ async function checkLogin() {
         var responseURL = xhr.responseURL;
         if (responseURL.includes("login")) {
             isLoggedIn = false;
-
         } else {
             isLoggedIn = true;
-
         }
         clearTimeout(myVar);
+        //alert(responseURL);
         setDisplay();
     };
 
     xhr.open("GET", "http://localhost:7000/");
     xhr.send();
 
+    document.getElementById("loading-icon").style.display ='block';
     var myVar = setTimeout(function() {
         document.getElementById("loading-icon").style.display ='none';
         document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Error: could not reach server.</div>");
     }, 5000);
-
 
 }
 

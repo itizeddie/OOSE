@@ -75,8 +75,9 @@
                 loginToServer(username, password, sendResponse);
             } else {
                 response = "Could not create account. Error: " + this.status + ". " + this.responseText;
+                sendResponse({ result: response });
             }
-            sendResponse({ result: response });
+
         };
 
         xhr.open("POST", "http://localhost:7000/accounts");
