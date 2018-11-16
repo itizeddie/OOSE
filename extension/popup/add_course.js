@@ -8,7 +8,7 @@ var isLoggedIn = false;
  * the content script in the page.
  */
 function listenForClicks() {
-    checkLogin();   // note: currently this is only called once at the loading of the extension
+    checkLogin();
 
     document.addEventListener("click", (e) => {
         /**
@@ -18,11 +18,17 @@ function listenForClicks() {
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
             }, function(response) {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
-                setTimeout(function(){
-                    document.getElementById("course-added-notification").remove()
-                }, 2000);
+                displayMessage(response);
             });
+        }
+
+        function displayMessage(response) {
+            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
+            checkLogin();
+            setTimeout(function(){
+                document.getElementById("course-added-notification").remove();
+
+            }, 4000);
         }
 
         function formatResponseMessage(response) {
@@ -45,10 +51,7 @@ function listenForClicks() {
                     email: email,
                     password: password
                 }, function (response) {
-                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
-                    setTimeout(function () {
-                        document.getElementById("signup-notification").remove()
-                    }, 1000);
+                    displayMessage(response);
                 });
             }
         }
@@ -66,10 +69,7 @@ function listenForClicks() {
                 username: username,
                 password: password
             }, function(response) {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>"+formatResponseMessage(response)+"</div>");
-                setTimeout(function () {
-                    document.getElementById("signup-notification").remove()
-                }, 1000);
+                displayMessage(response);
             });
         }
 

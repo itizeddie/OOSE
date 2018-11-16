@@ -71,7 +71,7 @@
 
         xhr.onload = function(){
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 201) {
-                response = "Successfully created account! Please click the extension again to add assignment.";
+                response = "Successfully created account!";
                 loginToServer(username, password, sendResponse);
             } else {
                 response = "Could not create account. Error: " + this.status + ". " + this.responseText;
@@ -95,7 +95,7 @@
         xhr.onload = function(){
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 console.log("Updated response after logging in");
-                response = "Successfully logged in! Please click the extension again to add assignment.";
+                response = "Successfully logged in!";
             } else {
                 response = "Could not login. Error: " + this.status + ". Invalid username or password.";
             }
