@@ -461,9 +461,9 @@ Main Components
 }
 
 .cd-schedule .event-modal .event-info > div {
-  overflow: auto;
-  height: 100%;
-  padding: 1.4em 5%;
+  overflow: visible;
+  height: auto;
+  padding: 15px;
 }
 
 .cd-schedule .event-modal .header-bg, .cd-schedule .event-modal .body-bg {
