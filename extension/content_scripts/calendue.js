@@ -21,7 +21,6 @@
         let response = "";
         let data = new FormData();
         data.append("token", create_UUID());
-        console.log(create_UUID());
         data.append("url", window.location.href);
         data.append("document", document.documentElement.innerHTML);
 
@@ -116,7 +115,7 @@
             sendDOMtoServer(sendResponse);
         } else if (message.command === "create-account") {
             createAccount(message, sendResponse);
-            console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
+            //console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
         } else if (message.command === "login") {
             loginToServer(message, sendResponse);
         }
