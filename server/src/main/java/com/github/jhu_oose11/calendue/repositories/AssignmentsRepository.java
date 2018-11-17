@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class AssignmentsRepository {
     private DataSource database;
 
-    AssignmentsRepository(DataSource database) throws SQLException {
+    public AssignmentsRepository(DataSource database) throws SQLException {
         this.database = database;
         var connection = database.getConnection();
         var statement = connection.createStatement();
@@ -52,7 +52,7 @@ public class AssignmentsRepository {
         return assignment;
     }
 
-    void addAssignmentForUser(int assignmentId, int userId) throws SQLException {
+    public void addAssignmentForUser(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id) VALUES (?, ?)");
         statement.setInt(1, assignmentId);

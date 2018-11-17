@@ -3,10 +3,7 @@ package com.github.jhu_oose11.calendue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jhu_oose11.calendue.controllers.*;
 import com.github.jhu_oose11.calendue.models.Course;
-import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
-import com.github.jhu_oose11.calendue.repositories.CredentialsRepository;
-import com.github.jhu_oose11.calendue.repositories.TermsRepository;
-import com.github.jhu_oose11.calendue.repositories.UsersRepository;
+import com.github.jhu_oose11.calendue.repositories.*;
 import io.javalin.Javalin;
 import io.javalin.JavalinEvent;
 import io.javalin.staticfiles.Location;
@@ -23,6 +20,7 @@ public class Server {
     private static CredentialsRepository credentialsRepository;
     private static CoursesRepository coursesRepository;
     private static TermsRepository termsRepository;
+    private static AssignmentsRepository assignmentsRepository;
 
     public static void main(String[] args) {
         Javalin.create()
@@ -57,6 +55,7 @@ public class Server {
                         });
                     });
                     path("course", () -> post(CoursesController::newCourse));
+                    path("assignment", () -> post(AssignmentsController::newAssignment));
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
                     if (System.getenv("JDBC_DATABASE_URL") != null) {
@@ -68,6 +67,7 @@ public class Server {
                     credentialsRepository = new CredentialsRepository(database);
                     coursesRepository = new CoursesRepository(database);
                     termsRepository = new TermsRepository(database);
+                    assignmentsRepository = new AssignmentsRepository(database);
                 })
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
                 .exception(TermsRepository.NonExistingTermException.class, (e, ctx) -> ctx.status(404))
@@ -90,4 +90,6 @@ public class Server {
     public static TermsRepository getTermsRepository() { return termsRepository; }
 
     public static CoursesRepository getCoursesRepository() { return coursesRepository; }
+
+    public static AssignmentsRepository getAssignmentsRepository() { return assignmentsRepository; }
 }
