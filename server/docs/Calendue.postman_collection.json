@@ -1140,7 +1140,14 @@
 							"script": {
 								"id": "1c831a5e-6e7e-4038-8356-5f49daedf5c9",
 								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));"
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term/${pm.response.text()}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);"
 								],
 								"type": "text/javascript"
 							}
@@ -1220,7 +1227,142 @@
 			"name": "New Course",
 			"item": [
 				{
-					"name": "Success",
+					"name": "No Title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "829073d4-57f1-486b-ac79-137d07609e6d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "222cc608-bbed-4ee2-8e34-ba9df72953da",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Title cannot be blank.'\", () => pm.response.to.have.body(\"Title cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "term_id",
+									"value": "{{$TERM_ID}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Blank Title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "829073d4-57f1-486b-ac79-137d07609e6d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "222cc608-bbed-4ee2-8e34-ba9df72953da",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"Response is 'Title cannot be blank.'\", () => pm.response.to.have.body(\"Title cannot be blank.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "term_id",
+									"value": "{{$TERM_ID}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Term ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "829073d4-57f1-486b-ac79-137d07609e6d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c593e344-3cd8-4f15-93ae-b19defc998a3",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"",
+									"pm.test(\"Response is 'Term ID is invalid.'\", () => pm.response.to.have.body(\"Term ID is invalid.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1234,19 +1376,160 @@
 								},
 								{
 									"key": "term_id",
-									"value": "2525",
+									"value": "invalid",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{host}}/course/new",
+							"raw": "{{host}}/course",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"course",
-								"new"
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Nonexistent Term ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "829073d4-57f1-486b-ac79-137d07609e6d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c593e344-3cd8-4f15-93ae-b19defc998a3",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+									"",
+									"pm.test(\"Response is 'Term does not exist.'\", () => pm.response.to.have.body(\"Term does not exist.\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text"
+								},
+								{
+									"key": "term_id",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "829073d4-57f1-486b-ac79-137d07609e6d",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term`,",
+									"    method: 'POST',",
+									"    body: {",
+									"        mode: 'formdata',",
+									"        formdata: [",
+									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"        ]",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(request, function (err, response) {",
+									"    if (response.code == 201) {",
+									"        pm.environment.set(\"TERM_ID\", response.text());",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c593e344-3cd8-4f15-93ae-b19defc998a3",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);",
+									"",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/course/${pm.response.text()}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text"
+								},
+								{
+									"key": "term_id",
+									"value": "{{TERM_ID}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/course",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"course"
 							]
 						}
 					},
@@ -1297,7 +1580,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{host}}/calendar/get",
 							"host": [
@@ -1409,7 +1695,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{host}}/assignment/{{assignmentIdentifier}}",
 							"host": [
@@ -1490,7 +1779,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{host}}/assignment/{{assignmentIdentifier}}/scores",
 							"host": [

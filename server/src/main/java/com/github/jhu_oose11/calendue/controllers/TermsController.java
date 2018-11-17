@@ -1,6 +1,7 @@
 package com.github.jhu_oose11.calendue.controllers;
 
 import com.github.jhu_oose11.calendue.Server;
+import com.github.jhu_oose11.calendue.controllers.Helpers.Auth;
 import com.github.jhu_oose11.calendue.controllers.Helpers.Strings;
 import com.github.jhu_oose11.calendue.controllers.Helpers.Validator;
 import com.github.jhu_oose11.calendue.models.Term;
@@ -15,6 +16,10 @@ import java.util.Objects;
 
 public class TermsController {
     public static void newTerm(Context ctx) throws SQLException {
+        Auth.ensureLoggedIn(ctx);
+
+        int current_user_id = ctx.sessionAttribute("current_user");
+
         ensureNewParamsValid(ctx);
 
         String title = ctx.formParam("title");
@@ -23,7 +28,8 @@ public class TermsController {
         Term term = new Term(title, start_date, end_date);
 
         try {
-            Server.getTermsRepository().create(term);
+            term = Server.getTermsRepository().create(term);
+            Server.getTermsRepository().addTermForUser(term.getId(), current_user_id);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23514")) {
                 throw new BadRequestResponse("End Date cannot be before Start Date.");
@@ -33,6 +39,7 @@ public class TermsController {
         }
 
         ctx.status(201);
+        ctx.result("" + term.getId());
     }
 
     public static void getTerm(Context ctx) throws SQLException, TermsRepository.NonExistingTermException {

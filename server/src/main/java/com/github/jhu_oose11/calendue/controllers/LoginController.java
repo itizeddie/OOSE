@@ -3,19 +3,15 @@ package com.github.jhu_oose11.calendue.controllers;
 import com.github.jhu_oose11.calendue.Server;
 import com.github.jhu_oose11.calendue.TemplatePath;
 import com.github.jhu_oose11.calendue.controllers.Exceptions.InvalidInputException;
+import com.github.jhu_oose11.calendue.controllers.Helpers.Auth;
 import com.github.jhu_oose11.calendue.controllers.Helpers.Render;
 import com.github.jhu_oose11.calendue.controllers.Helpers.Strings;
 import com.github.jhu_oose11.calendue.controllers.Helpers.Validator;
-import com.github.jhu_oose11.calendue.models.LoginCredential;
-import com.github.jhu_oose11.calendue.models.User;
 import com.github.jhu_oose11.calendue.models.UsernameLogin;
 import com.github.jhu_oose11.calendue.repositories.UsersRepository;
-import io.javalin.BadRequestResponse;
 import io.javalin.Context;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -54,17 +50,10 @@ public class LoginController {
     }
 
     public static void logout(Context ctx) {
-        ensureLoggedIn(ctx);
+        Auth.ensureLoggedIn(ctx);
         ctx.sessionAttribute("current_user", null);
         ctx.sessionAttribute("flash", "Successfully been logged out.");
         ctx.redirect("/login", 303);
-    }
-
-    static void ensureLoggedIn(Context ctx) {
-        if (ctx.sessionAttribute("current_user") == null) {
-            ctx.sessionAttribute("flash", "Must be logged in to view this page.");
-            ctx.redirect("/login", 303);
-        }
     }
 
     private static void setSessionCookies(Context ctx, UsernameLogin credential) {

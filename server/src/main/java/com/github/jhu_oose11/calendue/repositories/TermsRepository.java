@@ -52,7 +52,7 @@ public class TermsRepository {
         return term;
     }
 
-    void addTermForUser(int term_id, int user_id) throws SQLException {
+    public void addTermForUser(int term_id, int user_id) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("INSERT INTO terms_users (term_id, user_id) VALUES (?, ?)");
         statement.setInt(1, term_id);
