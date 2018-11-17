@@ -13,50 +13,83 @@
     }
     window.hasRun = true;
 
-    console.log("hostname= "+ window.location.hostname);
-
     /**
-     * Sends a post request with data to the server using AJAX.
-     *
-     * @param url       the url the post request is sent to
-     * @param data      the data that is being sent
+     * Sends the DOM the server using AJAX.
+     * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
-    function sendPostRequestWithData(url, data) {
-        var xhr = new XMLHttpRequest();
+    function sendDOMtoServer(sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("token", create_UUID());
+        data.append("url", window.location.href);
+        data.append("document", document.documentElement.innerHTML);
+
+        let xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(this.responseText);
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                response = "Course assignment successfully added!";
+            } else {
+                response = "Could not send to server. Error: " + this.status + ". " + this.responseText;
             }
+            sendResponse({ result: response });
         };
 
-        xhr.open("POST", url);
+        xhr.open("POST", "http://localhost:7000/scrape");
         xhr.send(data);
     }
 
     /**
-     * Sends the account data to the server to create the account using a POST request.
-     * @param username  the provided username of the user
-     * @param password  the provided password of the user
-     * @param email     the provided email of the user
+     *
+     * @param message
+     * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
-    function createAccountDataForm(username, password, email) {
-        var data = new FormData();
-        data.append("username", username);
-        data.append("password", password);
-        data.append("email", email);
+    function createAccount(message, sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("username", message.username);
+        data.append("password", message.password);
+        data.append("email", message.email);
 
-        return data;
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onload = function(){
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 201) {
+                response = "Successfully created account!";
+                loginToServer(message, sendResponse);
+            } else {
+                response = "Could not create account. Error: " + this.status + ". " + this.responseText;
+                sendResponse({ result: response });
+            }
+
+        };
+
+        xhr.open("POST", "http://localhost:7000/accounts");
+        xhr.send(data);
     }
 
-    function createDOMDataForm(token, url, document) {
-        var data = new FormData();
-        data.append("token", token);
-        data.append("url", url);
-        data.append("document", document);
+    function loginToServer(message, sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("username", message.username);
+        data.append("password", message.password);
 
-        return data;
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                response = "Successfully logged in!";
+            } else {
+                response = "Could not login. Error: " + this.status + ". Invalid username or password.";
+            }
+            sendResponse({ result: response });
+        };
+
+        xhr.open("POST", "http://localhost:7000/login");
+        xhr.send(data);
     }
 
     /**
@@ -65,31 +98,27 @@
      * @returns {string}
      */
     function create_UUID(){
-        var dt = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (dt + Math.random()*16)%16 | 0;
+        let dt = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = (dt + Math.random()*16)%16 | 0;
             dt = Math.floor(dt/16);
-            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+            return (c==='x' ? r :(r&0x3|0x8)).toString(16);
         });
-        return uuid;
+        //return uuid;
     }
 
     /**
      * Listen for messages from the background script.
      */
-    browser.runtime.onMessage.addListener((message) => {
-        console.log(message.command);
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.command === "add-course") {
-            var content = document.documentElement.innerHTML;
-            var url = window.location.href;
-            var token = create_UUID();
-            sendPostRequestWithData("http://localhost:7000/scrape", createDOMDataForm(token, url, content));
-            console.log(url+" "+token+" "+content);
+            sendDOMtoServer(sendResponse);
         } else if (message.command === "create-account") {
-            sendPostRequestWithData("http://localhost:7000/accounts",
-                createAccountDataForm(message.username, message.password, message.email));
-            console.log(message.username+" "+message.password+" "+message.email);
+            createAccount(message, sendResponse);
+            //console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
+        } else if (message.command === "login") {
+            loginToServer(message, sendResponse);
         }
+        return true;
     });
-
 })();

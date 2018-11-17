@@ -1,28 +1,161 @@
 /** Based on code from MDN web docs tutorial
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_second_WebExtension
  */
-var isLoggedIn = false;
+let isLoggedIn = false;
+
+class SignupController {
+    constructor(username, password, email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
+    isValidSignup() {
+        // Remove pre-existing error messages
+        let elem = document.getElementById("signup-error-msg");
+        while (typeof(elem) !== 'undefined' && elem != null) {
+            elem.remove();
+            elem = document.getElementById("signup-error-msg");
+        }
+
+        if (this.emptyFieldExists()) {
+            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
+            return false;
+        } else if (this.isPasswordInvalid()) {
+            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
+            return false;
+        } else if (this.isEmailInvalid()) {
+            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    emptyFieldExists() {
+        return ((this.username.length === 0) || (this.email.length === 0) || (this.password.length === 0));
+    }
+
+    /**
+     * Tests if email is valid. Regex is taken from
+     * https://jsfiddle.net/ghvj4gy9/embedded/result,js/
+     * @returns {boolean}
+     */
+    isEmailInvalid() {
+        const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return !(emailRegex.test(this.email));
+    }
+
+    isPasswordInvalid() {
+        return (this.password.length < 5);
+    }
+}
+
+class Display {
+    static async displayMessage(response) {
+        document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>"+Display.formatResponseMessage(response)+"</div>");
+        await Display.refreshDisplay();
+        setTimeout(function(){
+            document.getElementById("notification").remove();
+        }, 2000);
+    }
+
+    static formatResponseMessage(response) {
+        return JSON.stringify(response.result).replace(/"/g, "");
+    }
+
+    static clearPopup() {
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content");
+        elem.forEach(elem => {
+            elem.classList.add("hidden");
+        });
+        document.getElementById("loading-icon").style.display ='none';
+    }
+
+    static displayLoginForm() {
+        Display.clearPopup();
+        document.querySelector("#login-content").classList.remove("hidden");
+    }
+
+    static displaySignUpForm() {
+        Display.clearPopup();
+        document.querySelector("#signup-content").classList.remove("hidden");
+    }
+
+    static displayLoading() {
+        Display.clearPopup();
+        document.getElementById("loading-icon").style.display ='block';
+    }
+
+    /**
+     * Checks if user is logged in by making sending an AJAX request to the server.
+     * If the page redirects to /login, the user is not logged in, so the variable isLoggedIn
+     * is set as false. Otherwise, the variable is set as true.
+     * Then calls setDisplay() to refresh the display of the popup.
+     */
+    static async refreshDisplay() {
+        // Send ajax request to attempt to access localhost:7000/
+        let xhr = new XMLHttpRequest();
+
+        xhr.onload = function(){
+            // See if we are redirected to login page
+            let responseURL = xhr.responseURL;
+            isLoggedIn = !(responseURL.includes("login"));
+            clearTimeout(loading);
+            //alert(responseURL);
+            Display.setDisplay();
+        };
+
+        xhr.open("GET", "http://localhost:7000/");
+        xhr.send();
+
+        document.getElementById("loading-icon").style.display ='block';
+        const loading = setTimeout(function() {
+            document.getElementById("loading-icon").style.display ='none';
+            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>Error: could not reach server.</div>");
+        }, 5000);
+
+    }
+
+    /**
+     * Basic function that currently reports if user is logged in or not upon.
+     */
+    static setDisplay() {
+        Display.clearPopup();
+        if (isLoggedIn) {
+            browser.tabs.query({currentWindow: true, active: true})
+                .then((tabs) => {
+                    if (tabs[0].url.toString().includes("gradescope")) {
+                        document.querySelector("#popup-content").classList.remove("hidden");
+                    } else {
+                        document.querySelector("#check-URL-content").classList.remove("hidden");
+                    }
+                })
+        } else {
+            document.querySelector("#signup-content").classList.remove("hidden");
+        }
+    }
+}
 
 /**
  * Listen for clicks on the buttons, and send the appropriate message to
  * the content script in the page.
  */
-function listenForClicks() {
-    checkLogin();   // note: currently this is only called once at the loading of the extension
+async function listenForClicks() {
+    // Checks login each time extension is loaded and displays proper page
+    await Display.refreshDisplay();
 
+    // Event listener for clicks
     document.addEventListener("click", (e) => {
-
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
-        function sendCourseInfoToContentScript(tabs) {
+        async function sendCourseInfoToContentScript(tabs) {
+            Display.displayLoading();
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "add-course"
-            }).then(function() {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Course/assignment successfully added!</div>");
-                setTimeout(function(){
-                    document.getElementById("course-added-notification").remove()
-                }, 2000);
+            }, function(response) {
+                Display.displayMessage(response);
             });
         }
 
@@ -31,80 +164,41 @@ function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendSignupInfoToContentScript(tabs) {
-            var username = document.getElementById("username").value;
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value;
 
-            if (isValidSignup(username, email, password)) {
+            const account = new SignupController(username, password, email);
+
+            if (account.isValidSignup()) {
+                Display.displayLoading();
                 browser.tabs.sendMessage(tabs[0].id, {
                     command: "create-account",
                     username: username,
                     email: email,
                     password: password
-                }).then(function () {
-                    document.querySelector("#signup-content").classList.add("hidden");
-                    document.querySelector("#popup-content").classList.remove("hidden");
-                    document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Sign up successful!</div>");
-                    setTimeout(function () {
-                        document.getElementById("signup-notification").remove()
-                    }, 1000);
-
+                }, function (response) {
+                    Display.displayMessage(response);
                 });
             }
         }
 
-        function isValidSignup(username, email, password) {
-            // Remove pre-existing error messages
-            var elem = document.getElementById("signup-error-msg")
-            while (typeof(elem) != 'undefined' && elem != null) {
-                elem.remove();
-                elem = document.getElementById("signup-error-msg");
-            }
-
-            if (emptyFieldExists(username, email, password)) {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
-                return false;
-            } else if (isPasswordInvalid(password)) {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
-                return false;
-            } else if (isEmailInvalid(email)) {
-                document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        function emptyFieldExists(username, email, password) {
-            if ((username.length == 0) || (email.length == 0) || (password.length == 0)) {
-                return true;
-            } else {
-                return false;
-            }
-            return false;
-        }
-
         /**
-         * Tests if email is valid. Regex is taken from
-         * https://jsfiddle.net/ghvj4gy9/embedded/result,js/
-         * @param email
-         * @returns {boolean}
+         * Get username and password and send a "create-account" message to the content script in the active tab.
+         * Checks for validity of sign up.
          */
-        function isEmailInvalid(email) {
-            var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if (emailRegex.test(email)){
-                return false;
-            } else {
-                return true;
-            }
-        }
+        function sendLoginInfoToContentScript(tabs) {
+            Display.displayLoading();
+            const username = document.getElementById("username2").value;
+            const password = document.getElementById("password2").value;
 
-        function isPasswordInvalid(password) {
-            if (password.length < 5) {
-                return true;
-            } else {
-                return false;
-            }
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "login",
+                username: username,
+                password: password
+            }, function(response) {
+                Display.displayMessage(response);
+            });
         }
 
         /**
@@ -125,14 +219,10 @@ function listenForClicks() {
          * Log the error to the console.
          */
         function reportError(error) {
-            console.error(`Could not add course: ${error}`);
+            console.error(`Error in executing script: ${error}`);
         }
 
-        /**
-         * Get the active tab,
-         * then call "sendCourseInfoToContentScript()".
-         */
-        var clickedItem = e.target.classList;
+        const clickedItem = e.target.classList;
 
         if (clickedItem.contains("add-course")) {
             browser.tabs.query({active: true, currentWindow: true})
@@ -143,6 +233,17 @@ function listenForClicks() {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendSignupInfoToContentScript)
                 .catch(reportError);
+        }
+        if (clickedItem.contains("login")) {
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendLoginInfoToContentScript)
+                .catch(reportError);
+        }
+        if (clickedItem.contains("login-form")) {
+            Display.displayLoginForm();
+        }
+        if (clickedItem.contains("sign-up-form")) {
+            Display.displaySignUpForm();
         }
         if (clickedItem.contains("reload")) {
             console.log("contained");
@@ -158,62 +259,9 @@ function listenForClicks() {
  * Display the popup's error message, and hide the normal UI.
  */
 function reportExecuteScriptError(error) {
-    var elem = document.querySelectorAll("#popup-content, #signup-content");
-    elem.forEach(elem => {
-        elem.classList.add("hidden");
-    });
+    Display.clearPopup();
     document.querySelector("#error-content").classList.remove("hidden");
     console.error(`Failed to execute calendue content script: ${error.message}`);
-}
-
-/**
- * Checks if user is logged in by making sending an AJAX request to the server.
- * If the page redirects to /login, the user is not logged in, so the variable isLoggedIn
- * is set as false. Otherwise, the variable is set as true.
- */
-async function checkLogin() {
-    // Send ajax request to attempt to access localhost:7000/
-    var xhr = new XMLHttpRequest();
-
-    xhr.onload = function(){
-        // See if we are redirected to login page
-        var responseURL = xhr.responseURL;
-        if (responseURL.includes("login")) {
-            isLoggedIn = false;
-
-        } else {
-            isLoggedIn = true;
-
-        }
-        setDisplay();
-    };
-
-    xhr.open("GET", "http://localhost:7000/");
-    xhr.send();
-}
-
-/**
- * Basic function that currently reports if user is logged in or not upon.
- */
-function setDisplay() {
-    if (isLoggedIn) {
-        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Logged in!</div>");
-        browser.tabs.query({currentWindow: true, active: true})
-            .then((tabs) => {
-                if (tabs[0].url.toString().includes("gradescope")) {
-                    document.querySelector("#popup-content").classList.remove("hidden");
-                } else {
-                    document.querySelector("#check-URL-content").classList.remove("hidden");
-                }
-            })
-    } else {
-        //document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-notification'>Not logged in!</div>");
-        document.querySelector("#signup-content").classList.remove("hidden");
-    }
-}
-function logTab() {
-
-
 }
 
 /**
