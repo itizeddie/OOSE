@@ -1,7 +1,7 @@
 /** Based on code from MDN web docs tutorial
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_second_WebExtension
  */
-var isLoggedIn = false;
+let isLoggedIn = false;
 
 /**
  * Listen for clicks on the buttons, and send the appropriate message to
@@ -29,9 +29,9 @@ function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendSignupInfoToContentScript(tabs) {
-            var username = document.getElementById("username").value;
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
             if (isValidSignup(username, email, password)) {
                 browser.tabs.sendMessage(tabs[0].id, {
@@ -50,8 +50,8 @@ function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendLoginInfoToContentScript(tabs) {
-            var username = document.getElementById("username2").value;
-            var password = document.getElementById("password2").value;
+            const username = document.getElementById("username2").value;
+            const password = document.getElementById("password2").value;
 
             browser.tabs.sendMessage(tabs[0].id, {
                 command: "login",
@@ -64,8 +64,8 @@ function listenForClicks() {
 
         function isValidSignup(username, email, password) {
             // Remove pre-existing error messages
-            var elem = document.getElementById("signup-error-msg")
-            while (typeof(elem) != 'undefined' && elem != null) {
+            let elem = document.getElementById("signup-error-msg");
+            while (typeof(elem) !== 'undefined' && elem != null) {
                 elem.remove();
                 elem = document.getElementById("signup-error-msg");
             }
@@ -85,12 +85,7 @@ function listenForClicks() {
         }
 
         function emptyFieldExists(username, email, password) {
-            if ((username.length == 0) || (email.length == 0) || (password.length == 0)) {
-                return true;
-            } else {
-                return false;
-            }
-            return false;
+            return ((username.length === 0) || (email.length === 0) || (password.length === 0));
         }
 
         /**
@@ -100,20 +95,12 @@ function listenForClicks() {
          * @returns {boolean}
          */
         function isEmailInvalid(email) {
-            var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if (emailRegex.test(email)){
-                return false;
-            } else {
-                return true;
-            }
+            const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return !(emailRegex.test(email));
         }
 
         function isPasswordInvalid(password) {
-            if (password.length < 5) {
-                return true;
-            } else {
-                return false;
-            }
+            return (password.length < 5);
         }
 
         function displayMessage(response) {
@@ -125,7 +112,7 @@ function listenForClicks() {
         }
 
         function formatResponseMessage(response) {
-            return JSON.stringify(response.result).replace(/\"/g, "");
+            return JSON.stringify(response.result).replace(/"/g, "");
         }
 
         /**
@@ -149,7 +136,7 @@ function listenForClicks() {
             console.error(`Could not add course: ${error}`);
         }
 
-        var clickedItem = e.target.classList;
+        const clickedItem = e.target.classList;
 
         if (clickedItem.contains("add-course")) {
             browser.tabs.query({active: true, currentWindow: true})
@@ -192,7 +179,7 @@ function reportExecuteScriptError(error) {
 }
 
 function clearPopup() {
-    var elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content");
+    const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content");
     elem.forEach(elem => {
         elem.classList.add("hidden");
     });
@@ -217,18 +204,13 @@ function displaySignUpForm() {
  */
 async function checkLogin() {
     // Send ajax request to attempt to access localhost:7000/
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
 
     xhr.onload = function(){
         // See if we are redirected to login page
-        var responseURL = xhr.responseURL;
-        if (responseURL.includes("login")) {
-            isLoggedIn = false;
-        } else {
-            isLoggedIn = true;
-        }
-        clearTimeout(myVar);
-        //alert(responseURL);
+        const responseURL = xhr.responseURL;
+        isLoggedIn = !(responseURL.includes("login"));
+        clearTimeout(loading);
         setDisplay();
     };
 
@@ -236,7 +218,7 @@ async function checkLogin() {
     xhr.send();
 
     document.getElementById("loading-icon").style.display ='block';
-    var myVar = setTimeout(function() {
+    const loading = setTimeout(function() {
         document.getElementById("loading-icon").style.display ='none';
         document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='course-added-notification'>Error: could not reach server.</div>");
     }, 5000);

@@ -13,22 +13,19 @@
     }
     window.hasRun = true;
 
-    console.log("hostname= "+ window.location.hostname);
-
     /**
-     * Sends a post request with data to the server using AJAX.
-     *
-     * @param url       the url the post request is sent to
-     * @param data      the data that is being sent
+     * Sends the DOM the server using AJAX.
+     * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
-    function sendDOMtoServer(content, url, token, sendResponse) {
-        var response = "";
-        var data = new FormData();
-        data.append("token", token);
-        data.append("url", url);
-        data.append("document", document);
+    function sendDOMtoServer(sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("token", create_UUID());
+        console.log(create_UUID());
+        data.append("url", window.location.href);
+        data.append("document", document.documentElement.innerHTML);
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
         xhr.onload = function(){
@@ -45,34 +42,24 @@
     }
 
     /**
-     * Creates UUID. Function taken from
-     * https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
-     * @returns {string}
+     *
+     * @param message
+     * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
-    function create_UUID(){
-        var dt = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (dt + Math.random()*16)%16 | 0;
-            dt = Math.floor(dt/16);
-            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
-        });
-        return uuid;
-    }
+    function createAccount(message, sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("username", message.username);
+        data.append("password", message.password);
+        data.append("email", message.email);
 
-    function createAccount(username, password, email, sendResponse) {
-        var response = "";
-        var data = new FormData();
-        data.append("username", username);
-        data.append("password", password);
-        data.append("email", email);
-
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
         xhr.onload = function(){
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 201) {
                 response = "Successfully created account!";
-                loginToServer(username, password, sendResponse);
+                loginToServer(message, sendResponse);
             } else {
                 response = "Could not create account. Error: " + this.status + ". " + this.responseText;
                 sendResponse({ result: response });
@@ -84,18 +71,17 @@
         xhr.send(data);
     }
 
-    function loginToServer(username, password, sendResponse) {
-        var response = "";
-        var data = new FormData();
-        data.append("username", username);
-        data.append("password", password);
+    function loginToServer(message, sendResponse) {
+        let response = "";
+        let data = new FormData();
+        data.append("username", message.username);
+        data.append("password", message.password);
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
         xhr.onload = function(){
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log("Updated response after logging in");
                 response = "Successfully logged in!";
             } else {
                 response = "Could not login. Error: " + this.status + ". Invalid username or password.";
@@ -108,20 +94,31 @@
     }
 
     /**
+     * Creates UUID. Function taken from
+     * https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
+     * @returns {string}
+     */
+    function create_UUID(){
+        let dt = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c==='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        //return uuid;
+    }
+
+    /**
      * Listen for messages from the background script.
      */
     browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        console.log(message.command);
         if (message.command === "add-course") {
-            var content = document.documentElement.innerHTML;
-            var url = window.location.href;
-            var token = create_UUID();
-            sendDOMtoServer(content, url, token, sendResponse);
+            sendDOMtoServer(sendResponse);
         } else if (message.command === "create-account") {
-            createAccount(message.username, message.password, message.email, sendResponse);
-            console.log(message.username+" "+message.password+" "+message.email);
+            createAccount(message, sendResponse);
+            console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
         } else if (message.command === "login") {
-            loginToServer(message.username, message.password, sendResponse);
+            loginToServer(message, sendResponse);
         }
         return true;
     });
