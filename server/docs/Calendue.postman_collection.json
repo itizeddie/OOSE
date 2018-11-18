@@ -1497,9 +1497,7 @@
 									"request = {",
 									"    url:`${pm.variables.get(\"host\")}/course/${pm.response.text()}`,",
 									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
+									"};"
 								],
 								"type": "text/javascript"
 							}
@@ -1561,6 +1559,112 @@
 			]
 		},
 		{
+			"name": "New Assignment",
+			"item": [
+				{
+					"name": "Success",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term`,",
+									"    method: 'POST',",
+									"    body: {",
+									"        mode: 'formdata',",
+									"        formdata: [",
+									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"        ]",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(request, function (err, response) {",
+									"    if (response.code == 201) {",
+									"        pm.environment.set(\"TERM_ID\", response.text());",
+									"                ",
+									"        request = {",
+									"            url:`${pm.variables.get(\"host\")}/course`,",
+									"            method: 'POST',",
+									"            body: {",
+									"                mode: 'formdata',",
+									"                formdata: [",
+									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
+									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
+									"                ]",
+									"            }",
+									"        };",
+									"        ",
+									"        pm.sendRequest(request, function (err, response) {",
+									"            if (response.code == 201) {",
+									"                pm.environment.set(\"COURSE_ID\", response.text());",
+									"            }",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Course 25",
+									"type": "text"
+								},
+								{
+									"key": "course_id",
+									"value": "{{COURSE_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "due_date",
+									"value": "2018-09-16",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/assignment",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"assignment"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Get Calendar",
 			"item": [
 				{
@@ -1571,18 +1675,83 @@
 							"script": {
 								"id": "70e21b2b-142b-4de6-8728-dfdcb92d5162",
 								"exec": [
-									""
+									"/*{",
+									"\t\"<date>\": [<assignment>],",
+									"\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],",
+									"\t...",
+									"}*/",
+									"",
+									"//pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "30e94b85-fa71-4044-96bd-fa32930c81db",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term`,",
+									"    method: 'POST',",
+									"    body: {",
+									"        mode: 'formdata',",
+									"        formdata: [",
+									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"        ]",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(request, function (err, response) {",
+									"    if (response.code == 201) {",
+									"        pm.environment.set(\"TERM_ID\", response.text());",
+									"    }",
+									"});",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/course`,",
+									"    method: 'POST',",
+									"    body: {",
+									"        mode: 'formdata',",
+									"        formdata: [",
+									"            {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"        ]",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(request, function (err, response) {",
+									"    if (response.code == 201) {",
+									"        pm.environment.set(\"COURSE_ID\", response.text());",
+									"    }",
+									"});"
 								],
 								"type": "text/javascript"
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": ""
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text"
+								}
+							]
 						},
 						"url": {
 							"raw": "{{host}}/calendar/get",
