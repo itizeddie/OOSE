@@ -43,6 +43,9 @@ public class Server {
                         get(AccountsController::getAccount);
                         path(":user_id", () -> delete(AccountsController::deleteAccount));
                     });
+                    path("scrape", () -> {
+                        post(ScrapeController::main);
+                    });
                     path("login", () -> {
                         get(LoginController::loginView);
                         post(LoginController::login);
