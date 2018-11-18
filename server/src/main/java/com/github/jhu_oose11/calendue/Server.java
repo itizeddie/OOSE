@@ -2,6 +2,8 @@ package com.github.jhu_oose11.calendue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jhu_oose11.calendue.controllers.*;
+import com.github.jhu_oose11.calendue.models.Course;
+import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
 import com.github.jhu_oose11.calendue.repositories.CredentialsRepository;
 import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import com.github.jhu_oose11.calendue.repositories.UsersRepository;
@@ -19,6 +21,7 @@ public class Server {
     private static DataSource database;
     private static UsersRepository usersRepository;
     private static CredentialsRepository credentialsRepository;
+    private static CoursesRepository coursesRepository;
     private static TermsRepository termsRepository;
 
     public static void main(String[] args) {
@@ -55,6 +58,7 @@ public class Server {
                             get(TermsController::getTerm);
                         });
                     });
+                    path("course", () -> post(CoursesController::newCourse));
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
                     if (System.getenv("JDBC_DATABASE_URL") != null) {
@@ -64,10 +68,12 @@ public class Server {
                     }
                     usersRepository = new UsersRepository(database);
                     credentialsRepository = new CredentialsRepository(database);
+                    coursesRepository = new CoursesRepository(database);
                     termsRepository = new TermsRepository(database);
                 })
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
                 .exception(TermsRepository.NonExistingTermException.class, (e, ctx) -> ctx.status(404))
+                .exception(CoursesRepository.NonExistingCourseException.class, (e, ctx) -> ctx.status(404))
                 .start(System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : 7000);
     }
 
@@ -84,4 +90,6 @@ public class Server {
     }
 
     public static TermsRepository getTermsRepository() { return termsRepository; }
+
+    public static CoursesRepository getCoursesRepository() { return coursesRepository; }
 }
