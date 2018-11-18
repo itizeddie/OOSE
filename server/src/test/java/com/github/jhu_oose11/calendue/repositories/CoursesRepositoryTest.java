@@ -31,9 +31,9 @@ class CoursesRepositoryTest {
             var postgresDatabase = new PGSimpleDataSource();
             postgresDatabase.setURL(System.getenv("JDBC_DATABASE_URL"));
             database = postgresDatabase;
-            repo = new CoursesRepository(database);
             userRepo = new UsersRepository(database);
             termsRepository = new TermsRepository(database);
+            repo = new CoursesRepository(database);
 
             Term term = new Term("Test Term", LocalDate.now(), LocalDate.now().plusDays(1));
             term = termsRepository.create(term);
