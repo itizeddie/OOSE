@@ -120,14 +120,10 @@ function listenForClicks() {
          * checks the URL and reloads the login page if the active tab is on gradescope.
          */
         function sendCheckURLToContentScript(tabs) {
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: tabs[0].url
-            }).then(function() {
-                if (tabs[0].url.toString().includes("gradescope")) {
-                    document.querySelector("#popup-content").classList.remove("hidden");
-                    document.querySelector("#check-URL-content").classList.add("hidden");
-                }
-            });
+            if (tabs[0].url.toString().includes("gradescope")) {
+                document.querySelector("#popup-content").classList.remove("hidden");
+                document.querySelector("#check-URL-content").classList.add("hidden");
+            }
         }
 
         /**
