@@ -41,8 +41,8 @@
     }
 
     /**
-     *
-     * @param message
+     * Sends request to server to create an account.
+     * @param message       contains username, password, and email
      * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
     function createAccount(message, sendResponse) {
@@ -69,7 +69,7 @@
         xhr.open("POST", "http://localhost:7000/accounts");
         xhr.send(data);
     }
-
+    
     function loginToServer(message, sendResponse) {
         let response = "";
         let data = new FormData();
@@ -90,6 +90,24 @@
 
         xhr.open("POST", "http://localhost:7000/login");
         xhr.send(data);
+    }
+
+    function logoutFromServer(sendResponse) {
+        let response = "";
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                response = "Successfully logged out!";
+            } else {
+                response = "Could not logout. Error: " + this.status + ".";
+            }
+            sendResponse({ result: response });
+        };
+
+        xhr.open("GET", "http://localhost:7000/logout");
+        xhr.send();
     }
 
     /**
@@ -118,6 +136,8 @@
             //console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
         } else if (message.command === "login") {
             loginToServer(message, sendResponse);
+        } else if (message.command === "logout") {
+            logoutFromServer(sendResponse);
         }
         return true;
     });
