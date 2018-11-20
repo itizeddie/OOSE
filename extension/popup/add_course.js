@@ -118,7 +118,9 @@ class Display {
     }
 
     /**
-     * Basic function that currently reports if user is logged in or not upon.
+     * Sets the popup display. If user is not logged in, shows the sign up form. If user is logged in,
+     * checks the URL and either displays the add course/assignment page or tells user that they
+     * need to be on Gradescope to add assignments.
      */
     static setDisplay() {
         Display.clearPopup();

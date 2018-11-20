@@ -41,8 +41,8 @@
     }
 
     /**
-     *
-     * @param message
+     * Sends request to server to create an account.
+     * @param message       contains username, password, and email
      * @param sendResponse  the function that returns a response from calendue.js to add_course.js
      */
     function createAccount(message, sendResponse) {
@@ -69,7 +69,7 @@
         xhr.open("POST", "http://localhost:7000/accounts");
         xhr.send(data);
     }
-
+    
     function loginToServer(message, sendResponse) {
         let response = "";
         let data = new FormData();
