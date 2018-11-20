@@ -92,6 +92,24 @@
         xhr.send(data);
     }
 
+    function logoutFromServer(sendResponse) {
+        let response = "";
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.onload = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                response = "Successfully logged out!";
+            } else {
+                response = "Could not logout. Error: " + this.status + ".";
+            }
+            sendResponse({ result: response });
+        };
+
+        xhr.open("GET", "http://localhost:7000/logout");
+        xhr.send();
+    }
+
     /**
      * Creates UUID. Function taken from
      * https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
@@ -118,6 +136,8 @@
             //console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
         } else if (message.command === "login") {
             loginToServer(message, sendResponse);
+        } else if (message.command === "logout") {
+            logoutFromServer(sendResponse);
         }
         return true;
     });

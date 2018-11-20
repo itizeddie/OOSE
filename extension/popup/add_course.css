@@ -26,7 +26,7 @@ html, body {
     border-radius: 25px;
 }
 
-.login-form, .sign-up-form {
+.login-form, .sign-up-form, .logout {
     color: #6938ff;
     cursor: pointer;
 }

@@ -65,7 +65,7 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content");
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content, #logout-content");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
@@ -131,6 +131,7 @@ class Display {
                         document.querySelector("#check-URL-content").classList.remove("hidden");
                     }
                 })
+            document.querySelector("#logout-content").classList.remove("hidden");
         } else {
             document.querySelector("#signup-content").classList.remove("hidden");
         }
@@ -201,17 +202,12 @@ async function listenForClicks() {
             });
         }
 
-        /**
-         * checks the URL and reloads the login page if the active tab is on gradescope.
-         */
-        function sendCheckURLToContentScript(tabs) {
+        function sendLogoutRequestToContentScript(tabs) {
+            Display.displayLoading();
             browser.tabs.sendMessage(tabs[0].id, {
-                command: tabs[0].url
-            }).then(function() {
-                if (tabs[0].url.toString().includes("gradescope")) {
-                    document.querySelector("#signup-content").classList.remove("hidden");
-                    document.querySelector("#check-URL-content").classList.add("hidden");
-                }
+                command: "logout"
+            }, function(response) {
+                Display.displayMessage(response);
             });
         }
 
@@ -245,10 +241,9 @@ async function listenForClicks() {
         if (clickedItem.contains("sign-up-form")) {
             Display.displaySignUpForm();
         }
-        if (clickedItem.contains("reload")) {
-            console.log("contained");
+        if (clickedItem.contains("logout")) {
             browser.tabs.query({active: true, currentWindow: true})
-                .then(sendCheckURLToContentScript)
+                .then(sendLogoutRequestToContentScript)
                 .catch(reportError);
         }
     });
