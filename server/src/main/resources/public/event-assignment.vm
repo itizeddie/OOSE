@@ -1,0 +1,10 @@
+#parse("/templates/layout.vm")
+#set( $css_name = "calendar" )
+#set( $javascript = "<script src='/js/graph.js'></script>"
+#@mainContent($css_name, $javascript)
+<div class="event-info">
+    <div id='myDiv'></div>
+    <div>sdfsdfds</div>
+    <div onload="details()"></div>
+</div>
+#end
