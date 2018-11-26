@@ -3,13 +3,8 @@
 #set( $javascript = "<script src='/js/graph.js'></script>"
 #@mainContent($css_name, $javascript)
 <div class="event-info">
-    <h2>Assignment Details</h2>
-    <div class="stat">
-    <p id="det"></p>
-    </div>
+    <div id='myDiv'></div>
+    <div>sdfsdfds</div>
+    <div onload="details()"></div>
 </div>
-    <script>
-            var details = "(Details of assignment including title, description, etc.)"
-            document.getElementById('det').innerHTML = details;
-        </script>
 #end
