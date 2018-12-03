@@ -4,9 +4,10 @@
 let isLoggedIn = false;
 
 class SignupController {
-    constructor(username, password, email) {
+    constructor(username, password, password3, email) {
         this.username = username;
         this.password = password;
+        this.passwordmatch = password3;
         this.email = email;
     }
 
@@ -27,13 +28,17 @@ class SignupController {
         } else if (this.isEmailInvalid()) {
             document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
             return false;
+        } else if (!this.doPasswordsMatch()) {
+            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Passwords must match.</div>");
+            return false;
         } else {
             return true;
         }
     }
 
     emptyFieldExists() {
-        return ((this.username.length === 0) || (this.email.length === 0) || (this.password.length === 0));
+        return ((this.username.length === 0) || (this.email.length === 0) || (this.password.length === 0)
+            || (this.passwordmatch.length === 0));
     }
 
     /**
@@ -48,6 +53,10 @@ class SignupController {
 
     isPasswordInvalid() {
         return (this.password.length < 5);
+    }
+
+    doPasswordsMatch() {
+        return (this.password === this.passwordmatch);
     }
 }
 
@@ -132,7 +141,7 @@ class Display {
                     } else {
                         document.querySelector("#check-URL-content").classList.remove("hidden");
                     }
-                })
+                });
             document.querySelector("#logout-content").classList.remove("hidden");
         } else {
             document.querySelector("#signup-content").classList.remove("hidden");
@@ -169,9 +178,10 @@ async function listenForClicks() {
         function sendSignupInfoToContentScript(tabs) {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
+            const password3 = document.getElementById("password3").value;
             const email = document.getElementById("email").value;
 
-            const account = new SignupController(username, password, email);
+            const account = new SignupController(username, password, password3, email);
 
             if (account.isValidSignup()) {
                 Display.displayLoading();
