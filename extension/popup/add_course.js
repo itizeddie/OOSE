@@ -214,6 +214,11 @@ async function listenForClicks() {
             if (username.length === 0 || password.length === 0) {
                 Display.displaySignupError("Username or password cannot be blank.")
             } else {
+                let elem = document.getElementById("signup-error-msg");
+                while (typeof(elem) !== 'undefined' && elem != null) {
+                    elem.remove();
+                    elem = document.getElementById("signup-error-msg");
+                }
                 Display.displayLoading();
                 browser.tabs.sendMessage(tabs[0].id, {
                     command: "login",
