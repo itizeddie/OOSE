@@ -20,16 +20,16 @@ class SignupController {
         }
 
         if (this.emptyFieldExists()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
+            Display.displaySignupError("All fields are mandatory.");
             return false;
         } else if (this.isPasswordInvalid()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
+            Display.displaySignupError("Password must have 5 or more characters.");
             return false;
         } else if (this.isEmailInvalid()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
+            Display.displaySignupError("Email must be in valid format.");
             return false;
         } else if (!this.doPasswordsMatch()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Passwords must match.</div>");
+            Display.displaySignupError("Passwords must match.");
             return false;
         } else {
             return true;
@@ -62,7 +62,7 @@ class SignupController {
 
 class Display {
     static async displayMessage(response) {
-        document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>"+Display.formatResponseMessage(response)+"</div>");
+        document.querySelector("#logout-content").insertAdjacentHTML("afterend", "<div id='notification'>"+Display.formatResponseMessage(response)+"</div>");
         await Display.refreshDisplay();
         setTimeout(function(){
             document.getElementById("notification").remove();
@@ -79,6 +79,10 @@ class Display {
             elem.classList.add("hidden");
         });
         document.getElementById("loading-icon").style.display ='none';
+    }
+
+    static displaySignupError(msg) {
+        document.querySelector("#popup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>"+msg+"</div>");
     }
 
     static displayLoginForm() {
