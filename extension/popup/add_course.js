@@ -65,7 +65,7 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content, #logout-content");
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #check-courseURL-content#error-content, #login-content, #logout-content");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
@@ -127,8 +127,10 @@ class Display {
         if (isLoggedIn) {
             browser.tabs.query({currentWindow: true, active: true})
                 .then((tabs) => {
-                    if (tabs[0].url.toString().includes("gradescope")) {
+                    if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
                         document.querySelector("#popup-content").classList.remove("hidden");
+                    } else if (tabs[0].url.toString().includes("gradescope.com")) {
+                        document.querySelector("#check-courseURL-content").classList.remove("hidden");
                     } else {
                         document.querySelector("#check-URL-content").classList.remove("hidden");
                     }
