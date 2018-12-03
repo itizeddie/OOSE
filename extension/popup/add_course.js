@@ -65,7 +65,7 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content, #logout-content");
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #check-courseURL-content#error-content, #login-content, #logout-content");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
