@@ -12,13 +12,6 @@ class SignupController {
     }
 
     isValidSignup() {
-        // Remove pre-existing error messages
-        let elem = document.getElementById("signup-error-msg");
-        while (typeof(elem) !== 'undefined' && elem != null) {
-            elem.remove();
-            elem = document.getElementById("signup-error-msg");
-        }
-
         if (this.emptyFieldExists()) {
             Display.displaySignupError("All fields are mandatory.");
             return false;
@@ -62,7 +55,8 @@ class SignupController {
 
 class Display {
     static async displayMessage(response) {
-        document.querySelector("#logout-content").insertAdjacentHTML("afterend", "<div id='notification'>"+Display.formatResponseMessage(response)+"</div>");
+        document.querySelector("#logout-content").insertAdjacentHTML("afterend", "<div id='notification'>" +
+            Display.formatResponseMessage(response)+"</div>");
         await Display.refreshDisplay();
         setTimeout(function(){
             document.getElementById("notification").remove();
@@ -74,7 +68,8 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #error-content, #login-content, #logout-content");
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, " +
+            "#error-content, #login-content, #logout-content", "signup-error-msg");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
@@ -82,7 +77,14 @@ class Display {
     }
 
     static displaySignupError(msg) {
-        document.querySelector("#popup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>"+msg+"</div>");
+        // Remove pre-existing error messages
+        let elem = document.getElementById("signup-error-msg");
+        while (typeof(elem) !== 'undefined' && elem != null) {
+            elem.remove();
+            elem = document.getElementById("signup-error-msg");
+        }
+        document.querySelector("#popup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>"+
+            msg+"</div>");
     }
 
     static displayLoginForm() {
@@ -125,7 +127,8 @@ class Display {
         document.getElementById("loading-icon").style.display ='block';
         const loading = setTimeout(function() {
             document.getElementById("loading-icon").style.display ='none';
-            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>Error: could not reach server.</div>");
+            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>" +
+                "Error: could not reach server.</div>");
         }, 5000);
 
     }
@@ -205,17 +208,21 @@ async function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendLoginInfoToContentScript(tabs) {
-            Display.displayLoading();
             const username = document.getElementById("username2").value;
             const password = document.getElementById("password2").value;
 
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "login",
-                username: username,
-                password: password
-            }, function(response) {
-                Display.displayMessage(response);
-            });
+            if (username.length === 0 || password.length === 0) {
+                Display.displaySignupError("Username or password cannot be blank.")
+            } else {
+                Display.displayLoading();
+                browser.tabs.sendMessage(tabs[0].id, {
+                    command: "login",
+                    username: username,
+                    password: password
+                }, function (response) {
+                    Display.displayMessage(response);
+                });
+            }
         }
 
         function sendLogoutRequestToContentScript(tabs) {
@@ -263,6 +270,27 @@ async function listenForClicks() {
                 .catch(reportError);
         }
     });
+
+    clickOnEnterKey("signup-form", "signup-button");
+    clickOnEnterKey("login-form", "login-button");
+
+    /**
+     * Allows user to submit form by using the enter key. Calls click() on the desired button.
+     * @param focusId       the id of the field being focused on
+     * @param buttonId      the id of the desired button
+     */
+    function clickOnEnterKey(focusId, buttonId) {
+        var input = document.getElementById(focusId);
+        input.addEventListener("keyup", function(event) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Trigger the button element with a click
+                document.getElementById(buttonId).click();
+            }
+        });
+    }
 }
 
 /**
