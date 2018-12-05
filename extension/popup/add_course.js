@@ -4,28 +4,25 @@
 let isLoggedIn = false;
 
 class SignupController {
-    constructor(username, password, email) {
+    constructor(username, password, password3, email) {
         this.username = username;
         this.password = password;
+        this.passwordmatch = password3;
         this.email = email;
     }
 
     isValidSignup() {
-        // Remove pre-existing error messages
-        let elem = document.getElementById("signup-error-msg");
-        while (typeof(elem) !== 'undefined' && elem != null) {
-            elem.remove();
-            elem = document.getElementById("signup-error-msg");
-        }
-
         if (this.emptyFieldExists()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
+            Display.displaySignupError("All fields are mandatory.");
             return false;
         } else if (this.isPasswordInvalid()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Password must have 5 or more characters.</div>");
+            Display.displaySignupError("Password must have 5 or more characters.");
             return false;
         } else if (this.isEmailInvalid()) {
-            document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>Email must be in valid format.</div>");
+            Display.displaySignupError("Email must be in valid format.");
+            return false;
+        } else if (!this.doPasswordsMatch()) {
+            Display.displaySignupError("Passwords must match.");
             return false;
         } else {
             return true;
@@ -33,7 +30,8 @@ class SignupController {
     }
 
     emptyFieldExists() {
-        return ((this.username.length === 0) || (this.email.length === 0) || (this.password.length === 0));
+        return ((this.username.length === 0) || (this.email.length === 0) || (this.password.length === 0)
+            || (this.passwordmatch.length === 0));
     }
 
     /**
@@ -49,11 +47,16 @@ class SignupController {
     isPasswordInvalid() {
         return (this.password.length < 5);
     }
+
+    doPasswordsMatch() {
+        return (this.password === this.passwordmatch);
+    }
 }
 
 class Display {
     static async displayMessage(response) {
-        document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>"+Display.formatResponseMessage(response)+"</div>");
+        document.querySelector("#logout-content").insertAdjacentHTML("afterend", "<div id='notification'>" +
+            Display.formatResponseMessage(response)+"</div>");
         await Display.refreshDisplay();
         setTimeout(function(){
             document.getElementById("notification").remove();
@@ -65,11 +68,23 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #check-courseURL-content#error-content, #login-content, #logout-content");
+        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, " +
+            "#check-courseURL-content, #error-content, #login-content, #logout-content", "signup-error-msg");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
         document.getElementById("loading-icon").style.display ='none';
+    }
+
+    static displaySignupError(msg) {
+        // Remove pre-existing error messages
+        let elem = document.getElementById("signup-error-msg");
+        while (typeof(elem) !== 'undefined' && elem != null) {
+            elem.remove();
+            elem = document.getElementById("signup-error-msg");
+        }
+        document.querySelector("#popup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>"+
+            msg+"</div>");
     }
 
     static displayLoginForm() {
@@ -112,7 +127,8 @@ class Display {
         document.getElementById("loading-icon").style.display ='block';
         const loading = setTimeout(function() {
             document.getElementById("loading-icon").style.display ='none';
-            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>Error: could not reach server.</div>");
+            document.querySelector("#calendue-title").insertAdjacentHTML("afterend", "<div id='notification'>" +
+                "Error: could not reach server.</div>");
         }, 5000);
 
     }
@@ -134,7 +150,7 @@ class Display {
                     } else {
                         document.querySelector("#check-URL-content").classList.remove("hidden");
                     }
-                })
+                });
             document.querySelector("#logout-content").classList.remove("hidden");
         } else {
             document.querySelector("#signup-content").classList.remove("hidden");
@@ -171,9 +187,10 @@ async function listenForClicks() {
         function sendSignupInfoToContentScript(tabs) {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
+            const password3 = document.getElementById("password3").value;
             const email = document.getElementById("email").value;
 
-            const account = new SignupController(username, password, email);
+            const account = new SignupController(username, password, password3, email);
 
             if (account.isValidSignup()) {
                 Display.displayLoading();
@@ -193,17 +210,26 @@ async function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendLoginInfoToContentScript(tabs) {
-            Display.displayLoading();
             const username = document.getElementById("username2").value;
             const password = document.getElementById("password2").value;
 
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "login",
-                username: username,
-                password: password
-            }, function(response) {
-                Display.displayMessage(response);
-            });
+            if (username.length === 0 || password.length === 0) {
+                Display.displaySignupError("Username or password cannot be blank.")
+            } else {
+                let elem = document.getElementById("signup-error-msg");
+                while (typeof(elem) !== 'undefined' && elem != null) {
+                    elem.remove();
+                    elem = document.getElementById("signup-error-msg");
+                }
+                Display.displayLoading();
+                browser.tabs.sendMessage(tabs[0].id, {
+                    command: "login",
+                    username: username,
+                    password: password
+                }, function (response) {
+                    Display.displayMessage(response);
+                });
+            }
         }
 
         function sendLogoutRequestToContentScript(tabs) {
@@ -251,6 +277,27 @@ async function listenForClicks() {
                 .catch(reportError);
         }
     });
+
+    clickOnEnterKey("signup-form", "signup-button");
+    clickOnEnterKey("login-form", "login-button");
+
+    /**
+     * Allows user to submit form by using the enter key. Calls click() on the desired button.
+     * @param focusId       the id of the field being focused on
+     * @param buttonId      the id of the desired button
+     */
+    function clickOnEnterKey(focusId, buttonId) {
+        var input = document.getElementById(focusId);
+        input.addEventListener("keyup", function(event) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Trigger the button element with a click
+                document.getElementById(buttonId).click();
+            }
+        });
+    }
 }
 
 /**
