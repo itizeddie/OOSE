@@ -72,6 +72,7 @@ public class Server {
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
                 .exception(TermsRepository.NonExistingTermException.class, (e, ctx) -> ctx.status(404))
                 .exception(CoursesRepository.NonExistingCourseException.class, (e, ctx) -> ctx.status(404))
+                .exception(AssignmentsRepository.NonExistingAssignmentException.class, (e, ctx) -> ctx.status(404))
                 .start(System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : 7000);
     }
 

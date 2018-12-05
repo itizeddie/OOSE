@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class TermsController {
     public static void newTerm(Context ctx) throws SQLException {
-        Auth.ensureLoggedIn(ctx);
+        if (!Auth.ensureLoggedIn(ctx)) return;
 
         int current_user_id = ctx.sessionAttribute("current_user");
 
