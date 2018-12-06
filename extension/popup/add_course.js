@@ -87,6 +87,13 @@ class Display {
         document.getElementById("loading-icon").style.display ='block';
     }
 
+    static displayHome() {
+        Display.clearPopup();
+        document.getElementById("popup-content")
+        document.getElementById("home-icon").classList.add("nav-button-icon-clicked");
+        document.getElementById("profile-icon").classList.add("nav-button-icon");
+    }
+
     /**
      * Checks if user is logged in by making sending an AJAX request to the server.
      * If the page redirects to /login, the user is not logged in, so the variable isLoggedIn
@@ -152,6 +159,17 @@ async function listenForClicks() {
 
     // Event listener for clicks
     document.addEventListener("click", (e) => {
+
+        // Ignore right-clicks
+        //if (event.button == 2) {
+       //     console.log("rightclick");
+        //    return;
+       // }
+
+        //if (event.button == 1) {
+       //      console.log("leftclick");
+        // }
+
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
@@ -244,6 +262,10 @@ async function listenForClicks() {
         }
         if (clickedItem.contains("sign-up-form")) {
             Display.displaySignUpForm();
+        }
+        if (clickedItem.contains("home")) {
+            console.log("clicked");
+            Display.displayHome();
         }
         if (clickedItem.contains("logout")) {
             browser.tabs.query({active: true, currentWindow: true})

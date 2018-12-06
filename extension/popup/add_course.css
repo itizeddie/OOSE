@@ -2,11 +2,16 @@ html, body {
     width: 150px;
 }
 
+
 #calendue-title {
-    background-color: #6938ff;
-    color: white;
+    background-color: #E9E9E9;
+    color: #2196F3;
     font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    font-style: Markerfelt;
 }
+
 
 #add-course {
     padding: 10px 10px 10px 10px;
@@ -23,13 +28,68 @@ html, body {
     font-size: 1.5em;
     cursor: pointer;
     background-color: #e5e5e5;
-    border-radius: 25px;
+    border-radius: 10px;
 }
 
 .login-form, .sign-up-form, .logout {
     color: #6938ff;
     cursor: pointer;
 }
+
+.navigation {
+    width: 100%;
+    height: 50px;
+    position: relative;
+    display: block;
+    bottom: 0px;
+    vertical-align: top;
+    overflow: hidden;
+    border-top: 1px solid rgb(238, 238, 238);
+    background-color: rgb(254, 255, 255);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.nav-button {
+    width: calc(45%);
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 26px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    box-sizing: border-box;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.nav-button-icon-clicked {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 56px;
+    box-sizing: border-box;
+    padding-top: 4px;
+    opacity: 1;
+    cursor: pointer;
+    /*was default*/
+    border-bottom: 4px solid #2196F3;
+}
+
+.nav-button-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 56px;
+    box-sizing: border-box;
+    padding-top: 0px;
+    opacity: 0.4;
+}
+
+/*href later */
 
 /*Note: the following code for the loading icon comes from https://loading.io/css/ */
 .lds-ripple {
