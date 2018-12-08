@@ -50,7 +50,7 @@ public class LoginController {
     }
 
     public static void logout(Context ctx) {
-        Auth.ensureLoggedIn(ctx);
+        if (!Auth.ensureLoggedIn(ctx)) return;
         ctx.sessionAttribute("current_user", null);
         ctx.sessionAttribute("flash", "Successfully been logged out.");
         ctx.redirect("/login", 303);

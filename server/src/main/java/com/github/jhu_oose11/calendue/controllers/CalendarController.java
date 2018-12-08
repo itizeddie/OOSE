@@ -7,7 +7,7 @@ import io.javalin.Context;
 
 public class CalendarController {
     public static void index(Context ctx) {
-        Auth.ensureLoggedIn(ctx);
+        if (!Auth.ensureLoggedIn(ctx)) return;
         Render.render(ctx, TemplatePath.CALENDAR);
     }
 }

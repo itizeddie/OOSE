@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class AssignmentsRepositoryTest {
@@ -102,7 +103,20 @@ class AssignmentsRepositoryTest {
 
         userRepo.deleteUser(user);
     }
-    
+
+    @Test
+    void getAssignment() throws SQLException, AssignmentsRepository.NonExistingAssignmentException {
+        String title = "Test Course";
+        int course_id = ((Course) testData.get("course")).getId();
+        LocalDate dueDate = (LocalDate) testData.get("due_date");
+        Assignment assignment = new Assignment(title, dueDate, course_id, false);
+        assignment = repo.create(assignment);
+
+        Assignment result = repo.getAssignmentById(assignment.getId());
+        assertEquals(result.getId(), assignment.getId());
+        repo.deleteAssignment(assignment);
+    }
+
     @Test
     void AssignmentUsersUnique() throws SQLException, UsersRepository.NonExistingUserException {
         String email = "test1234235@testing.com";
@@ -136,6 +150,8 @@ class AssignmentsRepositoryTest {
 
         assertEquals(1, countAssignmentUsers(assignment.getId(), user.getId()));
         repo.deleteAssignment(assignment);
+
+        assertThrows(AssignmentsRepository.NonExistingAssignmentException.class, () -> repo.getAssignmentById(assignment.getId()));
 
         assertEquals(0, countAssignmentUsers(assignment.getId(), user.getId()));
         userRepo.deleteUser(user);
