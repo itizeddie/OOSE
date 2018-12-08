@@ -55,7 +55,7 @@ public class AssignmentsController {
         try {
             assignment_id = Integer.parseInt(ctx.pathParam("assignment_id"));
         } catch(NumberFormatException e) {
-            throw new NotFoundResponse();
+            throw new NotFoundResponse("Assignment not found.");
         }
         Assignment assignment = Server.getAssignmentsRepository().getAssignmentById(assignment_id);
         ctx.result("" + assignment.getId());

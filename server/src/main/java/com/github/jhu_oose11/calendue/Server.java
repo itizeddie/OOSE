@@ -55,7 +55,10 @@ public class Server {
                         });
                     });
                     path("course", () -> post(CoursesController::newCourse));
-                    path("assignment", () -> post(AssignmentsController::newAssignment));
+                    path("assignment", () -> {
+                        post(AssignmentsController::newAssignment);
+                        path(":assignment_id", () -> get(AssignmentsController::getAssignment));
+                    });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
                     if (System.getenv("JDBC_DATABASE_URL") != null) {
