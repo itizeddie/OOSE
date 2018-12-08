@@ -9,7 +9,6 @@ html, body {
     font-size: 2em;
     font-weight: bold;
     text-align: center;
-    font-style: Markerfelt;
 }
 
 
@@ -61,7 +60,7 @@ html, body {
     background-position: center center;
     box-sizing: border-box;
     vertical-align: top;
-    cursor: pointer;
+
 }
 
 .nav-button-icon-clicked {
@@ -87,10 +86,53 @@ html, body {
     box-sizing: border-box;
     padding-top: 0px;
     opacity: 0.4;
+    cursor: pointer;
 }
 
 /*href later */
 
+.nav-button img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 56px;
+    box-sizing: border-box;
+    padding-top: 0px;
+    opacity: 0.4;
+    cursor: pointer;
+}
+
+/* Container needed to position the button. Adjust the width as needed */
+.container {
+    position: relative;
+    width: 50%;
+}
+
+/* Make the image responsive */
+.container img {
+    width: 100%;
+    height: auto;
+}
+
+/* Style the button and place it in the middle of the container/image */
+.nav-button .btn {
+    position: absolute;
+    top: 25%;
+    width: 28px;
+    height: 28px;
+    background-color: rgb(254, 255, 255);
+    opacity: .1;
+    font-size: 2px;
+    padding: 2px 2px;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.nav-button .btn:hover {
+    background-color: black;
+}
 /*Note: the following code for the loading icon comes from https://loading.io/css/ */
 .lds-ripple {
     display: inline-block;

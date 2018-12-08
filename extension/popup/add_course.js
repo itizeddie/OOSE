@@ -89,8 +89,10 @@ class Display {
 
     static displayHome() {
         Display.clearPopup();
-        document.getElementById("popup-content")
+        document.getElementById("popup-content");
+        document.getElementById("home-icon").classList.remove("nav-button-icon");
         document.getElementById("home-icon").classList.add("nav-button-icon-clicked");
+        document.getElementById("profile-icon").classList.remove("nav-button-icon-clicked");
         document.getElementById("profile-icon").classList.add("nav-button-icon");
     }
 
@@ -156,6 +158,8 @@ class Display {
 async function listenForClicks() {
     // Checks login each time extension is loaded and displays proper page
     await Display.refreshDisplay();
+
+
 
     // Event listener for clicks
     document.addEventListener("click", (e) => {
@@ -233,6 +237,12 @@ async function listenForClicks() {
             });
         }
 
+        function sendMessage(tabs) {
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "home"
+            });
+        }
+
         /**
          * Log the error to the console.
          */
@@ -241,6 +251,7 @@ async function listenForClicks() {
         }
 
         const clickedItem = e.target.classList;
+        const clickedItem2 = e.target.id;
 
         if (clickedItem.contains("add-course")) {
             browser.tabs.query({active: true, currentWindow: true})
@@ -263,14 +274,36 @@ async function listenForClicks() {
         if (clickedItem.contains("sign-up-form")) {
             Display.displaySignUpForm();
         }
-        if (clickedItem.contains("home")) {
-            console.log("clicked");
-            Display.displayHome();
-        }
         if (clickedItem.contains("logout")) {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendLogoutRequestToContentScript)
                 .catch(reportError);
+        }
+        /*
+        if (clickedItem.contains("nav-button") || clickedItem2.contains("home")) {
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "home"
+            });
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendMessage)
+                .catch(reportError);
+            Display.displayHome();
+        }
+        if (clickedItem.contains("nav-button-icon")||clickedItem2.contains("home-icon")) {
+            browser.tabs.sendMessage(tabs[0].id, {
+                command: "home"
+            });
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendMessage);
+            Display.displayHome();
+        }*/
+
+        if (clickedItem.contains("nav-button") || clickedItem.contains("nav-button-icon")) {
+            //extension.getBackgroundPage().console.log('foo');
+            browser.tabs.query({active: true, currentWindow: true})
+                .then(sendMessage)
+                .catch(reportError);
+            Display.displayHome();
         }
     });
 }
