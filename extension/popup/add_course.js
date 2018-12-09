@@ -12,11 +12,13 @@ class SignupController {
 
     isValidSignup() {
         // Remove pre-existing error messages
-        let elem = document.getElementById("signup-error-msg");
+        /*let elem = document.getElementById("signup-error-msg");
         while (typeof(elem) !== 'undefined' && elem != null) {
             elem.remove();
             elem = document.getElementById("signup-error-msg");
         }
+        */
+        Display.clearErrorMessages();
 
         if (this.emptyFieldExists()) {
             document.querySelector("#signup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>All fields are mandatory.</div>");
@@ -65,11 +67,21 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, #check-courseURL-content#error-content, #login-content, #logout-content");
+        Display.clearErrorMessages();
+        const elem = document.querySelectorAll("#popup-content, #welcome, #signup-content, #check-URL-content, " +
+            "#check-courseURL-content, #error-content, #login-content, #logout-content, #website-link");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
         document.getElementById("loading-icon").style.display ='none';
+    }
+
+    static clearErrorMessages() {
+        let elem = document.getElementById("signup-error-msg");
+        while (typeof(elem) !== 'undefined' && elem != null) {
+            elem.remove();
+            elem = document.getElementById("signup-error-msg");
+        }
     }
 
     static displayLoginForm() {
@@ -89,7 +101,25 @@ class Display {
 
     static displayHome() {
         Display.clearPopup();
-        document.getElementById("popup-content");
+
+        //if logged in
+        if(isLoggedIn) {
+            browser.tabs.query({currentWindow: true, active: true})
+                .then((tabs) => {
+                    if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
+                        document.querySelector("#popup-content").classList.remove("hidden");
+                    } else if (tabs[0].url.toString().includes("gradescope.com")) {
+                        document.querySelector("#check-courseURL-content").classList.remove("hidden");
+                    } else {
+                        document.querySelector("#check-URL-content").classList.remove("hidden");
+                    }
+                });
+        }
+        else {
+            document.querySelector("#welcome").classList.remove("hidden");
+        }
+
+        //toggle icons
         if (document.getElementById("profile").classList.contains("clicked")) {
             document.getElementById("profile").classList.remove("clicked");
             document.getElementById("home").classList.add("clicked");
@@ -98,7 +128,15 @@ class Display {
 
     static displayProfile() {
         Display.clearPopup();
-        document.getElementById("popup-content");
+        if (isLoggedIn) {
+            document.getElementById("website-link").classList.remove("hidden");
+            document.querySelector("#logout-content").classList.remove("hidden");
+        }
+        else {
+            document.querySelector("#signup-content").classList.remove("hidden");
+        }
+
+        //toggle icons
         if (document.getElementById("home").classList.contains("clicked")) {
             document.getElementById("home").classList.remove("clicked");
             document.getElementById("profile").classList.add("clicked");
@@ -142,21 +180,31 @@ class Display {
      */
     static setDisplay() {
         Display.clearPopup();
-        if (isLoggedIn) {
+        //if (isLoggedIn) {
+            /*
             browser.tabs.query({currentWindow: true, active: true})
                 .then((tabs) => {
+                    //Display.displayHome();
                     if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
-                        document.querySelector("#popup-content").classList.remove("hidden");
+                        //document.querySelector("#popup-content").classList.remove("hidden");
                     } else if (tabs[0].url.toString().includes("gradescope.com")) {
                         document.querySelector("#check-courseURL-content").classList.remove("hidden");
                     } else {
                         document.querySelector("#check-URL-content").classList.remove("hidden");
                     }
-                })
+                });
             document.querySelector("#logout-content").classList.remove("hidden");
-        } else {
-            document.querySelector("#signup-content").classList.remove("hidden");
-        }
+            */
+            if(document.getElementById("profile").classList.contains("clicked")) {
+                Display.displayProfile()
+            }
+            else {
+                Display.displayHome();
+            }
+       // } else {
+            //document.querySelector("#signup-content").classList.remove("hidden");
+            //Display.displayProfile();
+       // }
     }
 }
 
@@ -172,16 +220,6 @@ async function listenForClicks() {
 
     // Event listener for clicks
     document.addEventListener("click", (e) => {
-
-        // Ignore right-clicks
-        //if (event.button == 2) {
-       //     console.log("rightclick");
-        //    return;
-       // }
-
-        //if (event.button == 1) {
-       //      console.log("leftclick");
-        // }
 
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
@@ -260,7 +298,6 @@ async function listenForClicks() {
         }
 
         const clickedItem = e.target.classList;
-        const clickedItem2 = e.target.id;
 
         if (clickedItem.contains("add-course")) {
             browser.tabs.query({active: true, currentWindow: true})
@@ -288,17 +325,18 @@ async function listenForClicks() {
                 .then(sendLogoutRequestToContentScript)
                 .catch(reportError);
         }
-
         if (clickedItem.contains("home-icon")) {
-            browser.tabs.query({active: true, currentWindow: true})
+            /*browser.tabs.query({active: true, currentWindow: true})
                 .then(sendMessage)
                 .catch(reportError);
+                */
             Display.displayHome();
         }
         if (clickedItem.contains("profile-icon")) {
-            browser.tabs.query({active: true, currentWindow: true})
+            /*browser.tabs.query({active: true, currentWindow: true})
                 .then(sendMessage)
                 .catch(reportError);
+                */
             Display.displayProfile();
         }
     });
