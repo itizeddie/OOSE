@@ -90,10 +90,19 @@ class Display {
     static displayHome() {
         Display.clearPopup();
         document.getElementById("popup-content");
-        document.getElementById("home-icon").classList.remove("nav-button-icon");
-        document.getElementById("home-icon").classList.add("nav-button-icon-clicked");
-        document.getElementById("profile-icon").classList.remove("nav-button-icon-clicked");
-        document.getElementById("profile-icon").classList.add("nav-button-icon");
+        if (document.getElementById("profile").classList.contains("clicked")) {
+            document.getElementById("profile").classList.remove("clicked");
+            document.getElementById("home").classList.add("clicked");
+        }
+    }
+
+    static displayProfile() {
+        Display.clearPopup();
+        document.getElementById("popup-content");
+        if (document.getElementById("home").classList.contains("clicked")) {
+            document.getElementById("home").classList.remove("clicked");
+            document.getElementById("profile").classList.add("clicked");
+        }
     }
 
     /**
@@ -279,31 +288,18 @@ async function listenForClicks() {
                 .then(sendLogoutRequestToContentScript)
                 .catch(reportError);
         }
-        /*
-        if (clickedItem.contains("nav-button") || clickedItem2.contains("home")) {
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "home"
-            });
+
+        if (clickedItem.contains("home-icon")) {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendMessage)
                 .catch(reportError);
             Display.displayHome();
         }
-        if (clickedItem.contains("nav-button-icon")||clickedItem2.contains("home-icon")) {
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "home"
-            });
-            browser.tabs.query({active: true, currentWindow: true})
-                .then(sendMessage);
-            Display.displayHome();
-        }*/
-
-        if (clickedItem.contains("nav-button") || clickedItem.contains("nav-button-icon")) {
-            //extension.getBackgroundPage().console.log('foo');
+        if (clickedItem.contains("profile-icon")) {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendMessage)
                 .catch(reportError);
-            Display.displayHome();
+            Display.displayProfile();
         }
     });
 }

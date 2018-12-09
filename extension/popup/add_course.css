@@ -60,36 +60,23 @@ html, body {
     background-position: center center;
     box-sizing: border-box;
     vertical-align: top;
-
 }
 
-.nav-button-icon-clicked {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 56px;
-    box-sizing: border-box;
+.clicked {
     padding-top: 4px;
-    opacity: 1;
     cursor: pointer;
-    /*was default*/
     border-bottom: 4px solid #2196F3;
 }
 
-.nav-button-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 56px;
-    box-sizing: border-box;
-    padding-top: 0px;
-    opacity: 0.4;
-    cursor: pointer;
+/*href later */
+
+.home-icon {
+    width: 28px;
 }
 
-/*href later */
+.profile-icon {
+    width: 28px;
+}
 
 .nav-button img {
     display: flex;
@@ -99,40 +86,14 @@ html, body {
     width: 56px;
     box-sizing: border-box;
     padding-top: 0px;
-    opacity: 0.4;
+    opacity: .4;
     cursor: pointer;
 }
 
-/* Container needed to position the button. Adjust the width as needed */
-.container {
-    position: relative;
-    width: 50%;
+.nav-button img:hover {
+    opacity: 1;
 }
 
-/* Make the image responsive */
-.container img {
-    width: 100%;
-    height: auto;
-}
-
-/* Style the button and place it in the middle of the container/image */
-.nav-button .btn {
-    position: absolute;
-    top: 25%;
-    width: 28px;
-    height: 28px;
-    background-color: rgb(254, 255, 255);
-    opacity: .1;
-    font-size: 2px;
-    padding: 2px 2px;
-    border: none;
-    cursor: pointer;
-    border-radius: 2px;
-}
-
-.nav-button .btn:hover {
-    background-color: black;
-}
 /*Note: the following code for the loading icon comes from https://loading.io/css/ */
 .lds-ripple {
     display: inline-block;
