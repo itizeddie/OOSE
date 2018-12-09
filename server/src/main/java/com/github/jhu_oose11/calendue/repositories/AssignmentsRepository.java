@@ -22,6 +22,15 @@ public class AssignmentsRepository {
         if (database instanceof PGSimpleDataSource) {
             statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE)");
             statement.execute("CREATE TABLE IF NOT EXISTS assignments_users (id SERIAL PRIMARY KEY, assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(assignment_id, user_id))");
+            statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
+                    "(id SERIAL PRIMARY KEY, " +
+                    "assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, " +
+                    "num_submissions INTEGER NOT NULL, " +
+                    "sum_of_grades REAL NOT NULL, " +
+                    "grades_std REAL NOT NULL, " +
+                    "num_comp_time INTEGER NOT NULL, " +
+                    "sum_comp_time INTEGER NOT NULL, " +
+                    "comp_time_std REAL NOT NULL)");
         }
         statement.close();
         connection.close();
@@ -57,6 +66,25 @@ public class AssignmentsRepository {
         var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id) VALUES (?, ?)");
         statement.setInt(1, assignmentId);
         statement.setInt(2, userId);
+        statement.executeUpdate();
+        statement.close();
+        connection.close();
+    }
+
+    public void addStatistic(int assignmentId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE assignment_id = "+assignmentId);
+        var rs = statement.executeQuery();
+        if (!rs.next()) {
+            createStatistic(assignmentId);
+        }
+    }
+
+    public void createStatistic(int assignmentId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("INSERT INTO statistics (assignment_id, num_submissions, " +
+                "sum_of_grades, grades_std, num_comp_time, sum_comp_time, comp_time_std) VALUES (?, 0, 0, 0, 0, 0, 0)");
+        statement.setInt(1, assignmentId);
         statement.executeUpdate();
         statement.close();
         connection.close();
