@@ -1,12 +1,14 @@
 package com.github.jhu_oose11.calendue.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 
 public class Assignment {
     private String title;
     private LocalDate dueDate;
     private int courseId;
-    boolean completed = false;
+    private boolean completed;
     private int id;
 
     public Assignment(String title, LocalDate dueDate, int courseId, boolean completed) {
@@ -29,6 +31,7 @@ public class Assignment {
         return title;
     }
 
+    @JsonIgnore
     public LocalDate getDueDate() {
         return dueDate;
     }
