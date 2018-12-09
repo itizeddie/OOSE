@@ -159,6 +159,7 @@
 <div class='stat'>
     <p id='variation'></p>
 </div>
+<div id='classScoresDistributionDiv'></div>
 </div>
 
 <script>
@@ -171,6 +172,7 @@ function getAverage(array) {
     avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
     return avg;
 }
+// Assignment score histogram graph
 var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
 avg = getAverage(x);
 var mean = "Average: " + avg.toString() + "     ";
@@ -181,23 +183,24 @@ var trace = {
     x: x,
     type: 'histogram',
   };
-var data = [trace];
+var assignmentData = [trace];
 var layout = {
     bargap: 0.1,
     xaxis: {
         range: [0, 50]
     }
 }
+
+// Class comparison graph
 var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3']; // all assignments for a class
 var userScores = [76, 85, 80]; // user's scores
-var classScores = [75.23, 82.13, 84.45]; // class average scores
+var classAvgScores = [75.23, 82.13, 84.45]; // class average scores
 var diff = []; // difference from mean
 var variation; // average deviation from mean
 for(var i = 0; i < userScores.length; i++) {
-    diff.push(userScores[i] - classScores[i]);
+    diff.push(userScores[i] - classAvgScores[i]);
 }
 variation = "Average Deviation from Mean: " + getAverage(diff).toString() + "%";
-
 var userData = {
     x: assignments,
     y: userScores,
@@ -208,18 +211,52 @@ var userData = {
 };
 var classData = {
     x: assignments,
-    y: classScores,
+    y: classAvgScores,
     name: 'Class Scores',
     type: 'bar',
-    text: classScores.map(String),
+    text: classAvgScores.map(String),
     textposition: 'auto'
 };
 
 var classCompareData = [userData, classData];
-
 var classCompareLayout = {barmode: 'group'};
 
-Plotly.newPlot('myDiv', data, layout);
+// Class Scores Distribution Graph
+var classAssignment1Scores = {
+  y: [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50],
+  name: 'Assignment 1',
+  type: 'box',
+  marker: {
+    color: 'rgb(10,140,208)'
+  },
+  boxmean: 'sd'
+};
+var classAssignment2Scores = {
+  y: [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50],
+  name: 'Assignment 2',
+  type: 'box',
+  marker: {
+    color: 'rgb(100,80,230)'
+  },
+  boxmean: 'sd'
+};
+var classAssignment3Scores = {
+  y: [20, 20, 20, 20, 20, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 42.5, 42.5, 42.5, 45, 45, 45, 50, 50, 50, 50, 50, 50, 50],
+  name: 'Assignment 3',
+  type: 'box',
+  marker: {
+    color: 'rgb(190,100,70)'
+  },
+  boxmean: 'sd'
+};
+
+var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores, classAssignment3Scores];
+
+var classAssignmentScoresLayout = {
+  title: 'Class Scores By Assignment Distribution'
+};
+
+Plotly.newPlot('myDiv', assignmentData, layout);
 document.getElementById('average').innerHTML = mean;
 document.getElementById('percentile').innerHTML = percentile;
 document.getElementById('toc').innerHTML = toc;
@@ -227,5 +264,8 @@ document.getElementById('rec').innerHTML = rec;
 
 Plotly.newPlot('classCompareDiv', classCompareData, classCompareLayout);
 document.getElementById('variation').innerHTML = variation;
+
+Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
+
 </script>
 #end
