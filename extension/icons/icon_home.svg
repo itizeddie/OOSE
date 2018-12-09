@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>icon_home</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="styleguidelines" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Assets" transform="translate(-392.000000, -903.000000)">
+            <g id="Group-4-Copy-7" transform="translate(79.000000, 148.000000)">
+                <g id="icon_28" transform="translate(219.000000, 755.000000)">
+                    <g id="home" transform="translate(94.000000, 0.000000)">
+                        <rect id="Rectangle-3" x="0" y="0" width="28" height="28"></rect>
+                        <path d="M23,16 L26,16 L14,3 L2,16 L5,16 L5,23.0029699 C5,23.5536144 5.44494629,24 5.99339768,24 L22.0066023,24 C22.5552407,24 23,23.5469637 23,23.0029699 L23,16 Z M16,18 L16,24 L12,24 L12,18 C12,16.8954305 12.8954305,16 14,16 C15.1045695,16 16,16.8954305 16,18 Z" fill="#292929"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

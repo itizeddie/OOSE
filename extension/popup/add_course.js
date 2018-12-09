@@ -12,6 +12,9 @@ class SignupController {
     }
 
     isValidSignup() {
+        // Remove pre-existing error messages
+        Display.clearErrorMessages();
+
         if (this.emptyFieldExists()) {
             Display.displaySignupError("All fields are mandatory.");
             return false;
@@ -22,7 +25,7 @@ class SignupController {
             Display.displaySignupError("Email must be in valid format.");
             return false;
         } else if (!this.doPasswordsMatch()) {
-            Display.displaySignupError("Passwords must match.");
+            Display.errError("Passwords must match.");
             return false;
         } else {
             return true;
@@ -68,13 +71,15 @@ class Display {
     }
 
     static clearPopup() {
-        const elem = document.querySelectorAll("#popup-content, #signup-content, #check-URL-content, " +
-            "#check-courseURL-content, #error-content, #login-content, #logout-content", "signup-error-msg");
+
+        const elem = document.querySelectorAll("#popup-content, #welcome, #signup-content, #check-URL-content, " +
+            "#check-courseURL-content, #error-content, #login-content, #logout-content, #website-link", "signup-error-msg");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
         document.getElementById("loading-icon").style.display ='none';
     }
+
 
     static displaySignupError(msg) {
         // Remove pre-existing error messages
@@ -100,6 +105,58 @@ class Display {
     static displayLoading() {
         Display.clearPopup();
         document.getElementById("loading-icon").style.display ='block';
+    }
+
+    /**If user is not logged in, says welcome. If user is logged in,
+    * checks the URL and either displays the add course/assignment page or tells user that they
+    * need to be on Gradescope to add assignments.
+    **/
+    static displayHome() {
+        Display.clearPopup();
+
+        if(isLoggedIn) {
+            browser.tabs.query({currentWindow: true, active: true})
+                .then((tabs) => {
+                    if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
+                        document.querySelector("#popup-content").classList.remove("hidden");
+                    } else if (tabs[0].url.toString().includes("gradescope.com")) {
+                        document.querySelector("#check-courseURL-content").classList.remove("hidden");
+                    } else {
+                        document.querySelector("#check-URL-content").classList.remove("hidden");
+                    }
+                });
+        }
+        else {
+            document.querySelector("#welcome").classList.remove("hidden");
+        }
+
+        //toggle icons
+        if (document.getElementById("profile").classList.contains("clicked")) {
+            document.getElementById("profile").classList.remove("clicked");
+            document.getElementById("home").classList.add("clicked");
+        }
+    }
+
+    /**If user is not logged in, shows the sign up form. If user is logged in,
+     * shows link to calendue website.
+     * TODO:display profile info
+     **/
+    static displayProfile() {
+
+        Display.clearPopup();
+        if (isLoggedIn) {
+            document.getElementById("website-link").classList.remove("hidden");
+            document.querySelector("#logout-content").classList.remove("hidden");
+        }
+        else {
+            document.querySelector("#signup-content").classList.remove("hidden");
+        }
+
+        //toggle icons
+        if (document.getElementById("home").classList.contains("clicked")) {
+            document.getElementById("home").classList.remove("clicked");
+            document.getElementById("profile").classList.add("clicked");
+        }
     }
 
     /**
@@ -140,21 +197,12 @@ class Display {
      */
     static setDisplay() {
         Display.clearPopup();
-        if (isLoggedIn) {
-            browser.tabs.query({currentWindow: true, active: true})
-                .then((tabs) => {
-                    if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
-                        document.querySelector("#popup-content").classList.remove("hidden");
-                    } else if (tabs[0].url.toString().includes("gradescope.com")) {
-                        document.querySelector("#check-courseURL-content").classList.remove("hidden");
-                    } else {
-                        document.querySelector("#check-URL-content").classList.remove("hidden");
-                    }
-                });
-            document.querySelector("#logout-content").classList.remove("hidden");
-        } else {
-            document.querySelector("#signup-content").classList.remove("hidden");
-        }
+            if(document.getElementById("profile").classList.contains("clicked")) {
+                Display.displayProfile()
+            }
+            else {
+                Display.displayHome();
+            }
     }
 }
 
@@ -166,8 +214,11 @@ async function listenForClicks() {
     // Checks login each time extension is loaded and displays proper page
     await Display.refreshDisplay();
 
+
+
     // Event listener for clicks
     document.addEventListener("click", (e) => {
+
         /**
          * Get page content and send a "add-course" message to the content script in the active tab.
          */
@@ -241,6 +292,7 @@ async function listenForClicks() {
             });
         }
 
+
         /**
          * Log the error to the console.
          */
@@ -275,6 +327,12 @@ async function listenForClicks() {
             browser.tabs.query({active: true, currentWindow: true})
                 .then(sendLogoutRequestToContentScript)
                 .catch(reportError);
+        }
+        if (clickedItem.contains("home-icon")) {
+            Display.displayHome();
+        }
+        if (clickedItem.contains("profile-icon")) {
+            Display.displayProfile();
         }
     });
 
