@@ -12,9 +12,6 @@ class SignupController {
     }
 
     isValidSignup() {
-        // Remove pre-existing error messages
-        Display.clearErrorMessages();
-
         if (this.emptyFieldExists()) {
             Display.displaySignupError("All fields are mandatory.");
             return false;
@@ -25,7 +22,7 @@ class SignupController {
             Display.displaySignupError("Email must be in valid format.");
             return false;
         } else if (!this.doPasswordsMatch()) {
-            Display.errError("Passwords must match.");
+            Display.displaySignupError("Passwords must match.");
             return false;
         } else {
             return true;
@@ -71,7 +68,7 @@ class Display {
     }
 
     static clearPopup() {
-
+        Display.clearSignupErrors();
         const elem = document.querySelectorAll("#popup-content, #welcome, #signup-content, #check-URL-content, " +
             "#check-courseURL-content, #error-content, #login-content, #logout-content, #website-link", "signup-error-msg");
         elem.forEach(elem => {
@@ -80,14 +77,16 @@ class Display {
         document.getElementById("loading-icon").style.display ='none';
     }
 
-
-    static displaySignupError(msg) {
+    static clearSignupErrors() {
         // Remove pre-existing error messages
         let elem = document.getElementById("signup-error-msg");
         while (typeof(elem) !== 'undefined' && elem != null) {
             elem.remove();
             elem = document.getElementById("signup-error-msg");
         }
+    }
+
+    static displaySignupError(msg) {
         document.querySelector("#popup-content").insertAdjacentHTML("afterend", "<div id='signup-error-msg'>"+
             msg+"</div>");
     }
@@ -236,6 +235,7 @@ async function listenForClicks() {
          * Checks for validity of sign up.
          */
         function sendSignupInfoToContentScript(tabs) {
+            Display.clearSignupErrors();
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
             const password3 = document.getElementById("password3").value;
@@ -257,21 +257,17 @@ async function listenForClicks() {
         }
 
         /**
-         * Get username and password and send a "create-account" message to the content script in the active tab.
+         * Get username and password and send a "login" message to the content script in the active tab.
          * Checks for validity of sign up.
          */
         function sendLoginInfoToContentScript(tabs) {
+            Display.clearSignupErrors();
             const username = document.getElementById("username2").value;
             const password = document.getElementById("password2").value;
 
             if (username.length === 0 || password.length === 0) {
                 Display.displaySignupError("Username or password cannot be blank.")
             } else {
-                let elem = document.getElementById("signup-error-msg");
-                while (typeof(elem) !== 'undefined' && elem != null) {
-                    elem.remove();
-                    elem = document.getElementById("signup-error-msg");
-                }
                 Display.displayLoading();
                 browser.tabs.sendMessage(tabs[0].id, {
                     command: "login",
