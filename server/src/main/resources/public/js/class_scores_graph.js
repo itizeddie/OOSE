@@ -22,6 +22,3 @@ var layout = {
 
 Plotly.newPlot('myDiv', data, layout);
 }
-function details() {
-var details = "(Details of assignment including title, description, etc.)"
-}
