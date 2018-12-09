@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.sql.Connection;
 
 public class AssignmentsRepository {
     private DataSource database;
@@ -76,18 +77,49 @@ public class AssignmentsRepository {
         var statement = connection.prepareStatement("SELECT * FROM statistics WHERE assignment_id = "+assignmentId);
         var rs = statement.executeQuery();
         if (!rs.next()) {
-            createStatistic(assignmentId);
+            createStatistic(connection, assignmentId);
         }
+        updateStatistics(connection, assignmentId);
+        statement.close();
+        connection.close();
     }
 
-    public void createStatistic(int assignmentId) throws SQLException {
-        var connection = database.getConnection();
+    private void createStatistic(Connection connection, int assignmentId) throws SQLException {
         var statement = connection.prepareStatement("INSERT INTO statistics (assignment_id, num_submissions, " +
                 "sum_of_grades, grades_std, num_comp_time, sum_comp_time, comp_time_std) VALUES (?, 0, 0, 0, 0, 0, 0)");
         statement.setInt(1, assignmentId);
         statement.executeUpdate();
         statement.close();
-        connection.close();
+    }
+
+    private void updateStatistics(Connection connection, int assignmentId) throws SQLException {
+        // note: still need to check if assignment was already added (maybe add a field to assignments to keep track)
+        // currently we are assuming it was not added
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE assignment_id = "+assignmentId);
+        var rs = statement.executeQuery();
+        rs.next();
+
+        // to do: change these to actual values
+        int grade = 90;
+        int compTime = 60; //minutes
+
+        // Prepare variables
+        int numSubmissions = rs.getInt("num_submissions") + 1;
+        double sumGrades = rs.getInt("sum_of_grades") + grade;
+        double gradesSTD = 1.0;
+        int numCompTime = rs.getInt("num_comp_time") + 1;
+        int sumCompTime = rs.getInt("sum_comp_time") + compTime;
+        double compTimeSTD = 1.0;
+
+        var stm = connection.createStatement();
+        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE assignment_id="+assignmentId);
+
+        stm.close();
     }
 
     void deleteAssignment(Assignment assignment) throws SQLException {
