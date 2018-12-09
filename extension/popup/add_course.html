@@ -32,7 +32,9 @@
             <input type="text" placeholder="Enter email" id="email" required>
             <label for="password"><b>Password</b></label>
             <input type="password" placeholder="At least 5 characters" id="password" required>
-            <div class="button sign-up">Sign up</div>
+            <label for="password3"><b>Re-enter Password</b></label>
+            <input type="password" placeholder="Confirm password" id="password3" required>
+            <div class="button sign-up" id="signup-button">Sign up</div>
             <div class="login-form">Already have an account? Log in</div>
         </div>
         </form>
@@ -45,7 +47,7 @@
             <input type="text" placeholder="Enter username" id="username2" required>
             <label for="password"><b>Password</b></label>
             <input type="password" placeholder="At least 5 characters" id="password2" required>
-            <div class="button login">Log in</div>
+            <div class="button login" id="login-button">Log in</div>
             <div class="sign-up-form">Don't have an account? Create account</div>
         </div>
     </form>
@@ -58,6 +60,7 @@
 <div id="error-content" class="hidden">
     <p>Error: could not load. Please navigate to a valid url.</p>
 </div>
+  
 <div id="success-message" class="hidden">
     <p>Added course.</p>
 </div>
@@ -66,7 +69,7 @@
     <p> See your schedule on <a href = "http://localhost:7000">Calendue </a>
     </p>
 </div>
-
+  
 <div id="logout-content" class="hidden">
     <div class="logout">Log out</div>
 </div>
@@ -80,7 +83,6 @@
         <img class = "profile-icon" src="../icons/icon_account.svg" style="width: 28px;">
     </div>
 </div>
-
 
 <script src="add_course.js"></script>
 </body>

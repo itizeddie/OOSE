@@ -36,6 +36,8 @@ public class Server {
 
                     path("/", () -> get(CalendarController::index));
 
+                    path("/calendar/get", () -> get(CalendarController::getAssignments));
+
                     path("accounts", () -> {
                         post(AccountsController::newAccount);
                         get(AccountsController::getAccount);
@@ -55,7 +57,10 @@ public class Server {
                         });
                     });
                     path("course", () -> post(CoursesController::newCourse));
-                    path("assignment", () -> post(AssignmentsController::newAssignment));
+                    path("assignment", () -> {
+                        post(AssignmentsController::newAssignment);
+                        path(":assignment_id", () -> get(AssignmentsController::getAssignment));
+                    });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
                     if (System.getenv("JDBC_DATABASE_URL") != null) {
@@ -65,13 +70,14 @@ public class Server {
                     }
                     usersRepository = new UsersRepository(database);
                     credentialsRepository = new CredentialsRepository(database);
-                    coursesRepository = new CoursesRepository(database);
                     termsRepository = new TermsRepository(database);
+                    coursesRepository = new CoursesRepository(database);
                     assignmentsRepository = new AssignmentsRepository(database);
                 })
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
                 .exception(TermsRepository.NonExistingTermException.class, (e, ctx) -> ctx.status(404))
                 .exception(CoursesRepository.NonExistingCourseException.class, (e, ctx) -> ctx.status(404))
+                .exception(AssignmentsRepository.NonExistingAssignmentException.class, (e, ctx) -> ctx.status(404))
                 .start(System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : 7000);
     }
 
