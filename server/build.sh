@@ -22,12 +22,12 @@ else
       echo -e "Running Integration Tests...\n"
       java -jar target/calendue-1.0-jar-with-dependencies.jar &
       sleep 10 &&
-      newman run 'docs/Calendue.postman_collection.json' --environment 'docs/Development.postman_environment.json' --timeout 60000 &&
+      newman run 'docs/Calendue.postman_collection.json' --environment 'docs/Development.postman_environment.json' --timeout 60000
       if [ $? -ne 0 ]; then
-        status=$?
+        status=1
       fi
       kill %1
     fi
   fi
+  exit $status
 fi
-exit $status
