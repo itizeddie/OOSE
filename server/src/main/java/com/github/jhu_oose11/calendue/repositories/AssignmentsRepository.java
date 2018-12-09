@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AssignmentsRepository {
     private DataSource database;
@@ -60,6 +62,22 @@ public class AssignmentsRepository {
         statement.executeUpdate();
         statement.close();
         connection.close();
+    }
+
+    public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT a.id, title, due_date, course_id, completed FROM assignments a INNER JOIN assignments_users au ON au.user_id = ?");
+        statement.setInt(1, userId);
+        ResultSet results = statement.executeQuery();
+
+        List<Assignment> assignments = new ArrayList<>();
+        while (results.next()) {
+            System.out.println(results.getInt("id"));
+            LocalDate dueDate = results.getDate("due_date").toLocalDate();
+            assignments.add(new Assignment(results.getInt("id"), results.getString("title"), dueDate, results.getInt("course_id"), results.getBoolean("completed")));
+        }
+
+        return assignments;
     }
 
     public Assignment getAssignmentById(int assignment_id) throws SQLException, NonExistingAssignmentException {

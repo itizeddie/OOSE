@@ -36,6 +36,8 @@ public class Server {
 
                     path("/", () -> get(CalendarController::index));
 
+                    path("/calendar/get", () -> get(CalendarController::getAssignments));
+
                     path("accounts", () -> {
                         post(AccountsController::newAccount);
                         get(AccountsController::getAccount);
@@ -68,8 +70,8 @@ public class Server {
                     }
                     usersRepository = new UsersRepository(database);
                     credentialsRepository = new CredentialsRepository(database);
-                    coursesRepository = new CoursesRepository(database);
                     termsRepository = new TermsRepository(database);
+                    coursesRepository = new CoursesRepository(database);
                     assignmentsRepository = new AssignmentsRepository(database);
                 })
                 .exception(UsersRepository.NonExistingUserException.class, (e, ctx) -> ctx.status(404))
