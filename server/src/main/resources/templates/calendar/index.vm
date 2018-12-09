@@ -156,15 +156,23 @@
 <br>
 <h2>Assignments Overview</h2>
 <div id='classCompareDiv'></div>
+<div class='stat'>
+    <p id='variation'></p>
+</div>
 </div>
 
 <script>
-var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
-var sum = 0, avg = 0;
-for(var i = 0; i < x.length; i++) {
-    sum += x[i];
+// function to get average of an array
+function getAverage(array) {
+    var sum = 0, avg = 0; // sum and average variables
+    for(var i = 0; i < array.length; i++) { // add each element of array to sum
+        sum += array[i]
+    }
+    avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
+    return avg;
 }
-avg = (sum / x.length).toFixed(2);
+var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
+avg = getAverage(x);
 var mean = "Average: " + avg.toString() + "     ";
 var percentile = "Percentile: 80";
 var toc = "Avg Completion Time: 3.5 hours";
@@ -180,9 +188,15 @@ var layout = {
         range: [0, 50]
     }
 }
-var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3'];
-var userScores = [76, 85, 80];
-var classScores = [75.23, 82.13, 84.45];
+var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3']; // all assignments for a class
+var userScores = [76, 85, 80]; // user's scores
+var classScores = [75.23, 82.13, 84.45]; // class average scores
+var diff = []; // difference from mean
+var variation; // average deviation from mean
+for(var i = 0; i < userScores.length; i++) {
+    diff.push(userScores[i] - classScores[i]);
+}
+variation = "Average Deviation from Mean: " + getAverage(diff).toString() + "%";
 
 var userData = {
     x: assignments,
@@ -201,15 +215,17 @@ var classData = {
     textposition: 'auto'
 };
 
-var data2 = [userData, classData];
+var classCompareData = [userData, classData];
 
-var layout2 = {barmode: 'group'};
+var classCompareLayout = {barmode: 'group'};
 
-Plotly.newPlot('classCompareDiv', data2, layout2);
 Plotly.newPlot('myDiv', data, layout);
 document.getElementById('average').innerHTML = mean;
 document.getElementById('percentile').innerHTML = percentile;
 document.getElementById('toc').innerHTML = toc;
 document.getElementById('rec').innerHTML = rec;
+
+Plotly.newPlot('classCompareDiv', classCompareData, classCompareLayout);
+document.getElementById('variation').innerHTML = variation;
 </script>
 #end
