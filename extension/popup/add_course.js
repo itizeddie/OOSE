@@ -12,12 +12,6 @@ class SignupController {
 
     isValidSignup() {
         // Remove pre-existing error messages
-        /*let elem = document.getElementById("signup-error-msg");
-        while (typeof(elem) !== 'undefined' && elem != null) {
-            elem.remove();
-            elem = document.getElementById("signup-error-msg");
-        }
-        */
         Display.clearErrorMessages();
 
         if (this.emptyFieldExists()) {
@@ -76,6 +70,7 @@ class Display {
         document.getElementById("loading-icon").style.display ='none';
     }
 
+    // Remove pre-existing error messages
     static clearErrorMessages() {
         let elem = document.getElementById("signup-error-msg");
         while (typeof(elem) !== 'undefined' && elem != null) {
@@ -99,10 +94,13 @@ class Display {
         document.getElementById("loading-icon").style.display ='block';
     }
 
+    /**If user is not logged in, says welcome. If user is logged in,
+    * checks the URL and either displays the add course/assignment page or tells user that they
+    * need to be on Gradescope to add assignments.
+    **/
     static displayHome() {
         Display.clearPopup();
 
-        //if logged in
         if(isLoggedIn) {
             browser.tabs.query({currentWindow: true, active: true})
                 .then((tabs) => {
@@ -126,7 +124,12 @@ class Display {
         }
     }
 
+    /**If user is not logged in, shows the sign up form. If user is logged in,
+     * shows link to calendue website.
+     * TODO:display profile info
+     **/
     static displayProfile() {
+
         Display.clearPopup();
         if (isLoggedIn) {
             document.getElementById("website-link").classList.remove("hidden");
@@ -180,31 +183,12 @@ class Display {
      */
     static setDisplay() {
         Display.clearPopup();
-        //if (isLoggedIn) {
-            /*
-            browser.tabs.query({currentWindow: true, active: true})
-                .then((tabs) => {
-                    //Display.displayHome();
-                    if (tabs[0].url.toString().includes("gradescope.com/courses/")) {
-                        //document.querySelector("#popup-content").classList.remove("hidden");
-                    } else if (tabs[0].url.toString().includes("gradescope.com")) {
-                        document.querySelector("#check-courseURL-content").classList.remove("hidden");
-                    } else {
-                        document.querySelector("#check-URL-content").classList.remove("hidden");
-                    }
-                });
-            document.querySelector("#logout-content").classList.remove("hidden");
-            */
             if(document.getElementById("profile").classList.contains("clicked")) {
                 Display.displayProfile()
             }
             else {
                 Display.displayHome();
             }
-       // } else {
-            //document.querySelector("#signup-content").classList.remove("hidden");
-            //Display.displayProfile();
-       // }
     }
 }
 
@@ -284,11 +268,6 @@ async function listenForClicks() {
             });
         }
 
-        function sendMessage(tabs) {
-            browser.tabs.sendMessage(tabs[0].id, {
-                command: "home"
-            });
-        }
 
         /**
          * Log the error to the console.
@@ -326,17 +305,9 @@ async function listenForClicks() {
                 .catch(reportError);
         }
         if (clickedItem.contains("home-icon")) {
-            /*browser.tabs.query({active: true, currentWindow: true})
-                .then(sendMessage)
-                .catch(reportError);
-                */
             Display.displayHome();
         }
         if (clickedItem.contains("profile-icon")) {
-            /*browser.tabs.query({active: true, currentWindow: true})
-                .then(sendMessage)
-                .catch(reportError);
-                */
             Display.displayProfile();
         }
     });
