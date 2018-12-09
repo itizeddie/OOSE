@@ -25,7 +25,7 @@ public class AssignmentsRepository {
             statement.execute("CREATE TABLE IF NOT EXISTS assignments_users (id SERIAL PRIMARY KEY, assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(assignment_id, user_id))");
             statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
                     "(id SERIAL PRIMARY KEY, " +
-                    "assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, " +
+                    "assignment_id integer NOT NULL REFERENCES assignments, " +
                     "num_submissions INTEGER NOT NULL, " +
                     "sum_of_grades REAL NOT NULL, " +
                     "grades_std REAL NOT NULL, " +
@@ -100,12 +100,12 @@ public class AssignmentsRepository {
         rs.next();
 
         // to do: change these to actual values
-        int grade = 90;
+        double grade = 90;
         int compTime = 60; //minutes
 
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
-        double sumGrades = rs.getInt("sum_of_grades") + grade;
+        double sumGrades = rs.getDouble("sum_of_grades") + grade;
         double gradesSTD = stdDev();
         int numCompTime = rs.getInt("num_comp_time") + 1;
         int sumCompTime = rs.getInt("sum_comp_time") + compTime;
@@ -125,8 +125,8 @@ public class AssignmentsRepository {
     private double stdDev() {
         // Get all grades for particular assignment
         double[] grades = {90, 100, 80.3, 55, 68.5};
-        double mean = 0;
-        double num = 0;
+        double mean = 0.0;
+        double num = 0.0;
         for (double grade : grades) {
             mean += grade;
             num++;
@@ -135,7 +135,7 @@ public class AssignmentsRepository {
 
         double sum = 0;
         for (double grade : grades) {
-            sum += (grade - mean) * (grade - mean);
+            sum += ((grade - mean) * (grade - mean));
         }
         return Math.sqrt(sum / num);
     }

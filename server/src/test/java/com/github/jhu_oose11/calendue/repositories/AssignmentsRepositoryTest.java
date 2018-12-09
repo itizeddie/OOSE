@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class AssignmentsRepositoryTest {
@@ -157,6 +158,73 @@ class AssignmentsRepositoryTest {
         assertEquals(0, countAssignmentUsers(assignment.getId(), user.getId()));
     }
 
+    @Test
+    void addStatistic() throws SQLException {
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addStatistic(assignment.getId());
+
+        assertEquals(1, countStatistics(assignment.getId()));
+    }
+
+    @Test
+    void addStatisticTwice() throws SQLException {
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addStatistic(assignment.getId());
+        repo.addStatistic(assignment.getId());
+
+        assertEquals(2, countStatistics(assignment.getId()));
+    }
+
+    @Test
+    void addTwoDifferentStatistics() throws SQLException {
+        Assignment assignment1 = (Assignment) testData.get("assignment");
+        repo.addStatistic(assignment1.getId());
+
+        String title = "Different Course";
+        int course_id = ((Course) testData.get("course")).getId();
+        LocalDate dueDate = (LocalDate) testData.get("due_date");
+        Assignment assignment2 = new Assignment(title, dueDate, course_id);
+        assignment2 = repo.create(assignment2);
+
+        repo.addStatistic(assignment2.getId());
+
+        assertEquals(1, countStatistics(assignment2.getId()));
+        repo.deleteAssignment(assignment2);
+    }
+
+    @Test
+    void statisticsHasRightSums() throws SQLException {
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addStatistic(assignment.getId());
+        repo.addStatistic(assignment.getId());
+
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics s WHERE s.assignment_id = ?");
+        statement.setInt(1, assignment.getId());
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+
+        double grades = 180;
+        int completionTime = 120;
+
+        assertEquals(grades, rs.getInt("sum_of_grades"));
+        assertEquals(completionTime, rs.getInt("sum_comp_time"));
+    }
+
+    @Test
+    void statisticsHasRightSTD() throws SQLException {
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addStatistic(assignment.getId());
+
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics s WHERE s.assignment_id = ?");
+        statement.setInt(1, assignment.getId());
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+
+        assertTrue((rs.getDouble("grades_std") > 15.808) && (rs.getInt("grades_std") < 15.810));
+    }
+
     private int countAssignmentUsers(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT COUNT(*) FROM assignments_users cu WHERE cu.assignment_id = ? AND cu.user_id = ?");
@@ -176,5 +244,14 @@ class AssignmentsRepositoryTest {
         ResultSet rs = statement.executeQuery();
         rs.next();
         return rs.getInt(1);
+    }
+
+    private int countStatistics(int assignmentId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics s WHERE s.assignment_id = ?");
+        statement.setInt(1, assignmentId);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return rs.getInt("num_submissions");
     }
 }
