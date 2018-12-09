@@ -11,3 +11,9 @@ install:
 script:
 - cd server/
 - ./build.sh -t
+deploy:
+  provider: heroku
+  api_key:
+    secure: "3de39ea0-ccea-411f-bd96-ac02fa3137dd"
+  app: calendue
+  on: issue-98-heroku
