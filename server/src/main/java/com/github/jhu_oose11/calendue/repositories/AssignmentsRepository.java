@@ -106,10 +106,10 @@ public class AssignmentsRepository {
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getInt("sum_of_grades") + grade;
-        double gradesSTD = 1.0;
+        double gradesSTD = stdDev();
         int numCompTime = rs.getInt("num_comp_time") + 1;
         int sumCompTime = rs.getInt("sum_comp_time") + compTime;
-        double compTimeSTD = 1.0;
+        double compTimeSTD = stdDev();
 
         var stm = connection.createStatement();
         stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE assignment_id="+assignmentId);
@@ -120,6 +120,24 @@ public class AssignmentsRepository {
         stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE assignment_id="+assignmentId);
 
         stm.close();
+    }
+
+    private double stdDev() {
+        // Get all grades for particular assignment
+        double[] grades = {90, 100, 80.3, 55, 68.5};
+        double mean = 0;
+        double num = 0;
+        for (double grade : grades) {
+            mean += grade;
+            num++;
+        }
+        mean = mean / num;
+
+        double sum = 0;
+        for (double grade : grades) {
+            sum += (grade - mean) * (grade - mean);
+        }
+        return Math.sqrt(sum / num);
     }
 
     void deleteAssignment(Assignment assignment) throws SQLException {
