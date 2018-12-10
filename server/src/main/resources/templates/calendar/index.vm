@@ -12,7 +12,7 @@
         </form>
     </div>
 </div>
-
+<p id='demo'></p>
 <div id='calendar'></div>
 <h2>Assignment Details</h2>
 <h3>Assignment 1</h3>
@@ -39,7 +39,6 @@
 <div id='classScoresDistributionDiv'></div>
 </div>
 <script>
-
   $(document).ready(function() {
 
     $('#calendar').fullCalendar({
@@ -48,9 +47,9 @@
         center: 'title',
         right: 'month,basicWeek,basicDay'
       },
-      defaultDate: '2018-03-12',
+      defaultDate: getDate(),
       navLinks: true, // can click day/week names to navigate views
-      editable: true,
+      editable: false,
       eventLimit: true, // allow "more" link when too many events
       events: [
         {
@@ -112,15 +111,47 @@
 
   });
 
-// function to get average of an array
-function getAverage(array) {
-    var sum = 0, avg = 0; // sum and average variables
-    for(var i = 0; i < array.length; i++) { // add each element of array to sum
-        sum += array[i]
+    // function to get average of an array
+    function getAverage(array) {
+        var sum = 0, avg = 0; // sum and average variables
+        for(var i = 0; i < array.length; i++) { // add each element of array to sum
+            sum += array[i]
+        }
+        avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
+        return avg;
     }
-    avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
-    return avg;
-}
+
+    // function to get current date
+    function getDate() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if(dd<10) {
+            dd = '0'+dd
+        }
+
+        if(mm<10) {
+            mm = '0'+mm
+        }
+
+        today = yyyy + '/' + mm + '/' + dd;
+        return today;
+    }
+
+    function getAssignments() {
+        var map = {};
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              document.getElementById("demo").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/calendar/get", true);
+        xhttp.send();
+    }
+
 // Assignment score histogram graph
 var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
 avg = getAverage(x);
