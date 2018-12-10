@@ -12,7 +12,7 @@
   "permissions": [
     "activeTab",
     "*://gradescope.com/*",
-    "*://localhost/*"
+    "*://calendue.herokuapp.com/*"
   ],
 
   "browser_action": {
