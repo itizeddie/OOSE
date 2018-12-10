@@ -7,7 +7,6 @@ import com.github.jhu_oose11.calendue.models.Term;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
 import io.javalin.BadRequestResponse;
 import io.javalin.Context;
-import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.*;
 import java.sql.SQLException;
