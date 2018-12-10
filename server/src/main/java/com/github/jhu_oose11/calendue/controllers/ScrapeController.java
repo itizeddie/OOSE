@@ -7,7 +7,6 @@ import com.github.jhu_oose11.calendue.models.Term;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
 import io.javalin.BadRequestResponse;
 import io.javalin.Context;
-import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -36,7 +35,11 @@ public class ScrapeController {
             term = Server.getTermsRepository().create(term);
             Server.getTermsRepository().addTermForUser(term.getId(), userId);
 
-            Course course = new Course("template", term.getId(), Integer.parseInt(lines[0]));
+            int gradescopeId = 0;
+            if (!lines[0].equals(""))
+                gradescopeId = Integer.parseInt(lines[0]);
+
+            Course course = new Course("template", term.getId(), gradescopeId);
             course = Server.getCoursesRepository().create(course);
             Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
 

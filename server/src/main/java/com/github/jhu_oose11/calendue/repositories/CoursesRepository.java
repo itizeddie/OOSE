@@ -19,7 +19,7 @@ public class CoursesRepository {
         var connection = database.getConnection();
         var statement = connection.createStatement();
         if (database instanceof PGSimpleDataSource) {
-            statement.execute("CREATE TABLE IF NOT EXISTS courses (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, term_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE, gradeScope_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE)");
+            statement.execute("CREATE TABLE IF NOT EXISTS courses (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, term_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE, gradeScope_id INTEGER NOT NULL)");
             statement.execute("CREATE TABLE IF NOT EXISTS courses_users (id SERIAL PRIMARY KEY, course_id integer NOT NULL REFERENCES courses ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(course_id, user_id))");
         }
         statement.close();
@@ -32,9 +32,10 @@ public class CoursesRepository {
         int gradeScope_id = course.getGradeScopeId();
 
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id, gradescope_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, title);
         statement.setInt(2, term_id);
+        statement.setInt(3, gradeScope_id);
         statement.executeUpdate();
 
         ResultSet rs = statement.getGeneratedKeys();
@@ -76,7 +77,7 @@ public class CoursesRepository {
 
     Course getCourseById(int course_id) throws SQLException, CoursesRepository.NonExistingCourseException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, title, term_id FROM courses WHERE courses.id = ?");
+        var statement = connection.prepareStatement("SELECT id, title, term_id, gradeScope_id FROM courses WHERE courses.id = ?");
         statement.setInt(1, course_id);
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new CoursesRepository.NonExistingCourseException();
