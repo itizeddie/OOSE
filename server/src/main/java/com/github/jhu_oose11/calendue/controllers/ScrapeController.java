@@ -1,8 +1,20 @@
 package com.github.jhu_oose11.calendue.controllers;
 
+import com.github.jhu_oose11.calendue.Server;
+import com.github.jhu_oose11.calendue.models.Assignment;
+import com.github.jhu_oose11.calendue.models.Course;
+import com.github.jhu_oose11.calendue.models.Term;
+import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
+import io.javalin.BadRequestResponse;
 import io.javalin.Context;
+import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.*;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 
 
 public class ScrapeController {
@@ -10,14 +22,60 @@ public class ScrapeController {
     public static void main (Context ctx) {
         String formatedHtm;
         String parsedHtm;
+
         try {
             formatedHtm = runPerl(ctx.formParam("document"), "formatHtm.pl");
             parsedHtm = runPerl(formatedHtm, "htm_parser.pl");
 
-            System.out.print(parsedHtm);
+            String[] lines = parsedHtm.split("\\n");
+
+            String[] assignmentParams;
+            int userId = ctx.sessionAttribute("current_user");
+
+            Term term = new Term("Term_Title", formatDate(" Jan 01"), formatDate(" Dec 31"));
+            term = Server.getTermsRepository().create(term);
+            Server.getTermsRepository().addTermForUser(term.getId(), userId);
+
+            Course course = new Course("template", term.getId(), Integer.parseInt(lines[0]));
+            course = Server.getCoursesRepository().create(course);
+            Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
+
+
+            //
+            //This for loop is going through each assignment that was parsed and creating
+            //assignment objects.
+            //
+            for( int i =1; i < lines.length; i++)
+            {
+                assignmentParams = lines[i].split(",");
+                boolean completed = !assignmentParams[1].equals("0");
+                LocalDate date = formatDate(assignmentParams[3]);
+
+                Assignment assignment = new Assignment(assignmentParams[0], date, course.getId(), completed);
+                assignment = Server.getAssignmentsRepository().create(assignment);
+                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            return;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    private static LocalDate formatDate(String stringDate)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMM dd");
+        formatter = formatter.withLocale(Locale.US);  // Locale specifies human language for translating, and cultural norms for lowercase/uppercase and abbreviations and such. Example: Locale.US or Locale.CANADA_FRENCH
+        LocalDate date;
+        if(stringDate.equals(" na"))
+        {
+            date = LocalDate.parse("2018 Jan 01", formatter);
+        }else {
+            date = LocalDate.parse("2018" + stringDate, formatter);
+        }
+        return date;
     }
 
     //Runs perl script.

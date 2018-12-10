@@ -39,7 +39,7 @@ class AssignmentsRepositoryTest {
             Term term = new Term("Test Term", LocalDate.now(), LocalDate.now().plusDays(1));
             term = termsRepository.create(term);
 
-            Course course = new Course("Test Course", term.getId());
+            Course course = new Course("Test Course", term.getId(), 1);
             course = courseRepo.create(course);
 
             testData.put("course", course);

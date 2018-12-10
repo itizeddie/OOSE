@@ -19,7 +19,7 @@ public class CoursesRepository {
         var connection = database.getConnection();
         var statement = connection.createStatement();
         if (database instanceof PGSimpleDataSource) {
-            statement.execute("CREATE TABLE IF NOT EXISTS courses (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, term_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE)");
+            statement.execute("CREATE TABLE IF NOT EXISTS courses (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, term_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE, gradeScope_id INTEGER NOT NULL REFERENCES terms ON DELETE CASCADE)");
             statement.execute("CREATE TABLE IF NOT EXISTS courses_users (id SERIAL PRIMARY KEY, course_id integer NOT NULL REFERENCES courses ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(course_id, user_id))");
         }
         statement.close();
@@ -29,6 +29,7 @@ public class CoursesRepository {
     public Course create(Course course) throws SQLException {
         String title = course.getTitle();
         int term_id = course.getTermId();
+        int gradeScope_id = course.getGradeScopeId();
 
         var connection = database.getConnection();
         var statement = connection.prepareStatement("INSERT INTO courses (title, term_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -39,7 +40,7 @@ public class CoursesRepository {
         ResultSet rs = statement.getGeneratedKeys();
         if (rs.next()) {
             int id = rs.getInt(1);
-            course = new Course(id, title, term_id);
+            course = new Course(id, title, term_id, gradeScope_id);
         }
 
 
@@ -79,7 +80,7 @@ public class CoursesRepository {
         statement.setInt(1, course_id);
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new CoursesRepository.NonExistingCourseException();
-        Course course = new Course(rs.getInt("id"), rs.getString("title"), rs.getInt("term_id"));
+        Course course = new Course(rs.getInt("id"), rs.getString("title"), rs.getInt("term_id"), rs.getInt("gradeScope_id"));
         statement.close();
         connection.close();
 

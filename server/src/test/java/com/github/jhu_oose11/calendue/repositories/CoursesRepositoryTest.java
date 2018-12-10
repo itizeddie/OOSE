@@ -45,7 +45,8 @@ class CoursesRepositoryTest {
     @BeforeEach
     void setUp() throws SQLException {
         String title = "Test Course";
-        Course course = new Course(title, (int) testData.get("term_id"));
+        int gradeScope_id = 5;
+        Course course = new Course(title, (int) testData.get("term_id"), gradeScope_id);
         course = repo.create(course);
 
         testData.put("course", course);
@@ -60,8 +61,9 @@ class CoursesRepositoryTest {
     @Test
     void create() throws SQLException {
         String title = "Test Course";
+        int gradeScope_id = 5;
         int term_id = (int) testData.get("term_id");
-        Course course = new Course(title, term_id);
+        Course course = new Course(title, term_id, gradeScope_id);
 
         int priorCount = countCourses(title, term_id);
         course = repo.create(course);
@@ -74,7 +76,8 @@ class CoursesRepositoryTest {
     @Test
     void validTermIdCheck() throws SQLException {
         String title = "Test Course";
-        Course course = new Course(title, 0);
+        int gradeScope_id = 5;
+        Course course = new Course(title, 0, gradeScope_id);
 
         try {
             repo.create(course);
