@@ -35,7 +35,11 @@ public class ScrapeController {
             term = Server.getTermsRepository().create(term);
             Server.getTermsRepository().addTermForUser(term.getId(), userId);
 
-            Course course = new Course("template", term.getId(), Integer.parseInt(lines[0]));
+            int gradescopeId = 0;
+            if (!lines[0].equals(""))
+                gradescopeId = Integer.parseInt(lines[0]);
+
+            Course course = new Course("template", term.getId(), gradescopeId);
             course = Server.getCoursesRepository().create(course);
             Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
 

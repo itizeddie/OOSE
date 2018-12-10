@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "99525e95-564c-44ee-b326-73c6e1880e2d",
+		"_postman_id": "e3d21a40-9248-47e3-8949-a1de2ddb40bb",
 		"name": "Calendue",
 		"description": "This is the specification for the Calendue API. Import the development environment to make requests to the localhost server.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -443,7 +443,7 @@
 								}
 							],
 							"cookie": [],
-							"body": ""
+							"body": null
 						}
 					]
 				},
@@ -1274,6 +1274,11 @@
 									"key": "term_id",
 									"value": "{{$TERM_ID}}",
 									"type": "text"
+								},
+								{
+									"key": "gradeScope_id",
+									"value": "255",
+									"type": "text"
 								}
 							]
 						},
@@ -1328,6 +1333,11 @@
 								{
 									"key": "term_id",
 									"value": "{{$TERM_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "gradeScope_id",
+									"value": "255",
 									"type": "text"
 								}
 							]
@@ -1385,6 +1395,11 @@
 									"key": "term_id",
 									"value": "invalid",
 									"type": "text"
+								},
+								{
+									"key": "gradeScope_id",
+									"value": "255",
+									"type": "text"
 								}
 							]
 						},
@@ -1440,6 +1455,11 @@
 								{
 									"key": "term_id",
 									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "gradeScope_id",
+									"value": "255",
 									"type": "text"
 								}
 							]
@@ -1525,6 +1545,11 @@
 									"key": "term_id",
 									"value": "{{TERM_ID}}",
 									"type": "text"
+								},
+								{
+									"key": "gradeScope_id",
+									"value": "255",
+									"type": "text"
 								}
 							]
 						},
@@ -1569,410 +1594,6 @@
 			"name": "New Assignment",
 			"item": [
 				{
-					"name": "No Title",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term`,",
-									"    method: 'POST',",
-									"    body: {",
-									"        mode: 'formdata',",
-									"        formdata: [",
-									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
-									"        ]",
-									"    }",
-									"};",
-									"",
-									"pm.sendRequest(request, function (err, response) {",
-									"    if (response.code == 201) {",
-									"        pm.environment.set(\"TERM_ID\", response.text());",
-									"                ",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/course`,",
-									"            method: 'POST',",
-									"            body: {",
-									"                mode: 'formdata',",
-									"                formdata: [",
-									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
-									"                ]",
-									"            }",
-									"        };",
-									"        ",
-									"        pm.sendRequest(request, function (err, response) {",
-									"            if (response.code == 201) {",
-									"                pm.environment.set(\"COURSE_ID\", response.text());",
-									"            }",
-									"        });",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "course_id",
-									"value": "{{COURSE_ID}}",
-									"type": "text"
-								},
-								{
-									"key": "due_date",
-									"value": "2018-09-16",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/assignment",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "No Course ID",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term`,",
-									"    method: 'POST',",
-									"    body: {",
-									"        mode: 'formdata',",
-									"        formdata: [",
-									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
-									"        ]",
-									"    }",
-									"};",
-									"",
-									"pm.sendRequest(request, function (err, response) {",
-									"    if (response.code == 201) {",
-									"        pm.environment.set(\"TERM_ID\", response.text());",
-									"                ",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/course`,",
-									"            method: 'POST',",
-									"            body: {",
-									"                mode: 'formdata',",
-									"                formdata: [",
-									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
-									"                ]",
-									"            }",
-									"        };",
-									"        ",
-									"        pm.sendRequest(request, function (err, response) {",
-									"            if (response.code == 201) {",
-									"                pm.environment.set(\"COURSE_ID\", response.text());",
-									"            }",
-									"        });",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "course_id",
-									"value": "{{COURSE_ID}}",
-									"type": "text"
-								},
-								{
-									"key": "due_date",
-									"value": "2018-09-16",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/assignment",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Invalid Due Date",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term`,",
-									"    method: 'POST',",
-									"    body: {",
-									"        mode: 'formdata',",
-									"        formdata: [",
-									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
-									"        ]",
-									"    }",
-									"};",
-									"",
-									"pm.sendRequest(request, function (err, response) {",
-									"    if (response.code == 201) {",
-									"        pm.environment.set(\"TERM_ID\", response.text());",
-									"                ",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/course`,",
-									"            method: 'POST',",
-									"            body: {",
-									"                mode: 'formdata',",
-									"                formdata: [",
-									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
-									"                ]",
-									"            }",
-									"        };",
-									"        ",
-									"        pm.sendRequest(request, function (err, response) {",
-									"            if (response.code == 201) {",
-									"                pm.environment.set(\"COURSE_ID\", response.text());",
-									"            }",
-									"        });",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "course_id",
-									"value": "{{COURSE_ID}}",
-									"type": "text"
-								},
-								{
-									"key": "due_date",
-									"value": "2018-09-16",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/assignment",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Nonexistent Due Date",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term`,",
-									"    method: 'POST',",
-									"    body: {",
-									"        mode: 'formdata',",
-									"        formdata: [",
-									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
-									"        ]",
-									"    }",
-									"};",
-									"",
-									"pm.sendRequest(request, function (err, response) {",
-									"    if (response.code == 201) {",
-									"        pm.environment.set(\"TERM_ID\", response.text());",
-									"                ",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/course`,",
-									"            method: 'POST',",
-									"            body: {",
-									"                mode: 'formdata',",
-									"                formdata: [",
-									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
-									"                ]",
-									"            }",
-									"        };",
-									"        ",
-									"        pm.sendRequest(request, function (err, response) {",
-									"            if (response.code == 201) {",
-									"                pm.environment.set(\"COURSE_ID\", response.text());",
-									"            }",
-									"        });",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "course_id",
-									"value": "{{COURSE_ID}}",
-									"type": "text"
-								},
-								{
-									"key": "due_date",
-									"value": "2018-09-16",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/assignment",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Success",
 					"event": [
 						{
@@ -2004,7 +1625,8 @@
 									"                mode: 'formdata',",
 									"                formdata: [",
 									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
+									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}},",
+									"                    {key: 'gradeScope_id', value: 255, description: {content: \"\", type: \"text/plain\"}}",
 									"                ]",
 									"            }",
 									"        };",
@@ -2148,7 +1770,8 @@
 									"                    mode: 'formdata',",
 									"                    formdata: [",
 									"                        {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                        {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"                        {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}},",
+									"                        {key: 'gradeScope_id', value: 255, description: {content: \"\", type: \"text/plain\"}}",
 									"                    ]",
 									"                }",
 									"            };",
@@ -2308,107 +1931,6 @@
 		{
 			"name": "Get Assignment",
 			"item": [
-				{
-					"name": "Nonexistent Assignment",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
-								"exec": [
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term`,",
-									"    method: 'POST',",
-									"    body: {",
-									"        mode: 'formdata',",
-									"        formdata: [",
-									"            {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
-									"            {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
-									"        ]",
-									"    }",
-									"};",
-									"",
-									"pm.sendRequest(request, function (err, response) {",
-									"    if (response.code == 201) {",
-									"        pm.environment.set(\"TERM_ID\", response.text());",
-									"                ",
-									"        request = {",
-									"            url:`${pm.variables.get(\"host\")}/course`,",
-									"            method: 'POST',",
-									"            body: {",
-									"                mode: 'formdata',",
-									"                formdata: [",
-									"                    {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                    {key: 'title', value: 'Test Course', description: {content: \"\", type: \"text/plain\"}}",
-									"                ]",
-									"            }",
-									"        };",
-									"        ",
-									"        pm.sendRequest(request, function (err, response) {",
-									"            if (response.code == 201) {",
-									"                pm.environment.set(\"COURSE_ID\", response.text());",
-									"            }",
-									"        });",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
-								"exec": [
-									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Course 25",
-									"type": "text"
-								},
-								{
-									"key": "course_id",
-									"value": "{{COURSE_ID}}",
-									"type": "text"
-								},
-								{
-									"key": "due_date",
-									"value": "2018-09-16",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{host}}/assignment",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Success",
 					"request": {
