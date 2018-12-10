@@ -21,4 +21,4 @@ Note: Run `./build.sh --help` to see all options.
 #### Or:
 1) Open Firefox
 2) Navigate to `about:debugging`
-3) Load temporary extension:`/extension/manifest.json`
+3) Load Temporary Add-on:`/extension/manifest.json`
