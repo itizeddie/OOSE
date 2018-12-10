@@ -13,10 +13,8 @@ import java.io.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.UUID;
+
 
 
 public class ScrapeController {
@@ -24,26 +22,25 @@ public class ScrapeController {
     public static void main (Context ctx) {
         String formatedHtm;
         String parsedHtm;
-        int currentUserId = ctx.sessionAttribute("current_user");
 
         try {
             formatedHtm = runPerl(ctx.formParam("document"), "formatHtm.pl");
             parsedHtm = runPerl(formatedHtm, "htm_parser.pl");
             System.out.println(parsedHtm);
             String[] lines = parsedHtm.split("\\n");
-            int courseId = Integer.parseInt(lines[0]);
+
             String[] assignmentParams;
             int userId = ctx.sessionAttribute("current_user");
-            int id = 11;
 
-            Term term = new Term(id, "Term_Title", formatDate(" Jan 01"), formatDate(" Jan 01"));
-            Course course = new Course(courseId, "template", courseId);
-
-            Server.getTermsRepository().create(term);
+            Term term = new Term("Term_Title", formatDate(" Jan 01"), formatDate(" Dec 31"));
+            term = Server.getTermsRepository().create(term);
             Server.getTermsRepository().addTermForUser(term.getId(), userId);
 
-            Server.getCoursesRepository().create(course);
-            Server.getCoursesRepository().addCourseForUser(courseId,userId);
+            Course course = new Course("template", term.getId());
+            course = Server.getCoursesRepository().create(course);
+            Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
+
+
             //
             //This for loop is going through each assignment that was parsed and creating
             //assignment objects.
@@ -54,10 +51,9 @@ public class ScrapeController {
                 boolean completed = !assignmentParams[1].equals("0");
                 LocalDate date = formatDate(assignmentParams[3]);
 
-
-                Assignment assignment = new Assignment(assignmentParams[0], date, courseId, completed);
-
-                //Server.getAssignmentsRepository().create(assignment);
+                Assignment assignment = new Assignment(assignmentParams[0], date, course.getId(), completed);
+                assignment = Server.getAssignmentsRepository().create(assignment);
+                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
             }
         } catch (IOException e) {
             e.printStackTrace();
