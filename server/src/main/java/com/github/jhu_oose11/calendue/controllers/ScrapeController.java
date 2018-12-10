@@ -26,7 +26,7 @@ public class ScrapeController {
         try {
             formatedHtm = runPerl(ctx.formParam("document"), "formatHtm.pl");
             parsedHtm = runPerl(formatedHtm, "htm_parser.pl");
-            System.out.println(parsedHtm);
+            
             String[] lines = parsedHtm.split("\\n");
 
             String[] assignmentParams;
