@@ -141,6 +141,7 @@ public class AssignmentsRepository {
             sum += ((value - mean) * (value - mean));
         }
         return Math.sqrt(sum / num);
+    }
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
         var connection = database.getConnection();
