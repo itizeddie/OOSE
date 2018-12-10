@@ -25,7 +25,7 @@ public class AssignmentsRepository {
             statement.execute("CREATE TABLE IF NOT EXISTS assignments_users (id SERIAL PRIMARY KEY, assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(assignment_id, user_id))");
             statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
                     "(id SERIAL PRIMARY KEY, " +
-                    "assignment_id integer NOT NULL REFERENCES assignments, " +
+                    "title varchar(255) NOT NULL, " +
                     "num_submissions INTEGER NOT NULL, " +
                     "sum_of_grades REAL NOT NULL, " +
                     "grades_std REAL NOT NULL, " +
@@ -36,7 +36,7 @@ public class AssignmentsRepository {
         statement.close();
         connection.close();
     }
-    
+
     public Assignment create(Assignment assignment) throws SQLException {
         String title = assignment.getTitle();
         int course_id = assignment.getCourseId();
@@ -72,30 +72,30 @@ public class AssignmentsRepository {
         connection.close();
     }
 
-    public void addStatistic(int assignmentId) throws SQLException {
+    public void addStatistic(String title) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE assignment_id = "+assignmentId);
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
         var rs = statement.executeQuery();
         if (!rs.next()) {
-            createStatistic(connection, assignmentId);
+            createStatistic(connection, title);
         }
-        updateStatistics(connection, assignmentId);
+        updateStatistics(connection, title);
         statement.close();
         connection.close();
     }
 
-    private void createStatistic(Connection connection, int assignmentId) throws SQLException {
-        var statement = connection.prepareStatement("INSERT INTO statistics (assignment_id, num_submissions, " +
+    private void createStatistic(Connection connection, String title) throws SQLException {
+        var statement = connection.prepareStatement("INSERT INTO statistics (title, num_submissions, " +
                 "sum_of_grades, grades_std, num_comp_time, sum_comp_time, comp_time_std) VALUES (?, 0, 0, 0, 0, 0, 0)");
-        statement.setInt(1, assignmentId);
+        statement.setString(1, title);
         statement.executeUpdate();
         statement.close();
     }
 
-    private void updateStatistics(Connection connection, int assignmentId) throws SQLException {
-        // note: still need to check if assignment was already added (maybe add a field to assignments to keep track)
-        // currently we are assuming it was not added
-        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE assignment_id = "+assignmentId);
+    private void updateStatistics(Connection connection, String assignmentId) throws SQLException {
+        // note: still need to check if assignment was already added
+        // currently this code assumes it was not added
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+assignmentId+"'");
         var rs = statement.executeQuery();
         rs.next();
 
@@ -106,36 +106,36 @@ public class AssignmentsRepository {
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getDouble("sum_of_grades") + grade;
-        double gradesSTD = stdDev();
+        double[] grades = {90, 100, 80.3, 55, 68.5}; // to do: get actual grades
+        double gradesSTD = stdDev(grades);
         int numCompTime = rs.getInt("num_comp_time") + 1;
         int sumCompTime = rs.getInt("sum_comp_time") + compTime;
-        double compTimeSTD = stdDev();
+        double[] compTimes = {90, 100, 80.3, 55, 68.5}; // to do: get actual completion times
+        double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
-        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE assignment_id="+assignmentId);
-        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE assignment_id="+assignmentId);
-        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE assignment_id="+assignmentId);
-        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE assignment_id="+assignmentId);
-        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE assignment_id="+assignmentId);
-        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE assignment_id="+assignmentId);
+        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE title="+"'"+assignmentId+"'");
 
         stm.close();
     }
 
-    private double stdDev() {
-        // Get all grades for particular assignment
-        double[] grades = {90, 100, 80.3, 55, 68.5};
+    private double stdDev(double[] values) {
         double mean = 0.0;
         double num = 0.0;
-        for (double grade : grades) {
-            mean += grade;
+        for (double value : values) {
+            mean += value;
             num++;
         }
         mean = mean / num;
 
         double sum = 0;
-        for (double grade : grades) {
-            sum += ((grade - mean) * (grade - mean));
+        for (double value : values) {
+            sum += ((value - mean) * (value - mean));
         }
         return Math.sqrt(sum / num);
     }
@@ -144,6 +144,16 @@ public class AssignmentsRepository {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("DELETE FROM assignments WHERE id=?");
         statement.setInt(1, assignment.getId());
+        statement.executeUpdate();
+        statement.close();
+        connection.close();
+    }
+
+    void deleteStatistic(String title) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("DELETE FROM statistics WHERE title=?");
+        //statement.setString(1, "'"+title+"'");
+        statement.setString(1, title);
         statement.executeUpdate();
         statement.close();
         connection.close();
