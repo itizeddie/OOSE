@@ -177,7 +177,7 @@ class Display {
             Display.setDisplay();
         };
 
-        xhr.open("GET", "http://calendue.herokuapp.com/");
+        xhr.open("GET", "http://localhost:7000/");
         xhr.send();
 
         document.getElementById("loading-icon").style.display ='block';

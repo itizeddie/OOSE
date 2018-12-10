@@ -36,7 +36,7 @@
             sendResponse({ result: response });
         };
 
-        xhr.open("POST", "http://calendue.herokuapp.com/scrape");
+        xhr.open("POST", "http://localhost:7000/scrape");
         xhr.send(data);
     }
 
@@ -66,7 +66,7 @@
 
         };
 
-        xhr.open("POST", "http://calendue.herokuapp.com/accounts");
+        xhr.open("POST", "http://localhost:7000/accounts");
         xhr.send(data);
     }
     
@@ -88,7 +88,7 @@
             sendResponse({ result: response });
         };
 
-        xhr.open("POST", "http://calendue.herokuapp.com/login");
+        xhr.open("POST", "http://localhost:7000/login");
         xhr.send(data);
     }
 
@@ -106,7 +106,7 @@
             sendResponse({ result: response });
         };
 
-        xhr.open("GET", "http://calendue.herokuapp.com/logout");
+        xhr.open("GET", "http://localhost:7000/logout");
         xhr.send();
     }
 
