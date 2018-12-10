@@ -37,6 +37,8 @@
 <div id='classScoresDistributionDiv'></div>
 </div>
 <script>
+    var events = [];
+    getAssignments("calendar/get")
   $(document).ready(function() {
 
     $('#calendar').fullCalendar({
@@ -49,7 +51,7 @@
       navLinks: true, // can click day/week names to navigate views
       editable: false,
       eventLimit: true, // allow "more" link when too many events
-      events: loadEvents()
+      events: events
     });
 
   });
@@ -83,25 +85,23 @@
         return today;
     }
 
-    function getAssignments() {
-        var map = {};
+    function getAssignments(url) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-               map = this.responseText;
+              loadEvents(this);
             }
         };
-        xhttp.open("GET", "/calendar/get", true);
+        xhttp.open("GET", url, true);
         xhttp.send();
-        return map;
     }
 
-    function loadEvents() {
-        var events = [];
-        var assignments = getAssignments();
-        // temporary events
-        events.push({title: 'Event', start: '2018-12-11', end: '2018-12-13'});
-        return events;
+    function loadEvents(xhttp) {
+        var assignments = JSON.parse(xhttp.responseText);
+        for(const date in assignments) {
+            var name = assignments[date][0].title;
+            events.push({title: name, start: date});
+        }
     }
 
 // Assignment score histogram graph
