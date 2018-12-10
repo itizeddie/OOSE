@@ -14,8 +14,6 @@
 </div>
 <p id='demo'></p>
 <div id='calendar'></div>
-<h2>Assignment Details</h2>
-<h3>Assignment 1</h3>
 <div id="myDiv"></div>
 <div class="stat">
     <p id="average"></p>
@@ -31,7 +29,6 @@
     <p id="rec"></p>
 </div>
 <br>
-<h2>Assignments Overview</h2>
 <div id='classCompareDiv'></div>
 <div class='stat'>
     <p id='variation'></p>
@@ -145,7 +142,8 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-              document.getElementById("demo").innerHTML = this.responseText;
+               map = this.responseText;
+               document.getElementById("demo").innerHTML = Object.keys(map).length;
             }
         };
         xhttp.open("GET", "/calendar/get", true);
@@ -159,12 +157,13 @@ var mean = "Average: " + avg.toString() + "     ";
 var percentile = "Percentile: 80";
 var toc = "Avg Completion Time: 3.5 hours";
 var rec = "Estimated Completion Time: 4.5 hours";
-var trace = {
+var assignmentHistogram = {
     x: x,
     type: 'histogram',
   };
-var assignmentData = [trace];
+var assignmentData = [assignmentHistogram];
 var layout = {
+    title: 'Assignment 1 Details',
     bargap: 0.1,
     xaxis: {
         range: [0, 50]
@@ -199,7 +198,10 @@ var classData = {
 };
 
 var classCompareData = [userData, classData];
-var classCompareLayout = {barmode: 'group'};
+var classCompareLayout = {
+    title: 'Assignments Overview',
+    barmode: 'group'
+};
 
 // Class Scores Distribution Graph
 var classAssignment1Scores = {
