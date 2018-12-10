@@ -8,6 +8,10 @@
 <body>
 <div id="calendue-title">Calendue</div>
 
+<div id="welcome" class="hidden">
+    <p>Welcome to Calendue!</p>
+</div>
+
 <div id="loading-icon" class="lds-ripple"><div></div>Loading...<div></div></div>
 
 <div id="check-URL-content" class="hidden">
@@ -16,6 +20,10 @@
 
 <div id="check-courseURL-content" class="hidden">
     <p>Please navigate to your course page.</p>
+</div>
+
+<div id="profile-info" class="hidden">
+    <p> username: </p>
 </div>
 
 <div id="signup-content" class="hidden">
@@ -27,7 +35,9 @@
             <input type="text" placeholder="Enter email" id="email" required>
             <label for="password"><b>Password</b></label>
             <input type="password" placeholder="At least 5 characters" id="password" required>
-            <div class="button sign-up">Sign up</div>
+            <label for="password3"><b>Re-enter Password</b></label>
+            <input type="password" placeholder="Confirm password" id="password3" required>
+            <div class="button sign-up" id="signup-button">Sign up</div>
             <div class="login-form">Already have an account? Log in</div>
         </div>
         </form>
@@ -40,7 +50,7 @@
             <input type="text" placeholder="Enter username" id="username2" required>
             <label for="password"><b>Password</b></label>
             <input type="password" placeholder="At least 5 characters" id="password2" required>
-            <div class="button login">Log in</div>
+            <div class="button login" id="login-button">Log in</div>
             <div class="sign-up-form">Don't have an account? Create account</div>
         </div>
     </form>
@@ -50,16 +60,34 @@
     <div id="add-course">Search page for assignments?</div>
     <div class="button add-course">Confirm</div>
 </div>
+
 <div id="error-content" class="hidden">
     <p>Error: could not load. Please navigate to a valid url.</p>
 </div>
+  
 <div id="success-message" class="hidden">
     <p>Added course.</p>
 </div>
+
+<div id="website-link" class="hidden">
+    <p> See your schedule on <a href = "http://localhost:7000">Calendue </a>
+    </p>
+</div>
+  
 <div id="logout-content" class="hidden">
     <div class="logout">Log out</div>
 </div>
+
+<div class = "navigation">
+    <div id="home" class = "nav-button">
+        <img class= "home-icon" src="../icons/icon_home.svg" style="width: 28px;">
+    </div>
+
+    <div id = "profile" class = "nav-button clicked">
+        <img class = "profile-icon" src="../icons/icon_account.svg" style="width: 28px;">
+    </div>
+</div>
+
 <script src="add_course.js"></script>
 </body>
-
 </html>

@@ -10,8 +10,10 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AssignmentsRepository {
     private DataSource database;
@@ -21,7 +23,7 @@ public class AssignmentsRepository {
         var connection = database.getConnection();
         var statement = connection.createStatement();
         if (database instanceof PGSimpleDataSource) {
-            statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE)");
+            statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE, completed BOOLEAN NOT NULL DEFAULT 'false')");
             statement.execute("CREATE TABLE IF NOT EXISTS assignments_users (id SERIAL PRIMARY KEY, assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(assignment_id, user_id))");
             statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
                     "(id SERIAL PRIMARY KEY, " +
@@ -52,7 +54,7 @@ public class AssignmentsRepository {
         ResultSet rs = statement.getGeneratedKeys();
         if (rs.next()) {
             int id = rs.getInt(1);
-            assignment = new Assignment(id, title, dueDate, course_id);
+            assignment = new Assignment(id, title, dueDate, course_id, false);
         }
 
 
@@ -71,6 +73,7 @@ public class AssignmentsRepository {
         statement.close();
         connection.close();
     }
+
 
     public void addStatistic(String title) throws SQLException {
         var connection = database.getConnection();
@@ -138,6 +141,35 @@ public class AssignmentsRepository {
             sum += ((value - mean) * (value - mean));
         }
         return Math.sqrt(sum / num);
+
+    public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT a.id, title, due_date, course_id, completed FROM assignments a INNER JOIN assignments_users au ON au.user_id = ?");
+        statement.setInt(1, userId);
+        ResultSet results = statement.executeQuery();
+
+        List<Assignment> assignments = new ArrayList<>();
+        while (results.next()) {
+            System.out.println(results.getInt("id"));
+            LocalDate dueDate = results.getDate("due_date").toLocalDate();
+            assignments.add(new Assignment(results.getInt("id"), results.getString("title"), dueDate, results.getInt("course_id"), results.getBoolean("completed")));
+        }
+
+        return assignments;
+    }
+
+    public Assignment getAssignmentById(int assignment_id) throws SQLException, NonExistingAssignmentException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id, completed FROM assignments WHERE assignments.id = ?");
+        statement.setInt(1, assignment_id);
+        ResultSet rs = statement.executeQuery();
+        if (!rs.next()) throw new NonExistingAssignmentException();
+        LocalDate dueDate = rs.getDate("due_date").toLocalDate();
+        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"), rs.getBoolean("completed"));
+        statement.close();
+        connection.close();
+
+        return assignment;
     }
 
     void deleteAssignment(Assignment assignment) throws SQLException {
@@ -158,4 +190,6 @@ public class AssignmentsRepository {
         statement.close();
         connection.close();
     }
+
+    public class NonExistingAssignmentException extends Exception {}
 }

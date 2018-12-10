@@ -15,7 +15,7 @@ import java.util.Objects;
 
 public class CoursesController {
     public static void newCourse(Context ctx) throws SQLException {
-        Auth.ensureLoggedIn(ctx);
+        if (!Auth.ensureLoggedIn(ctx)) return;
         int current_user_id = ctx.sessionAttribute("current_user");
 
         ensureNewParamsValid(ctx);
