@@ -132,7 +132,6 @@
             sendDOMtoServer(sendResponse);
         } else if (message.command === "create-account") {
             createAccount(message, sendResponse);
-            //console.log(message.username+" "+message.password+" "+message.email); // for debugging purposes
         } else if (message.command === "login") {
             loginToServer(message, sendResponse);
         } else if (message.command === "logout") {
