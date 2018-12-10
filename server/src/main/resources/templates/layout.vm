@@ -12,8 +12,10 @@
     <script>
     	if( !window.jQuery ) document.write('<script src="js/jquery-3.0.0.min.js"><\/script>');
     </script>
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/fullcalendar.css">
+    <link rel="stylesheet" media="print" href="/fullcalendar.print.min.css">
+    <script src='/js/moment.min.js'></script>
+    <script src='/js/fullcalendar.js'></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     $javascript
     <title> Calendue </title>

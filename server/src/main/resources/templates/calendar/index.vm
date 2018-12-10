@@ -1,6 +1,6 @@
 #parse("/templates/layout.vm")
 #set( $css_name = "calendar" )
-#set( $javascript = "<script src='/js/modernizr.js'></script><script src='/js/main.js'></script><script src='/js/graph.js'></script>")
+#set( $javascript = "<script src='/js/modernizr.js'></script><script src='/js/main.js'></script>")
 #@mainContent($css_name, $javascript)
 <html lang="en" class="no-js">
 <div class="topnav">
@@ -12,133 +12,9 @@
         </form>
     </div>
 </div>
-
-<h2>November 12-18</h2>
-<div class="cd-schedule loading">
-	<div class="timeline">
-		<ul>
-			<li><span>09:00</span></li>
-			<li><span>09:30</span></li>
-			<li><span>10:00</span></li>
-			<li><span>10:30</span></li>
-			<li><span>11:00</span></li>
-			<li><span>11:30</span></li>
-			<li><span>12:00</span></li>
-			<li><span>12:30</span></li>
-			<li><span>1:00</span></li>
-			<li><span>1:30</span></li>
-			<li><span>2:00</span></li>
-			<li><span>2:30</span></li>
-			<li><span>3:00</span></li>
-			<li><span>3:30</span></li>
-			<li><span>4:00</span></li>
-			<li><span>4:30</span></li>
-			<li><span>5:00</span></li>
-			<li><span>5:30</span></li>
-			<li><span>6:00</span></li>
-		</ul>
-	</div> <!-- .timeline -->
-
-	<div class="events">
-		<ul>
-			<li class="events-group">
-				<div class="top-info"><span>Monday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:30" data-end="10:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Tuesday</span></div>
-
-				<ul>
-
-					<li class="single-event" data-start="13:30" data-end="15:00" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Wednesday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:00" data-end="10:15" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Thursday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:30" data-end="10:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-
-					<li class="single-event" data-start="15:30" data-end="16:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Friday</span></div>
-
-				<ul>
-
-					<li class="single-event" data-start="12:30" data-end="14:00" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-		</ul>
-	</div>
-
-	<div class="event-modal">
-		<header class="header">
-			<div class="content">
-				<span class="event-date"></span>
-				<h3 class="event-name"></h3>
-			</div>
-
-			<div class="header-bg"></div>
-		</header>
-
-		<div class="body">
-			<div class="event-info"></div>
-			<div class="body-bg"></div>
-		</div>
-
-		<a href="#0" class="close">Close</a>
-	</div>
-
-	<div class="cover-layer"></div>
-</div> <!-- .cd-schedule -->
-<div class="event-info">
-<h2>Assignment Details</h2>
-<h3>Assignment 1</h3>
+<p id='demo'></p>
+<p id='temp'></p>
+<div id='calendar'></div>
 <div id="myDiv"></div>
 <div class="stat">
     <p id="average"></p>
@@ -154,24 +30,80 @@
     <p id="rec"></p>
 </div>
 <br>
-<h2>Assignments Overview</h2>
 <div id='classCompareDiv'></div>
 <div class='stat'>
     <p id='variation'></p>
 </div>
 <div id='classScoresDistributionDiv'></div>
 </div>
-
 <script>
-// function to get average of an array
-function getAverage(array) {
-    var sum = 0, avg = 0; // sum and average variables
-    for(var i = 0; i < array.length; i++) { // add each element of array to sum
-        sum += array[i]
+  $(document).ready(function() {
+
+    $('#calendar').fullCalendar({
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'month,basicWeek,basicDay'
+      },
+      defaultDate: getDate(),
+      navLinks: true, // can click day/week names to navigate views
+      editable: false,
+      eventLimit: true, // allow "more" link when too many events
+      events: loadEvents()
+    });
+
+  });
+
+    // function to get average of an array
+    function getAverage(array) {
+        var sum = 0, avg = 0; // sum and average variables
+        for(var i = 0; i < array.length; i++) { // add each element of array to sum
+            sum += array[i]
+        }
+        avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
+        return avg;
     }
-    avg = (sum / array.length).toFixed(2); // round average to 2 decimal places
-    return avg;
-}
+
+    // function to get current date
+    function getDate() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if(dd<10) {
+            dd = '0'+dd
+        }
+
+        if(mm<10) {
+            mm = '0'+mm
+        }
+
+        today = yyyy + '/' + mm + '/' + dd;
+        return today;
+    }
+
+    function getAssignments() {
+        var map = {};
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+               map = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/calendar/get", true);
+        xhttp.send();
+        return map;
+    }
+
+    function loadEvents() {
+        var events = [];
+        var assignments = getAssignments();
+        // temporary events
+        events.push({title: 'Event', start: '2018-12-11', end: '2018-12-13'});
+        return events;
+    }
+
 // Assignment score histogram graph
 var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
 avg = getAverage(x);
@@ -179,12 +111,13 @@ var mean = "Average: " + avg.toString() + "     ";
 var percentile = "Percentile: 80";
 var toc = "Avg Completion Time: 3.5 hours";
 var rec = "Estimated Completion Time: 4.5 hours";
-var trace = {
+var assignmentHistogram = {
     x: x,
     type: 'histogram',
   };
-var assignmentData = [trace];
+var assignmentData = [assignmentHistogram];
 var layout = {
+    title: 'Assignment 1 Details',
     bargap: 0.1,
     xaxis: {
         range: [0, 50]
@@ -219,7 +152,10 @@ var classData = {
 };
 
 var classCompareData = [userData, classData];
-var classCompareLayout = {barmode: 'group'};
+var classCompareLayout = {
+    title: 'Assignments Overview',
+    barmode: 'group'
+};
 
 // Class Scores Distribution Graph
 var classAssignment1Scores = {
