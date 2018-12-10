@@ -9,26 +9,29 @@ use v5.10;
 
     #Expected tag for files that are formated with formatHtm.pl
     my $formatTag = 	"Formated with formatHtm.pl\n";
-    ## Final regex patterns
+    ## Final regex patterns - Used to filter content of html
 
-    my $REGEXDUE =	    "submissionTimeChart--dueDate";
-    my $REGEXRELEASE =	"submissionTimeChart--releaseDate";
-    my $REGEXNOGRADES =	"submissionStatus--text";
-    my $REGEXGRADES = 	"submissionStatus--score";
+    my $REGEX_DUE =	    "submissionTimeChart--dueDate";
+    my $REGEX_RELEASE =	"submissionTimeChart--releaseDate";
+    my $REGEX_DATES_TWO = "[A-Z][a-z]{2} [0-9]{2}";
+    my $REGEX_NO_GRADES =	"submissionStatus--text";
+    my $REGEX_GRADES = 	"submissionStatus--score";
+    my $REGEX_GRADES_TWO = "[0-9]*.?[0-9]*\\s\\/\\s[0-9]*.?[0-9]*";
     my $ERROR = -1;
 
     ##
     #Can and will just make an Assignment Object and use
     #name, grade, release, and due, timeTakeToComplete as values for it. 
     ##
-    my $courseNumber;
+    my $courseId;
     my @assignmentNames; 
     my @assignmentGrades;
     my @assignmentRelease; 
     my @assignmentDue; 
 
     my $assignmentCount = 0;
-    my $lineCount = 0; 
+    my $lineCount = 0;
+    my $term = 0;
 
 
 
@@ -37,9 +40,9 @@ use v5.10;
 	die ".htm was not formatted with formatHtm.pl: $!";
     }
 
-    $courseNumber = getCourseNumber(@allLines);
-    print "$courseNumber\n";
-    if($courseNumber eq $ERROR) { die "Can't read course number: $!";}
+    $courseId = getCourseId(@allLines);
+    print "$courseId\n";
+    if($courseId eq $ERROR) { die "Can't read course number: $!";}
     my $temp;
 
     foreach my $line (@allLines) {
@@ -91,22 +94,23 @@ use v5.10;
 		    return 0;
 	    }
     }
+
+
     ##
-    #Use a regex to find Gradescope [anything] [3numbers . 3 numbers]anything Dashboard
-    #return 3 numbers.3numbers + anything up until a space
+    #Return a course Id that is shared between all users of the same course
     ##
-    sub getCourseNumber
+    sub getCourseId
     {
     	my @lotsOfLines = @_;
 
-	    my $regexPattern = "[0-9]{3}.[0-9]{3}(\/[0-9]{3})?";
+	    my $regexPattern = "/courses/\\d*";
 	    foreach my $line ( @lotsOfLines )
 	    {
 	        if ( $line =~ /$regexPattern/ )
 	        {
 		        #Returning $line gives the line with the course number now try and only get the numbers
-		        my ($justCourse) = $line =~ /$regexPattern/i;
-		        return $&;
+		        my ($justCourse) = $line =~ /$regexPattern/ig;
+		        return substr($&, 9);
 	        }
     	}
 	    return $ERROR;
@@ -133,10 +137,11 @@ use v5.10;
 		        my ($justAssignment) = $completeHtm[$count+1] =~ /View [^\"|\n]*/i;
 		        return substr($&, 5); #removes word view
 		    }
-		    else #might not need this# experiment with this later
+		    else #Need this for assignments that were not submitted
 		    {
-		        my ($justAssignment) = $completeHtm[$count+1] =~ /[A-Za-z0-9 ]+/i;
-		        return $&;
+		        my ($justAssignment) = $completeHtm[$count+1] =~ /<[^\"|\n|>]*/i;
+		        #/[A-Za-z0-9 ]+/i;
+		        return substr($&, 1);
 		    }
 	    }		
 	    return $ERROR;
@@ -149,13 +154,13 @@ use v5.10;
     sub getGrades
     {
 	my ($count, $line, @completeHtm) = @_;
-	    if ($line =~ /$REGEXNOGRADES/ )
+	    if ($line =~ /$REGEX_NO_GRADES/ )
 	    {
 	    return 0;
 	    }
-	    elsif ( $line =~ /$REGEXGRADES/ )
+	    elsif ( $line =~ /$REGEX_GRADES/ )
 	    {
-	        my($result) = $completeHtm[$count+1] =~ /[0-9]*.?[0-9]*\s\/\s[0-9]*.?[0-9]*/gi;
+	        my($result) = $completeHtm[$count+1] =~ /$REGEX_GRADES_TWO/gi;
 	        return $&;
 	    }
 	    else
@@ -164,6 +169,7 @@ use v5.10;
 	    }
 	}
 
+
     ##
     #submissionTimeChart--releaseDate
     #next line will hold the release date
@@ -171,7 +177,7 @@ use v5.10;
     sub getRelease
     {
 	    my ($count, $line, @completeHtm) = @_;
-	    if ( $line =~ /$REGEXRELEASE/ )
+	    if ( $line =~ /$REGEX_RELEASE/ )
 	    {
 	        my($result) = $completeHtm[$count+1] =~ /[A-Z][a-z]{2} [0-9]{2}/gi;
 	        return $&;
@@ -188,7 +194,7 @@ use v5.10;
     sub getDue
     {
 	    my ( $count, $line, @completeHtm ) = @_;
-	    if ( $line =~ /$REGEXDUE/ )
+	    if ( $line =~ /$REGEX_DUE/ )
 	    {
 	        my($result) = $completeHtm[$count+1] =~ /[A-Z][a-z]{2} [0-9]{2}/gi;
 	        return $&;
