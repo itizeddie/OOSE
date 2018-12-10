@@ -1,6 +1,6 @@
 #parse("/templates/layout.vm")
 #set( $css_name = "calendar" )
-#set( $javascript = "<script src='/js/modernizr.js'></script><script src='/js/main.js'></script><script src='/js/graph.js'></script>")
+#set( $javascript = "<script src='/js/modernizr.js'></script><script src='/js/main.js'></script>")
 #@mainContent($css_name, $javascript)
 <html lang="en" class="no-js">
 <div class="topnav">
@@ -13,130 +13,7 @@
     </div>
 </div>
 
-<h2>November 12-18</h2>
-<div class="cd-schedule loading">
-	<div class="timeline">
-		<ul>
-			<li><span>09:00</span></li>
-			<li><span>09:30</span></li>
-			<li><span>10:00</span></li>
-			<li><span>10:30</span></li>
-			<li><span>11:00</span></li>
-			<li><span>11:30</span></li>
-			<li><span>12:00</span></li>
-			<li><span>12:30</span></li>
-			<li><span>1:00</span></li>
-			<li><span>1:30</span></li>
-			<li><span>2:00</span></li>
-			<li><span>2:30</span></li>
-			<li><span>3:00</span></li>
-			<li><span>3:30</span></li>
-			<li><span>4:00</span></li>
-			<li><span>4:30</span></li>
-			<li><span>5:00</span></li>
-			<li><span>5:30</span></li>
-			<li><span>6:00</span></li>
-		</ul>
-	</div> <!-- .timeline -->
-
-	<div class="events">
-		<ul>
-			<li class="events-group">
-				<div class="top-info"><span>Monday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:30" data-end="10:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Tuesday</span></div>
-
-				<ul>
-
-					<li class="single-event" data-start="13:30" data-end="15:00" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Wednesday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:00" data-end="10:15" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Thursday</span></div>
-
-				<ul>
-					<li class="single-event" data-start="09:30" data-end="10:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-
-					<li class="single-event" data-start="15:30" data-end="16:30" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-
-			<li class="events-group">
-				<div class="top-info"><span>Friday</span></div>
-
-				<ul>
-
-					<li class="single-event" data-start="12:30" data-end="14:00" data-content="event-assignment" data-event="event-1">
-						<a href="#0">
-							<em class="event-name">Class</em>
-						</a>
-					</li>
-
-				</ul>
-			</li>
-		</ul>
-	</div>
-
-	<div class="event-modal">
-		<header class="header">
-			<div class="content">
-				<span class="event-date"></span>
-				<h3 class="event-name"></h3>
-			</div>
-
-			<div class="header-bg"></div>
-		</header>
-
-		<div class="body">
-			<div class="event-info"></div>
-			<div class="body-bg"></div>
-		</div>
-
-		<a href="#0" class="close">Close</a>
-	</div>
-
-	<div class="cover-layer"></div>
-</div> <!-- .cd-schedule -->
-<div class="event-info">
+<div id='calendar'></div>
 <h2>Assignment Details</h2>
 <h3>Assignment 1</h3>
 <div id="myDiv"></div>
@@ -161,8 +38,80 @@
 </div>
 <div id='classScoresDistributionDiv'></div>
 </div>
-
 <script>
+
+  $(document).ready(function() {
+
+    $('#calendar').fullCalendar({
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'month,basicWeek,basicDay'
+      },
+      defaultDate: '2018-03-12',
+      navLinks: true, // can click day/week names to navigate views
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: [
+        {
+          title: 'All Day Event',
+          start: '2018-03-01'
+        },
+        {
+          title: 'Long Event',
+          start: '2018-03-07',
+          end: '2018-03-10'
+        },
+        {
+          id: 999,
+          title: 'Repeating Event',
+          start: '2018-03-09T16:00:00'
+        },
+        {
+          id: 999,
+          title: 'Repeating Event',
+          start: '2018-03-16T16:00:00'
+        },
+        {
+          title: 'Conference',
+          start: '2018-03-11',
+          end: '2018-03-13'
+        },
+        {
+          title: 'Meeting',
+          start: '2018-03-12T10:30:00',
+          end: '2018-03-12T12:30:00'
+        },
+        {
+          title: 'Lunch',
+          start: '2018-03-12T12:00:00'
+        },
+        {
+          title: 'Meeting',
+          start: '2018-03-12T14:30:00'
+        },
+        {
+          title: 'Happy Hour',
+          start: '2018-03-12T17:30:00'
+        },
+        {
+          title: 'Dinner',
+          start: '2018-03-12T20:00:00'
+        },
+        {
+          title: 'Birthday Party',
+          start: '2018-03-13T07:00:00'
+        },
+        {
+          title: 'Click for Google',
+          url: 'http://google.com/',
+          start: '2018-03-28'
+        }
+      ]
+    });
+
+  });
+
 // function to get average of an array
 function getAverage(array) {
     var sum = 0, avg = 0; // sum and average variables
