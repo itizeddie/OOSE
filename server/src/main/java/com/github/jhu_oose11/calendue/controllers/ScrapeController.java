@@ -26,7 +26,7 @@ public class ScrapeController {
         try {
             formatedHtm = runPerl(ctx.formParam("document"), "formatHtm.pl");
             parsedHtm = runPerl(formatedHtm, "htm_parser.pl");
-            
+
             String[] lines = parsedHtm.split("\\n");
 
             String[] assignmentParams;
@@ -36,7 +36,7 @@ public class ScrapeController {
             term = Server.getTermsRepository().create(term);
             Server.getTermsRepository().addTermForUser(term.getId(), userId);
 
-            Course course = new Course("template", term.getId());
+            Course course = new Course("template", term.getId(), Integer.parseInt(lines[0]));
             course = Server.getCoursesRepository().create(course);
             Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
 
@@ -67,8 +67,14 @@ public class ScrapeController {
     private static LocalDate formatDate(String stringDate)
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMM dd");
-        formatter = formatter.withLocale(Locale.US );  // Locale specifies human language for translating, and cultural norms for lowercase/uppercase and abbreviations and such. Example: Locale.US or Locale.CANADA_FRENCH
-        LocalDate date = LocalDate.parse("2018"+stringDate, formatter);
+        formatter = formatter.withLocale(Locale.US);  // Locale specifies human language for translating, and cultural norms for lowercase/uppercase and abbreviations and such. Example: Locale.US or Locale.CANADA_FRENCH
+        LocalDate date;
+        if(stringDate.equals(" na"))
+        {
+            date = LocalDate.parse("2018 Jan 01", formatter);
+        }else {
+            date = LocalDate.parse("2018" + stringDate, formatter);
+        }
         return date;
     }
 

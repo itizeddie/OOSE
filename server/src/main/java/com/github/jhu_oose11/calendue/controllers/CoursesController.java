@@ -28,8 +28,14 @@ public class CoursesController {
         } catch(NumberFormatException e) {
             throw new BadRequestResponse("Term ID is invalid.");
         }
+        int gradeScope_id;
+        try {
+            gradeScope_id = Integer.parseInt(ctx.formParam("gradeScope_id"));
+        } catch(NumberFormatException e) {
+            throw new BadRequestResponse("Grade Scope ID is invalid.");
+        }
 
-        Course course = new Course(title, term_id);
+        Course course = new Course(title, term_id, gradeScope_id);
 
         try {
             course = Server.getCoursesRepository().create(course);

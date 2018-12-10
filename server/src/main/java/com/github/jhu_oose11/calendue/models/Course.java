@@ -4,14 +4,16 @@ public class Course {
     private String title;
     private int id = 0;
     private int termId;
+    private int gradeScopeId;
 
-    public Course(String title, int term_id) {
+    public Course(String title, int term_id, int gradeScope_id) {
         this.title = title;
         this.termId = term_id;
+        this.gradeScopeId = gradeScope_id;
     }
 
-    public Course(int id, String title, int term_id) {
-        this(title, term_id);
+    public Course(int id, String title, int term_id, int gradeScope_Id) {
+        this(title, term_id, gradeScope_Id);
         this.id = id;
     }
 
@@ -24,4 +26,6 @@ public class Course {
     public int getTermId() {
         return termId;
     }
+
+    public int getGradeScopeId() {return gradeScopeId;}
 }
