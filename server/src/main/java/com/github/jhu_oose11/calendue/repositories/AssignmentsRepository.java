@@ -24,7 +24,14 @@ public class AssignmentsRepository {
         var statement = connection.createStatement();
         if (database instanceof PGSimpleDataSource) {
             statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE, completed BOOLEAN NOT NULL DEFAULT 'false')");
-            statement.execute("CREATE TABLE IF NOT EXISTS assignments_users (id SERIAL PRIMARY KEY, assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, UNIQUE(assignment_id, user_id))");
+            statement.execute("CREATE TABLE IF NOT EXISTS assignments_users " +
+                    "(id SERIAL PRIMARY KEY, " +
+                    "assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, " +
+                    "user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, " +
+                    "completion_time INTEGER NOT NULL, " +
+                    "grade REAL NOT NULL, " +
+                    "added_to_statistics BOOLEAN NOT NULL DEFAULT 'false', " +
+                    "UNIQUE(assignment_id, user_id))");
             statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
                     "(id SERIAL PRIMARY KEY, " +
                     "title varchar(255) NOT NULL, " +
@@ -66,23 +73,32 @@ public class AssignmentsRepository {
 
     public void addAssignmentForUser(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id) VALUES (?, ?)");
+        var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id, completion_time, grade) VALUES (?, ?, ?, ?)");
+
+        int completionTime = 30; // to do: get actual completion time
+        double grade = 90; // to do: get actual grade
+
         statement.setInt(1, assignmentId);
         statement.setInt(2, userId);
+        statement.setInt(3, completionTime);
+        statement.setDouble(4, grade);
         statement.executeUpdate();
         statement.close();
         connection.close();
     }
 
 
-    public void addStatistic(String title) throws SQLException {
+    public void addStatistic(String title, int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
         var rs = statement.executeQuery();
-        if (!rs.next()) {
+        if (!rs.next()) { // checks if row in statistics already exists
             createStatistic(connection, title);
         }
-        updateStatistics(connection, title);
+
+        if (notAddedToStatistics(assignmentId, userId)) {
+            updateStatistics(connection, title, assignmentId, userId);
+        }
         statement.close();
         connection.close();
     }
@@ -95,10 +111,10 @@ public class AssignmentsRepository {
         statement.close();
     }
 
-    private void updateStatistics(Connection connection, String assignmentId) throws SQLException {
+    private void updateStatistics(Connection connection, String title, int assignmentId, int userId) throws SQLException {
         // note: still need to check if assignment was already added
         // currently this code assumes it was not added
-        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+assignmentId+"'");
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
         var rs = statement.executeQuery();
         rs.next();
 
@@ -117,14 +133,16 @@ public class AssignmentsRepository {
         double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
-        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE title="+"'"+assignmentId+"'");
-        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE title="+"'"+assignmentId+"'");
-        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE title="+"'"+assignmentId+"'");
-        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE title="+"'"+assignmentId+"'");
-        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE title="+"'"+assignmentId+"'");
-        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE title="+"'"+assignmentId+"'");
+        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE title="+"'"+title+"'");
 
         stm.close();
+
+        markAsAddedToStatistic(assignmentId, userId);
     }
 
     private double stdDev(double[] values) {
@@ -141,6 +159,31 @@ public class AssignmentsRepository {
             sum += ((value - mean) * (value - mean));
         }
         return Math.sqrt(sum / num);
+    }
+
+    private boolean notAddedToStatistics(int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT added_to_statistic FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        statement.setInt(1, userId);
+        statement.setInt(2, assignmentId);
+        var rs = statement.executeQuery();
+
+        if (!rs.next()) throw new NonExistingAssignmentException();
+        boolean added = rs.getBoolean("added_to_statistic");
+
+        statement.close();
+        connection.close();
+
+        return added;
+    }
+
+    private void markAsAddedToStatistic(int assignmentId, int userId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.createStatement();
+        statement.executeUpdate("UPDATE assignments_users set added_to_statistics = 'false' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+
+        statement.close();
+        connection.close();
     }
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
