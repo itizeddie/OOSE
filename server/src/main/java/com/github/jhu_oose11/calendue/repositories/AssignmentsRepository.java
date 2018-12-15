@@ -28,7 +28,7 @@ public class AssignmentsRepository {
                     "(id SERIAL PRIMARY KEY, " +
                     "assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, " +
                     "user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, " +
-                    "completion_time INTEGER NOT NULL, " +
+                    "completion_time REAL NOT NULL, " +
                     "grade REAL NOT NULL, " +
                     "added_to_statistics BOOLEAN NOT NULL DEFAULT 'false', " +
                     "UNIQUE(assignment_id, user_id))");
@@ -119,16 +119,16 @@ public class AssignmentsRepository {
         rs.next();
 
         // to do: change these to actual values
-        double grade = 90;
-        int compTime = 60; //minutes
+        double grade = getDoubleFromAssmtUsers("grade", assignmentId, userId);
+        double compTime = getDoubleFromAssmtUsers("completion_time", assignmentId, userId);
 
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getDouble("sum_of_grades") + grade;
         double[] grades = {90, 100, 80.3, 55, 68.5}; // to do: get actual grades
         double gradesSTD = stdDev(grades);
-        int numCompTime = rs.getInt("num_comp_time") + 1;
-        int sumCompTime = rs.getInt("sum_comp_time") + compTime;
+        double numCompTime = rs.getDouble("num_comp_time") + 1;
+        double sumCompTime = rs.getDouble("sum_comp_time") + compTime;
         double[] compTimes = {90, 100, 80.3, 55, 68.5}; // to do: get actual completion times
         double compTimeSTD = stdDev(compTimes);
 
@@ -184,6 +184,21 @@ public class AssignmentsRepository {
 
         statement.close();
         connection.close();
+    }
+
+    private double getDoubleFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        statement.setInt(1, userId);
+        statement.setInt(2, assignmentId);
+        var rs = statement.executeQuery();
+
+        double grade = rs.getDouble(param);
+
+        statement.close();
+        connection.close();
+
+        return grade;
     }
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
