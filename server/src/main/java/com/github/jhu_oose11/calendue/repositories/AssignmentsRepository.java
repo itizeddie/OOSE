@@ -75,8 +75,8 @@ public class AssignmentsRepository {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id, completion_time, grade) VALUES (?, ?, ?, ?)");
 
-        int completionTime = 30; // to do: get actual completion time
-        double grade = 90; // to do: get actual grade
+        int completionTime = 30; // TODO: get actual completion time
+        double grade = 90; // TODO: get actual grade
 
         statement.setInt(1, assignmentId);
         statement.setInt(2, userId);
@@ -118,18 +118,17 @@ public class AssignmentsRepository {
         var rs = statement.executeQuery();
         rs.next();
 
-        // to do: change these to actual values
         double grade = getDoubleFromAssmtUsers("grade", assignmentId, userId);
         double compTime = getDoubleFromAssmtUsers("completion_time", assignmentId, userId);
 
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getDouble("sum_of_grades") + grade;
-        double[] grades = {90, 100, 80.3, 55, 68.5}; // to do: get actual grades
+        double[] grades = {90, 100, 80.3, 55, 68.5}; // TODO: get actual grades
         double gradesSTD = stdDev(grades);
         double numCompTime = rs.getDouble("num_comp_time") + 1;
         double sumCompTime = rs.getDouble("sum_comp_time") + compTime;
-        double[] compTimes = {90, 100, 80.3, 55, 68.5}; // to do: get actual completion times
+        double[] compTimes = {90, 100, 80.3, 55, 68.5}; // TODO: get actual completion times
         double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
@@ -193,12 +192,31 @@ public class AssignmentsRepository {
         statement.setInt(2, assignmentId);
         var rs = statement.executeQuery();
 
-        double grade = rs.getDouble(param);
+        double result = rs.getDouble(param);
 
         statement.close();
         connection.close();
 
-        return grade;
+        return result;
+    }
+
+    private double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        statement.setInt(1, userId);
+        statement.setInt(2, assignmentId);
+        var rs = statement.executeQuery();
+
+        double[] result = new double[100]; // TODO: change this to a list or arraylist, or add dynamic resizing
+
+        while(rs.next()) {
+            rs.getDouble(param);
+        }
+
+        statement.close();
+        connection.close();
+
+        return result;
     }
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
