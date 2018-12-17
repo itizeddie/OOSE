@@ -70,7 +70,7 @@ class Display {
     static clearPopup() {
         Display.clearSignupErrors();
         const elem = document.querySelectorAll("#popup-content, #welcome, #signup-content, #check-URL-content, " +
-            "#check-courseURL-content, #error-content, #login-content, #logout-content, #website-link", "signup-error-msg");
+            "#check-courseURL-content, #error-content, #login-content, #logout-content, #profile-page-content", "signup-error-msg");
         elem.forEach(elem => {
             elem.classList.add("hidden");
         });
@@ -144,7 +144,20 @@ class Display {
 
         Display.clearPopup();
         if (isLoggedIn) {
-            document.getElementById("website-link").classList.remove("hidden");
+            document.getElementById("profile-page-content").classList.remove("hidden");
+
+            //inject username
+            const username = document.getElementById("username2").value;
+/*            let para = document.createElement("welcome-user");
+            let node = document.createTextNode("Welcome " + username + " !");
+            para.appendChild(node);
+
+            let element = document.getElementById("profile-page-content");
+            let child = document.getElementById("website-link");
+            element.insertBefore(para, child);*/
+
+            document.getElementById("welcome-user").innerHTML = "Welcome " + username + "!";
+
             document.querySelector("#logout-content").classList.remove("hidden");
         }
         else {
