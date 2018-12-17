@@ -145,16 +145,8 @@ class Display {
         Display.clearPopup();
         if (isLoggedIn) {
             document.getElementById("profile-page-content").classList.remove("hidden");
-
             //inject username
             const username = document.getElementById("username2").value;
-/*            let para = document.createElement("welcome-user");
-            let node = document.createTextNode("Welcome " + username + " !");
-            para.appendChild(node);
-
-            let element = document.getElementById("profile-page-content");
-            let child = document.getElementById("website-link");
-            element.insertBefore(para, child);*/
 
             document.getElementById("welcome-user").innerHTML = "Welcome " + username + "!";
 
