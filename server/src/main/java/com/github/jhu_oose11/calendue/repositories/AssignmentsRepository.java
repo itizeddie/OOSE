@@ -124,11 +124,11 @@ public class AssignmentsRepository {
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getDouble("sum_of_grades") + grade;
-        double[] grades = {90, 100, 80.3, 55, 68.5}; // TODO: get actual grades
+        double[] grades = getDoubleArrayFromAssmtUsers("grade", assignmentId);
         double gradesSTD = stdDev(grades);
         double numCompTime = rs.getDouble("num_comp_time") + 1;
         double sumCompTime = rs.getDouble("sum_comp_time") + compTime;
-        double[] compTimes = {90, 100, 80.3, 55, 68.5}; // TODO: get actual completion times
+        double[] compTimes = getDoubleArrayFromAssmtUsers("completion_time", assignmentId);
         double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
@@ -200,17 +200,24 @@ public class AssignmentsRepository {
         return result;
     }
 
-    private double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
+    private double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
-        statement.setInt(1, userId);
+        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE assignment_id = ?");
         statement.setInt(2, assignmentId);
         var rs = statement.executeQuery();
 
-        double[] result = new double[100]; // TODO: change this to a list or arraylist, or add dynamic resizing
+        int size = 100;
+        int counter = 0;
+        double[] result = new double[size];
 
         while(rs.next()) {
-            rs.getDouble(param);
+            result[counter++] = rs.getDouble(param);
+            if (counter >= size) {
+                double[] temp = new double[size*2];
+                System.arraycopy(result, 0, temp, 0, size);
+                size *= 2;
+                result = temp;
+            }
         }
 
         statement.close();
