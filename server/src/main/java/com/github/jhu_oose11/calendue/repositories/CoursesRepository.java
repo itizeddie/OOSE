@@ -32,7 +32,7 @@ public class CoursesRepository {
         int gradeScope_id = course.getGradeScopeId();
 
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id, gradescope_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id, gradeScope_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, title);
         statement.setInt(2, term_id);
         statement.setInt(3, gradeScope_id);
