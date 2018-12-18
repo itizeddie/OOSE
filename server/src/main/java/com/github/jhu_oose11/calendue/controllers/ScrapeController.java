@@ -5,6 +5,7 @@ import com.github.jhu_oose11.calendue.models.Assignment;
 import com.github.jhu_oose11.calendue.models.Course;
 import com.github.jhu_oose11.calendue.models.Term;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
+import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import io.javalin.BadRequestResponse;
 import io.javalin.Context;
 
@@ -31,8 +32,18 @@ public class ScrapeController {
             String[] assignmentParams;
             int userId = ctx.sessionAttribute("current_user");
 
-            Term term = new Term("Term_Title", formatDate(" Jan 01"), formatDate(" Dec 31"));
-            term = Server.getTermsRepository().create(term);
+            Term term;
+
+            String term_title = "Unknown Term";
+            if (!lines[1].equals("")) term_title = lines[1];
+
+            try {
+                term = Server.getTermsRepository().getTermByTitle(lines[1]);
+            } catch(TermsRepository.NonExistingTermException e) {
+                term = new Term(term_title, formatDate(" Jan 01"), formatDate(" Dec 31"));
+                term = Server.getTermsRepository().create(term);
+            }
+
             Server.getTermsRepository().addTermForUser(term.getId(), userId);
 
             int gradescopeId = 0;
