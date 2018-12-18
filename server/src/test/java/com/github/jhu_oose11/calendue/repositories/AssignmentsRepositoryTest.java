@@ -117,6 +117,20 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
+    void getGradeAveragesInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
+        Map<Integer, Double> result = repo.getGradeAveragesInCourse(((Course) testData.get("course")).getId());
+
+        assertEquals(result.size(), 0);
+
+        userRepo.deleteUser(user);
+    }
+
+    @Test
     void getAssignmentsForUser() throws SQLException, UsersRepository.NonExistingUserException {
         String email = "test1234235@testing.com";
         User user = new User(email);

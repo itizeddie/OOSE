@@ -64,6 +64,8 @@ public class Server {
                                 get(AssignmentsController::getAssignment);
                                 put(AssignmentsController::markAssignmentComplete);
                         });
+
+                        get(AssignmentsController::getAverages);
                     });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
