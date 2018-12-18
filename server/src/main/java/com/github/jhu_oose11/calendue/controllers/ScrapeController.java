@@ -44,16 +44,31 @@ public class ScrapeController {
                 term = Server.getTermsRepository().create(term);
             }
 
-            Server.getTermsRepository().addTermForUser(term.getId(), userId);
+            try {
+                Server.getTermsRepository().addTermForUser(term.getId(), userId);
+            } catch (SQLException e) {
+                // If the user already has the term then ignore this exception
+                if (!e.getSQLState().equals("23505")) throw e;
+            }
 
             int gradescopeId = 0;
             if (!lines[0].equals(""))
                 gradescopeId = Integer.parseInt(lines[0]);
 
-            Course course = new Course("template", term.getId(), gradescopeId);
-            course = Server.getCoursesRepository().create(course);
-            Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
+            Course course;
+            try {
+                course = Server.getCoursesRepository().getCourseByGradescopeId(gradescopeId);
+            } catch (CoursesRepository.NonExistingCourseException e) {
+                course = new Course("template", term.getId(), gradescopeId);
+                course = Server.getCoursesRepository().create(course);
+            }
 
+            try {
+                Server.getCoursesRepository().addCourseForUser(course.getId(), userId);
+            } catch (SQLException e) {
+                // If the user already has the course then ignore this exception
+                if (!e.getSQLState().equals("23505")) throw e;
+            }
 
             //
             //This for loop is going through each assignment that was parsed and creating
@@ -96,7 +111,7 @@ public class ScrapeController {
     //Read STDOUT of perlscript and save output into a string
     //@param    String file: s the input for perl script via STDIN
     private static String runPerl(String file, String perlscript) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("perl", System.getProperty("user.dir")+"\\src\\main\\perl_parsing_scripts\\"+perlscript);
+        ProcessBuilder pb = new ProcessBuilder("perl", System.getProperty("user.dir")+"/src/main/perl_parsing_scripts/"+perlscript);
         StringBuilder returnString = new StringBuilder();
         try {
             Process p=pb.start();

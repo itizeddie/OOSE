@@ -51,6 +51,8 @@ class CoursesRepositoryTest {
 
         testData.put("course", course);
         testData.put("title", title);
+        testData.put("gradeScope_id", gradeScope_id);
+        testData.put("id", course.getId());
     }
 
     @AfterAll
@@ -128,6 +130,27 @@ class CoursesRepositoryTest {
     @Test
     void getCourseByIdNonExistent() {
         assertThrows(CoursesRepository.NonExistingCourseException.class, () -> repo.getCourseById(0));
+    }
+
+    @Test
+    void getCourseByGradescopeIdNonExistent() {
+        assertThrows(CoursesRepository.NonExistingCourseException.class, () -> repo.getCourseByGradescopeId(-1));
+    }
+
+    @Test
+    void getCourseById() throws SQLException, CoursesRepository.NonExistingCourseException {
+        Course course = repo.getCourseById((int) testData.get("id"));
+        Course targetCourse = (Course) testData.get("course");
+
+        assertEquals(course.getId(), targetCourse.getId());
+    }
+
+    @Test
+    void getCourseByGradescopeID() throws SQLException, CoursesRepository.NonExistingCourseException {
+        Course course = repo.getCourseByGradescopeId((int) testData.get("gradeScope_id"));
+        Course targetCourse = (Course) testData.get("course");
+
+        assertEquals(course.getId(), targetCourse.getId());
     }
 
     @Test
