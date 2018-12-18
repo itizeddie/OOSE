@@ -190,46 +190,91 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
-    void addStatistic() throws SQLException {
+    void addStatistic() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
         Assignment assignment = (Assignment) testData.get("assignment");
-        repo.addStatistic(assignment.getTitle());
+        repo.addAssignmentForUser(assignment.getId(), user.getId());
+
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user.getId());
 
         assertEquals(1, countStatistics(assignment.getTitle()));
         repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user);
     }
 
-    @Test
-    void addStatisticTwice() throws SQLException {
+   @Test
+    void addSameStatisticTwice() throws SQLException, AssignmentsRepository.NonExistingAssignmentException, UsersRepository.NonExistingUserException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
         Assignment assignment = (Assignment) testData.get("assignment");
-        repo.addStatistic(assignment.getTitle());
-        repo.addStatistic(assignment.getTitle());
+        repo.addAssignmentForUser(assignment.getId(), user.getId());
 
-        assertEquals(2, countStatistics(assignment.getTitle()));
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user.getId());
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user.getId());
+        assertEquals(1, countStatistics(assignment.getTitle()));
+
         repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user.getId());
     }
 
     @Test
-    void addTwoDifferentStatistics() throws SQLException {
+    void addTwoDifferentAssignmentStatistics() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
         Assignment assignment1 = (Assignment) testData.get("assignment");
-        repo.addStatistic(assignment1.getTitle());
+        repo.addAssignmentForUser(assignment1.getId(), user.getId());
+
+        repo.addStatistic(assignment1.getTitle(), assignment1.getId(), user.getId());
 
         String title = "Different Course";
         int course_id = ((Course) testData.get("course")).getId();
         LocalDate dueDate = (LocalDate) testData.get("due_date");
         Assignment assignment2 = new Assignment(title, dueDate, course_id);
-        repo.addStatistic(assignment2.getTitle());
+        assignment2 = repo.create(assignment2);
+        repo.addAssignmentForUser(assignment2.getId(), user.getId());
 
+        repo.addStatistic(assignment2.getTitle(), assignment2.getId(), user.getId());
+
+        assertEquals(1, countStatistics(assignment1.getTitle()));
         assertEquals(1, countStatistics(assignment2.getTitle()));
 
         repo.deleteStatistic(assignment1.getTitle());
         repo.deleteStatistic(assignment2.getTitle());
+        userRepo.deleteUser(user.getId());
+        repo.deleteAssignment(assignment1);
+        repo.deleteAssignment(assignment2);
     }
 
     @Test
-    void statisticsHasRightSums() throws SQLException {
+    void statisticsHasRightSums() throws SQLException, AssignmentsRepository.NonExistingAssignmentException, UsersRepository.NonExistingUserException {
+        // User 1
+        String email1 = "test1234235@testing.com";
+        User user1 = new User(email1);
+        userRepo.create(user1);
+        user1 = userRepo.getByEmail(email1);
+
+        // User 2
+        String email2 = "test67890@testing.com";
+        User user2 = new User(email2);
+        userRepo.create(user2);
+        user2 = userRepo.getByEmail(email2);
+
         Assignment assignment = (Assignment) testData.get("assignment");
-        repo.addStatistic(assignment.getTitle());
-        repo.addStatistic(assignment.getTitle());
+        repo.addAssignmentForUser(assignment.getId(), user1.getId());
+        repo.addAssignmentForUser(assignment.getId(), user2.getId());
+
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user1.getId());
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user2.getId());
 
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM statistics s WHERE s.title = ?");
@@ -238,18 +283,27 @@ class AssignmentsRepositoryTest {
         rs.next();
 
         double grades = 180;
-        int completionTime = 120;
+        double completionTime = 60;
 
         assertEquals(grades, rs.getInt("sum_of_grades"));
         assertEquals(completionTime, rs.getInt("sum_comp_time"));
 
         repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user1.getId());
+        userRepo.deleteUser(user2.getId());
     }
 
     @Test
-    void statisticsHasRightSTD() throws SQLException {
+    void statisticsHasRightSTD() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
         Assignment assignment = (Assignment) testData.get("assignment");
-        repo.addStatistic(assignment.getTitle());
+        repo.addAssignmentForUser(assignment.getId(), user.getId());
+
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user.getId());
 
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = ?");
@@ -257,8 +311,15 @@ class AssignmentsRepositoryTest {
         ResultSet rs = statement.executeQuery();
         rs.next();
 
-        assertTrue((rs.getDouble("grades_std") > 15.808) && (rs.getInt("grades_std") < 15.810));
+        double std = 0;
+        /*double[] blah = repo.getDoubleArrayFromAssmtUsers("grade", assignment.getId());
+        double uh = 90.0;
+        for (double x : blah) {
+            assertEquals(x, uh);
+        }*/
+        assertEquals(std, rs.getDouble("grades_std"));
         repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user);
     }
 
     private int countAssignmentUsers(int assignmentId, int userId) throws SQLException {
