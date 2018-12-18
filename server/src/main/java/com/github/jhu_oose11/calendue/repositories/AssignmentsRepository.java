@@ -281,14 +281,14 @@ public class AssignmentsRepository {
 
     public Assignment getAssignmentByTitleAndCourse(String title, int courseId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id, completed FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
+        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
         statement.setString(1, title);
         statement.setInt(2, courseId);
 
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new NonExistingAssignmentException();
         LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"), rs.getBoolean("completed"));
+        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"));
         statement.close();
         connection.close();
 
