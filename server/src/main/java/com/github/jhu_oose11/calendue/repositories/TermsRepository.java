@@ -1,5 +1,6 @@
 package com.github.jhu_oose11.calendue.repositories;
 
+import com.github.jhu_oose11.calendue.models.Course;
 import com.github.jhu_oose11.calendue.models.Term;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -25,6 +26,22 @@ public class TermsRepository {
         }
         statement.close();
         connection.close();
+    }
+
+    public Term getTermByTitle(String title) throws SQLException, NonExistingTermException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT id, title, start_date, end_date FROM terms WHERE terms.title = ?");
+        statement.setString(1, title);
+        ResultSet rs = statement.executeQuery();
+
+        if (!rs.next()) throw new NonExistingTermException();
+        LocalDate startDate = rs.getDate("start_date").toLocalDate();
+        LocalDate endDate = rs.getDate("end_date").toLocalDate();
+        Term term = new Term(rs.getInt("id"), rs.getString("title"), startDate, endDate);
+        statement.close();
+        connection.close();
+
+        return term;
     }
 
     public Term create(Term term) throws SQLException {
