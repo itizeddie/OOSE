@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e3d21a40-9248-47e3-8949-a1de2ddb40bb",
+		"_postman_id": "54db451c-43f6-4b3b-8555-023c094a224c",
 		"name": "Calendue",
 		"description": "This is the specification for the Calendue API. Import the development environment to make requests to the localhost server.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -443,7 +443,7 @@
 								}
 							],
 							"cookie": [],
-							"body": null
+							"body": ""
 						}
 					]
 				},

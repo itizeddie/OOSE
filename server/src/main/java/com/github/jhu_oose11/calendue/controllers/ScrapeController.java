@@ -53,10 +53,17 @@ public class ScrapeController {
                 assignmentParams = lines[i].split(",");
                 boolean completed = !assignmentParams[1].equals("0");
                 LocalDate date = formatDate(assignmentParams[3]);
+                double grade = 0;
+
+                if (completed) {
+                    double score = Integer.parseInt(assignmentParams[1].split("/")[0]);
+                    double total = Integer.parseInt(assignmentParams[1].split("/")[1]);
+                    grade = score/total * 100;
+                }
 
                 Assignment assignment = new Assignment(assignmentParams[0], date, course.getId(), completed);
                 assignment = Server.getAssignmentsRepository().create(assignment);
-                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
+                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId, grade, completed);
             }
         } catch (IOException e) {
             e.printStackTrace();
