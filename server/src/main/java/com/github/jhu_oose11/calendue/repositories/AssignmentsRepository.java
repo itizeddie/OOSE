@@ -175,14 +175,60 @@ public class AssignmentsRepository {
         markAsAddedToStatistic(assignmentId, userId);
     }
 
-    private double stdDev(List<Double> values) {
-        double mean = 0.0;
+
+    public List<Double> getTimePredictions(int userId) throws SQLException {
+        var connection=database.getConnection();
+        var statement=connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
+        statement.setInt(1,userId);
+        var rs = statement.executeQuery();
+
+        //get avg and std of a user's assignments
+        List<Double> time = getDoubleTimeArrayFromAssmtUsers("completion_time",userId);
+        double timeSTD = stdDev(time);
+        double timeavg = average(time);
+
+        List<Double> result = new ArrayList<>();
+        result.add(timeavg);
+        result.add(timeSTD);
+
+        statement.close();
+        connection.close();
+
+        return result;
+    }
+
+
+    private List<Double> getDoubleTimeArrayFromAssmtUsers(String param, int userId) throws SQLException{
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
+        statement.setInt(1, userId);
+        var rs=statement.executeQuery();
+
+        List<Double> result = new ArrayList<>();
+        while(rs.next()){
+            result.add(rs.getDouble(param));
+        }
+
+        statement.close();
+        connection.close();
+
+        return result;
+    }
+
+    private double average(List<Double> values){
+        double sum = 0.0;
         double num = 0.0;
-        for (double value : values) {
-            mean += value;
+        for(double value : values){
+            sum += value;
             num++;
         }
-        mean = mean / num;
+        return sum/num;
+    }
+
+
+    private double stdDev(List<Double> values) {
+        double num = 0.0;
+        double mean = average(values);
 
         double sum = 0;
         for (double value : values) {
@@ -281,14 +327,14 @@ public class AssignmentsRepository {
 
     public Assignment getAssignmentByTitleAndCourse(String title, int courseId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id, completed FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
+        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
         statement.setString(1, title);
         statement.setInt(2, courseId);
 
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new NonExistingAssignmentException();
         LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"), rs.getBoolean("completed"));
+        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"));
         statement.close();
         connection.close();
 

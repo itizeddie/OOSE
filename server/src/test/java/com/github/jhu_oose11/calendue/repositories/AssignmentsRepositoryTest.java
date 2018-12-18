@@ -376,6 +376,38 @@ class AssignmentsRepositoryTest {
         userRepo.deleteUser(user);
     }
 
+    @Test
+    void getTimePredictionsUser() throws SQLException, UsersRepository.NonExistingUserException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
+        Assignment assignment1 = (Assignment) testData.get("assignment");
+        repo.addAssignmentForUser(assignment1.getId(), user.getId(), 90, true);
+        repo.markAssignmentAsCompleted(assignment1.getId(), user.getId(), 8);
+
+
+        String title = "Different Course";
+        int course_id = ((Course) testData.get("course")).getId();
+        LocalDate dueDate = (LocalDate) testData.get("due_date");
+        Assignment assignment2 = new Assignment(title, dueDate, course_id);
+        assignment2 = repo.create(assignment2);
+        repo.addAssignmentForUser(assignment2.getId(), user.getId(), 90, true);
+        repo.markAssignmentAsCompleted(assignment2.getId(), user.getId(), 10);
+
+
+        List<Double> result = repo.getTimePredictions(user.getId());
+
+        assertEquals(9, result.get(0).doubleValue());
+        assertEquals(1, result.get(1).doubleValue());
+
+
+        userRepo.deleteUser(user.getId());
+        repo.deleteAssignment(assignment1);
+        repo.deleteAssignment(assignment2);
+    }
+
     private int countAssignmentUsers(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT COUNT(*) FROM assignments_users cu WHERE cu.assignment_id = ? AND cu.user_id = ?");
