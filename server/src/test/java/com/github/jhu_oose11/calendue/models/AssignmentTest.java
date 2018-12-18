@@ -32,7 +32,7 @@ class AssignmentTest {
         String title = (String) testData.get("title");
         int courseId = (int) testData.get("course_id");
         LocalDate dueDate = (LocalDate) testData.get("due_date");
-        Assignment assignment = new Assignment(id, title, dueDate, courseId, false);
+        Assignment assignment = new Assignment(id, title, dueDate, courseId);
 
         assertEquals(assignment.getId(), id);
     }

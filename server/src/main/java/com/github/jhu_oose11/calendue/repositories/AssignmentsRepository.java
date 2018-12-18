@@ -23,13 +23,14 @@ public class AssignmentsRepository {
         var connection = database.getConnection();
         var statement = connection.createStatement();
         if (database instanceof PGSimpleDataSource) {
-            statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE, completed BOOLEAN NOT NULL DEFAULT 'false')");
+            statement.execute("CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, title varchar(255) NOT NULL, due_date DATE NOT NULL, course_id INTEGER NOT NULL REFERENCES courses ON DELETE CASCADE)");
             statement.execute("CREATE TABLE IF NOT EXISTS assignments_users " +
                     "(id SERIAL PRIMARY KEY, " +
                     "assignment_id integer NOT NULL REFERENCES assignments ON DELETE CASCADE, " +
                     "user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE, " +
                     "completion_time REAL NOT NULL, " +
                     "grade REAL NOT NULL, " +
+                    "completed BOOLEAN NOT NULL DEFAULT 'false', " +
                     "added_to_statistics BOOLEAN NOT NULL DEFAULT 'false', " +
                     "UNIQUE(assignment_id, user_id))");
             statement.execute("CREATE TABLE IF NOT EXISTS statistics " +
@@ -61,7 +62,7 @@ public class AssignmentsRepository {
         ResultSet rs = statement.getGeneratedKeys();
         if (rs.next()) {
             int id = rs.getInt(1);
-            assignment = new Assignment(id, title, dueDate, course_id, false);
+            assignment = new Assignment(id, title, dueDate, course_id);
         }
 
 
@@ -71,17 +72,17 @@ public class AssignmentsRepository {
         return assignment;
     }
 
-    public void addAssignmentForUser(int assignmentId, int userId) throws SQLException {
+    public void addAssignmentForUser(int assignmentId, int userId, double grade, boolean completed) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id, completion_time, grade) VALUES (?, ?, ?, ?)");
+        var statement = connection.prepareStatement("INSERT INTO assignments_users (assignment_id, user_id, completion_time, grade, completed) VALUES (?, ?, ?, ?, ?)");
 
-        int completionTime = 30; // TODO: get actual completion time
-        double grade = 90; // TODO: get actual grade
+        double completionTime = 30; // TODO: get actual completion time
 
         statement.setInt(1, assignmentId);
         statement.setInt(2, userId);
-        statement.setInt(3, completionTime);
+        statement.setDouble(3, completionTime);
         statement.setDouble(4, grade);
+        statement.setBoolean(5, completed);
         statement.executeUpdate();
         statement.close();
         connection.close();
@@ -89,9 +90,11 @@ public class AssignmentsRepository {
 
 
     public void addStatistic(String title, int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
+        if (!isCompletedAssignment(assignmentId, userId)) {return;}
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
         var rs = statement.executeQuery();
+
         if (!rs.next()) { // checks if row in statistics already exists
             createStatistic(connection, title);
         }
@@ -101,6 +104,34 @@ public class AssignmentsRepository {
         }
         statement.close();
         connection.close();
+    }
+
+    public void markAssignmentAsCompleted(int assignmentId, int userId, double completionTime) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.createStatement();
+        statement.executeUpdate("UPDATE assignments_users set completed = 'true' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set completion_time = "+completionTime+" WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+
+        statement.close();
+        connection.close();
+    }
+
+    // Not private for testing purposes
+    boolean isCompletedAssignment(int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        statement.setInt(1, userId);
+        statement.setInt(2, assignmentId);
+        var rs = statement.executeQuery();
+
+        if (!rs.next()) throw new NonExistingAssignmentException();
+
+        boolean completed = rs.getBoolean("completed");
+
+        statement.close();
+        connection.close();
+
+        return completed;
     }
 
     private void createStatistic(Connection connection, String title) throws SQLException {
@@ -220,7 +251,7 @@ public class AssignmentsRepository {
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT a.id, title, due_date, course_id, completed FROM assignments a INNER JOIN assignments_users au ON au.user_id = ?");
+        var statement = connection.prepareStatement("SELECT a.id, title, due_date, course_id FROM assignments a INNER JOIN assignments_users au ON au.user_id = ?");
         statement.setInt(1, userId);
         ResultSet results = statement.executeQuery();
 
@@ -228,7 +259,7 @@ public class AssignmentsRepository {
         while (results.next()) {
             System.out.println(results.getInt("id"));
             LocalDate dueDate = results.getDate("due_date").toLocalDate();
-            assignments.add(new Assignment(results.getInt("id"), results.getString("title"), dueDate, results.getInt("course_id"), results.getBoolean("completed")));
+            assignments.add(new Assignment(results.getInt("id"), results.getString("title"), dueDate, results.getInt("course_id")));
         }
 
         return assignments;
@@ -236,12 +267,12 @@ public class AssignmentsRepository {
 
     public Assignment getAssignmentById(int assignment_id) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id, completed FROM assignments WHERE assignments.id = ?");
+        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id FROM assignments WHERE assignments.id = ?");
         statement.setInt(1, assignment_id);
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new NonExistingAssignmentException();
         LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"), rs.getBoolean("completed"));
+        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"));
         statement.close();
         connection.close();
 
@@ -250,14 +281,14 @@ public class AssignmentsRepository {
 
     public Assignment getAssignmentByTitleAndCourse(String title, int courseId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id, completed FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
+        var statement = connection.prepareStatement("SELECT id, title, due_date, course_id FROM assignments WHERE assignments.title = ? AND assignments.course_id = ?");
         statement.setString(1, title);
         statement.setInt(2, courseId);
 
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new NonExistingAssignmentException();
         LocalDate dueDate = rs.getDate("due_date").toLocalDate();
-        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"), rs.getBoolean("completed"));
+        Assignment assignment = new Assignment(rs.getInt("id"), rs.getString("title"), dueDate, rs.getInt("course_id"));
         statement.close();
         connection.close();
 
