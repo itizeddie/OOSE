@@ -48,7 +48,7 @@ public class ScrapeController {
             //This for loop is going through each assignment that was parsed and creating
             //assignment objects.
             //
-            for( int i =1; i < lines.length; i++)
+            for( int i =2; i < lines.length; i++)
             {
                 assignmentParams = lines[i].split(",");
                 boolean completed = !assignmentParams[1].equals("0");
