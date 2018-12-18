@@ -4,6 +4,7 @@ import com.github.jhu_oose11.calendue.Server;
 import com.github.jhu_oose11.calendue.models.Assignment;
 import com.github.jhu_oose11.calendue.models.Course;
 import com.github.jhu_oose11.calendue.models.Term;
+import com.github.jhu_oose11.calendue.repositories.AssignmentsRepository;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
 import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import io.javalin.BadRequestResponse;
@@ -32,43 +33,18 @@ public class ScrapeController {
             String[] assignmentParams;
             int userId = ctx.sessionAttribute("current_user");
 
-            Term term;
-
             String term_title = "Unknown Term";
             if (!lines[1].equals("")) term_title = lines[1];
 
-            try {
-                term = Server.getTermsRepository().getTermByTitle(lines[1]);
-            } catch(TermsRepository.NonExistingTermException e) {
-                term = new Term(term_title, formatDate(" Jan 01"), formatDate(" Dec 31"));
-                term = Server.getTermsRepository().create(term);
-            }
-
-            try {
-                Server.getTermsRepository().addTermForUser(term.getId(), userId);
-            } catch (SQLException e) {
-                // If the user already has the term then ignore this exception
-                if (!e.getSQLState().equals("23505")) throw e;
-            }
+            Term term = getOrCreateTerm(term_title);
+            addUserToTerm(userId, term);
 
             int gradescopeId = 0;
             if (!lines[0].equals(""))
                 gradescopeId = Integer.parseInt(lines[0]);
 
-            Course course;
-            try {
-                course = Server.getCoursesRepository().getCourseByGradescopeId(gradescopeId);
-            } catch (CoursesRepository.NonExistingCourseException e) {
-                course = new Course("template", term.getId(), gradescopeId);
-                course = Server.getCoursesRepository().create(course);
-            }
-
-            try {
-                Server.getCoursesRepository().addCourseForUser(course.getId(), userId);
-            } catch (SQLException e) {
-                // If the user already has the course then ignore this exception
-                if (!e.getSQLState().equals("23505")) throw e;
-            }
+            Course course = getOrCreateCourse(term, gradescopeId);
+            addUserToCourse(userId, course);
 
             //
             //This for loop is going through each assignment that was parsed and creating
@@ -79,10 +55,10 @@ public class ScrapeController {
                 assignmentParams = lines[i].split(",");
                 boolean completed = !assignmentParams[1].equals("0");
                 LocalDate date = formatDate(assignmentParams[3]);
+                String title = assignmentParams[0];
 
-                Assignment assignment = new Assignment(assignmentParams[0], date, course.getId(), completed);
-                assignment = Server.getAssignmentsRepository().create(assignment);
-                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
+                Assignment assignment = getOrCreateAssignment(course, completed, date, title);
+                addUserToAssignment(userId, assignment);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,6 +67,66 @@ public class ScrapeController {
             e.printStackTrace();
         }
 
+    }
+
+    private static void addUserToAssignment(int userId, Assignment assignment) throws SQLException {
+        try {
+            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
+        } catch (SQLException e) {
+            // If the user already has the assignment then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Assignment getOrCreateAssignment(Course course, boolean completed, LocalDate date, String title) throws SQLException {
+        Assignment assignment;
+        try {
+            assignment = Server.getAssignmentsRepository().getAssignmentByTitleAndCourse(title, course.getId());
+        } catch (AssignmentsRepository.NonExistingAssignmentException e) {
+            assignment = new Assignment(title, date, course.getId(), completed);
+            assignment = Server.getAssignmentsRepository().create(assignment);
+        }
+        return assignment;
+    }
+
+    private static void addUserToCourse(int userId, Course course) throws SQLException {
+        try {
+            Server.getCoursesRepository().addCourseForUser(course.getId(), userId);
+        } catch (SQLException e) {
+            // If the user already has the course then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Course getOrCreateCourse(Term term, int gradescopeId) throws SQLException {
+        Course course;
+        try {
+            course = Server.getCoursesRepository().getCourseByGradescopeId(gradescopeId);
+        } catch (CoursesRepository.NonExistingCourseException e) {
+            course = new Course("template", term.getId(), gradescopeId);
+            course = Server.getCoursesRepository().create(course);
+        }
+        return course;
+    }
+
+    private static void addUserToTerm(int userId, Term term) throws SQLException {
+        try {
+            Server.getTermsRepository().addTermForUser(term.getId(), userId);
+        } catch (SQLException e) {
+            // If the user already has the term then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Term getOrCreateTerm(String term_title) throws SQLException {
+        Term term;
+        try {
+            term = Server.getTermsRepository().getTermByTitle(term_title);
+        } catch(TermsRepository.NonExistingTermException e) {
+            term = new Term(term_title, formatDate(" Jan 01"), formatDate(" Dec 31"));
+            term = Server.getTermsRepository().create(term);
+        }
+        return term;
     }
 
     private static LocalDate formatDate(String stringDate)
