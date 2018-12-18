@@ -165,7 +165,7 @@ use v5.10;
 		    }
 		    else #Need this for assignments that were not submitted
 		    {
-		        my ($justAssignment) = $completeHtm[$count+1] =~ /<[^\"|\n|>]*/i;
+		        my ($justAssignment) = $completeHtm[$count+2] =~ /<[^\"|\n|>]*/i;
 		        #/[A-Za-z0-9 ]+/i;
 		        return substr($&, 1);
 		    }

@@ -36,7 +36,8 @@ public class LoginController {
         try {
             ensureLoginParamsValid(ctx);
         } catch(InvalidInputException e) {
-            Map<String, Object> args = model("flash", e.getMessage());
+            Map<String, Object>
+                    args = model("flash", e.getMessage());
             ctx.status(400);
             Render.render(ctx, TemplatePath.LOGIN, args);
             return;
