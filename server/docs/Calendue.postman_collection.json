@@ -1985,7 +1985,62 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "time_spent",
+											"value": "2",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{host}}/assignment/{{ASSIGNMENT_ID}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignment",
+										"{{ASSIGNMENT_ID}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 18 Dec 2018 04:44:05 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "Javalin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Length",
+									"value": "720"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html>\n<html>\n    <head>\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n        <link rel=\"stylesheet\" href=\"/app.css\" />\n        <link rel=\"stylesheet\" href=\"/login.css\" />\n        <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\">\n        <meta charset=\"UTF-8\">\n        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js\"></script>\n        <script>\r\n    \tif( !window.jQuery ) document.write('\n            <script src=\"js/jquery-3.0.0.min.js\"><\\/script>');\r\n    \n            </script>\n            <link rel=\"stylesheet\" href=\"/fullcalendar.css\">\n            <link rel=\"stylesheet\" media=\"print\" href=\"/fullcalendar.print.min.css\">\n            <script src='/js/moment.min.js'></script>\n            <script src='/js/fullcalendar.js'></script>\n            <script src=\"https://cdn.plot.ly/plotly-latest.min.js\"></script>\n            <title> Calendue </title>\n        </head>\n        <body>\n            <div class=\"flash\">\n                <ul>\n                    <li>Must be logged in to view this page.</li>\n                </ul>\n            </div>\n            <div id=\"content-container\">\n                <h2>Calendue Login</h2>\n                <form action=\"/login\" method=\"post\">\n                    <div class=\"container\">\n                        <label for=\"username\">\n                            <b>Username</b>\n                        </label>\n                        <input type=\"text\" placeholder=\"Enter Username\" name=\"username\">\n                        <label for=\"password\">\n                            <b>Password</b>\n                        </label>\n                        <input type=\"password\" placeholder=\"Enter Password\" name=\"password\" required>\n                        <button type=\"submit\">Login</button>\n                    </div>\n                    <div class=\"container\" style=\"background-color:#f1f1f1\">\n                        <button type=\"button\" class=\"cancelbtn\">Cancel</button>\n                        <span class=\"psw\">Forgot \n                            <a href=\"#\">password?</a>\n                        </span>\n                    </div>\n                </form>\n            </div>\n        </body>"
+						}
+					]
 				}
 			],
 			"description": "PUT Request: Marks the assignment as complete. Accepts `assignment_id` param for the assignment ID and a `time_spent` param for the time spent on the assignment.\n\nReturns 404 if the assignment is not found or 200 if successful.\n\nReturns 400 for validation error (if `time_spent` is blank)",

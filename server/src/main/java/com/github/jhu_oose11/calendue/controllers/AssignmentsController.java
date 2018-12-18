@@ -54,6 +54,27 @@ public class AssignmentsController {
         ctx.result("" + assignment.getId());
     }
 
+    public static void markAssignmentComplete(Context ctx) throws SQLException {
+        if (!Auth.ensureLoggedIn(ctx)) return;
+        int current_user_id = ctx.sessionAttribute("current_user");
+
+        int assignment_id;
+        int completion_time;
+        try {
+            assignment_id = Integer.parseInt(ctx.pathParam("assignment_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Assignment not found.");
+        }
+        try {
+            completion_time = Integer.parseInt(ctx.formParam("time_spent"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Completion time must be a valid number.");
+        }
+        Server.getAssignmentsRepository().markAssignmentAsCompleted(assignment_id, current_user_id, completion_time);
+
+        ctx.status(200);
+    }
+
     public static void getAssignment(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
         int assignment_id;
         try {

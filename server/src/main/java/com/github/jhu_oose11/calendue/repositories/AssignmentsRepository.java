@@ -106,7 +106,18 @@ public class AssignmentsRepository {
         connection.close();
     }
 
-    private boolean isCompletedAssignment(int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
+    public void markAssignmentAsCompleted(int assignmentId, int userId, double completionTime) throws SQLException {
+        var connection = database.getConnection();
+        var statement = connection.createStatement();
+        statement.executeUpdate("UPDATE assignments_users set completed = 'true' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set completion_time = "+completionTime+" WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+
+        statement.close();
+        connection.close();
+    }
+
+    // Not private for testing purposes
+    boolean isCompletedAssignment(int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
         statement.setInt(1, userId);

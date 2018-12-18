@@ -312,12 +312,49 @@ class AssignmentsRepositoryTest {
         rs.next();
 
         double std = 0;
-        /*double[] blah = repo.getDoubleArrayFromAssmtUsers("grade", assignment.getId());
-        double uh = 90.0;
-        for (double x : blah) {
-            assertEquals(x, uh);
-        }*/
+
         assertEquals(std, rs.getDouble("grades_std"));
+        repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user);
+    }
+
+    @Test
+    void assignmentMarkedAsComplete() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addAssignmentForUser(assignment.getId(), user.getId(), 90, true);
+        repo.markAssignmentAsCompleted(assignment.getId(), user.getId(), 8);
+
+        assertTrue(repo.isCompletedAssignment(assignment.getId(), user.getId()));
+
+        userRepo.deleteUser(user);
+    }
+
+    @Test
+    void completionTimeAddedToStatistic() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        String email = "test1234235@testing.com";
+        User user = new User(email);
+        userRepo.create(user);
+        user = userRepo.getByEmail(email);
+
+        double completionTime = 8;
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addAssignmentForUser(assignment.getId(), user.getId(), 90, true);
+        repo.markAssignmentAsCompleted(assignment.getId(), user.getId(), completionTime);
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user.getId());
+
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics s WHERE s.title = ?");
+        statement.setString(1, assignment.getTitle());
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+
+        assertEquals(completionTime, rs.getInt("sum_comp_time"));
+
         repo.deleteStatistic(assignment.getTitle());
         userRepo.deleteUser(user);
     }
