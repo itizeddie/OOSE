@@ -34,3 +34,20 @@ All notable changes to this project will be documented in this file.
 - Add New Term controller.
 - Add Term model and repository with full unit tests.
 - Add Postman API for terms with tests.
+
+# Iteration 5
+- Setup and deploy to Heroku
+- Graphs appear on front page
+- Extension Testing has been setup
+- Assignments are loaded onto calendar
+- Parser stores records in database 
+- Signup through extension has more validation
+- User can logout through extension
+- Add API for calendar assignment retrieveal
+
+# Iteration 6
+- Retrieve existing terms when scraping
+- Retrieve existing courses when scraping
+- Retrieve existing assignments when scraping
+- Add statistics tables
+- Add methods for populating/updating statistics
