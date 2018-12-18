@@ -117,7 +117,7 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
-    void getGradeAveragesInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+    void getGradeAveragesInCourseStart() throws SQLException, UsersRepository.NonExistingUserException {
         String email = "test1234235@testing.com";
         User user = new User(email);
         userRepo.create(user);
@@ -128,6 +128,50 @@ class AssignmentsRepositoryTest {
         assertEquals(result.size(), 0);
 
         userRepo.deleteUser(user);
+    }
+
+    @Test
+    void getGradeAveragesInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+        String title2 = "Test Course";
+        LocalDate dueDate2 = LocalDate.now();
+        Assignment assignment2 = new Assignment(2, title2, dueDate2, ((Course) testData.get("course")).getId());
+        assignment2 = repo.create(assignment2);
+
+        testData.put("assignment", assignment2);
+        testData.put("title", title2);
+        testData.put("due_date", dueDate2);
+
+        // User 1
+        String email1 = "test1234235@testing.com";
+        User user1 = new User(email1);
+        userRepo.create(user1);
+        user1 = userRepo.getByEmail(email1);
+
+        // User 2
+        String email2 = "test67890@testing.com";
+        User user2 = new User(email2);
+        userRepo.create(user2);
+        user2 = userRepo.getByEmail(email2);
+
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addAssignmentForUser(assignment.getId(), user1.getId(), 90, true);
+        repo.addAssignmentForUser(assignment.getId(), user2.getId(), 70, true);
+
+        /*repo.addAssignmentForUser(assignment2.getId(), user1.getId(), 70, true);
+        repo.addAssignmentForUser(assignment2.getId(), user2.getId(), 90, true);*/
+
+        Map<Integer, Double> result = repo.getGradeAveragesInCourse(((Course) testData.get("course")).getId());
+
+        System.out.println(result);
+        assertEquals(result.size(), 2);
+
+        userRepo.deleteUser(user1);
+        userRepo.deleteUser(user2);
+
+        try {
+            repo.deleteAssignment(assignment2);
+        }
+        catch(SQLException ignored) {}
     }
 
     @Test

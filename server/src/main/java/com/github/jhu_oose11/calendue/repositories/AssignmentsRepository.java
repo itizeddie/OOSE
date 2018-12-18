@@ -315,13 +315,13 @@ public class AssignmentsRepository {
 
     public Map<Integer, Double> getGradeAveragesInCourse(int courseId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT AVG(au.grade) AS avg_grade, au.user_id FROM assignments_users au INNER JOIN assignments a ON a.id = au.assignment_id AND a.course_id = ? GROUP BY au.user_id");
+        var statement = connection.prepareStatement("SELECT AVG(au.grade) AS avg_grade, user_id FROM assignments_users au INNER JOIN assignments a ON a.id = au.assignment_id AND a.course_id = ? GROUP BY au.user_id");
         statement.setInt(1, courseId);
         var rs = statement.executeQuery();
 
         Map<Integer, Double> result = new HashMap<>();
         while(rs.next()) {
-            result.put(rs.getInt("au.user_id"), rs.getDouble("avg_grade"));
+            result.put(rs.getInt("user_id"), rs.getDouble("avg_grade"));
         }
 
         statement.close();
