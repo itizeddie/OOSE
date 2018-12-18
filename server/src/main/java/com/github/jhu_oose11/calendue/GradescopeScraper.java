@@ -1,6 +1,8 @@
-package com.github.jhu_oose11.calendue.models;
+package com.github.jhu_oose11.calendue;
 
-import com.github.jhu_oose11.calendue.Server;
+import com.github.jhu_oose11.calendue.models.Assignment;
+import com.github.jhu_oose11.calendue.models.Course;
+import com.github.jhu_oose11.calendue.models.Term;
 import com.github.jhu_oose11.calendue.repositories.AssignmentsRepository;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
 import com.github.jhu_oose11.calendue.repositories.TermsRepository;
