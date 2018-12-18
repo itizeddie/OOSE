@@ -22,7 +22,8 @@
         <input type="text" name="hours" placeholder="Enter a number...">
         <input type="submit" value="Submit">
     </form>
-    <p>Statistics</p>
+    <br><br>
+    <h2>Statistics</h2>
     <div id="assignmentScores"></div>
     <div id='classCompareDiv'></div>
     <div id='classScoresDistributionDiv'></div>
@@ -48,10 +49,12 @@ $(document).ready(function() {
     function loadEvents(xhttp) {
         var assignments = JSON.parse(xhttp.responseText);
         for(const date in assignments) {
-            var name = assignments[date][0].title;
-            events.push({title: name, start: date, description: "<p>(Hours predicted)</p>"});
+            for(var i = 0; i < assignments[date].length; i++) {
+                var name = assignments[date][i].title;
+                var uniqueId = assignments[date][i].id;
+                events.push({title: name, start: date, id: uniqueId, description: "<p>(Hours predicted)</p>"});
+            }
         }
-
         loadCalendar();
     }
 
@@ -69,7 +72,7 @@ $(document).ready(function() {
     function getDate() {
         var today = new Date();
         var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
+        var mm = today.getMonth()+1;
         var yyyy = today.getFullYear();
 
         if(dd<10) {
@@ -82,6 +85,7 @@ $(document).ready(function() {
         return today;
     }
 
+    // loads the calendar interface
     function loadCalendar() {
         $('#calendar').fullCalendar({
             header: {
@@ -108,7 +112,6 @@ $(document).ready(function() {
                             $(this).dialog("destroy");
                         }
                     });
-
                     assignmentScoresGraph(event.title);
                     classComparisonGraph();
                     classDistributionGraph();
@@ -117,6 +120,7 @@ $(document).ready(function() {
         });
     }
 
+    // Specific assignment's class scores
     function assignmentScoresGraph(name) {
         var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
         avg = getAverage(x);
@@ -131,7 +135,7 @@ $(document).ready(function() {
         var assignmentData = [assignmentHistogram];
         var layout = {
             title: name,
-            bargap: 0.1,
+            bargap: 0.05,
             xaxis: {
                 title: 'Score',
                 range: [0, 50]
@@ -141,8 +145,11 @@ $(document).ready(function() {
             }
         };
         Plotly.newPlot('assignmentScores', assignmentData, layout);
+        var extend = [0];
+        Plotly.extendTraces('assignmentScores', {x: [extend]}, [0]);
     }
 
+    // User's scores compared to class average per assignment
     function classComparisonGraph() {
         var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3']; // all assignments for a class
         var userScores = [76, 85, 80]; // user's scores
@@ -178,6 +185,7 @@ $(document).ready(function() {
         Plotly.newPlot('classCompareDiv', classCompareData, classCompareLayout);
     }
 
+    // Class scores for each assignment
     function classDistributionGraph() {
         var assignment1Scores = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
         var assignment2Scores = [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50];
@@ -199,7 +207,7 @@ $(document).ready(function() {
                 color: 'rgb(100,80,230)'
             },
                 boxmean: 'sd'
-            };
+        };
         var classAssignment3Scores = {
             y: assignment3Scores,
             name: 'Assignment 3',
@@ -207,15 +215,16 @@ $(document).ready(function() {
             marker: {
                 color: 'rgb(190,100,70)'
             },
-                boxmean: 'sd'
+            boxmean: 'sd'
         };
 
-        var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores, classAssignment3Scores];
+        var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores];
         var classAssignmentScoresLayout = {
             title: 'Class Scores By Assignment Distribution'
         };
 
         Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
+        Plotly.addTraces('classScoresDistributionDiv', classAssignment3Scores);
     }
 
 </script>
