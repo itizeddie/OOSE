@@ -17,6 +17,11 @@
 <div id='calendar'></div>
 <div id="eventContent" title="Event Details" style="display:none;">
     <div id="eventInfo"></div>
+    <form action="/action_page.php">
+      Hours Spent:
+      <input type="text" name="hours" placeholder="Enter a number...">
+      <input type="submit" value="Submit">
+    </form>
     <p><strong><a id="eventLink" href="" target="_blank">Assignment Statistics</a></strong></p>
 </div>
 <div id="myDiv"></div>
@@ -65,7 +70,7 @@
             $("#eventContent").dialog({
                 modal: true,
                 title: event.title,
-                height: 500,
+                height: 'auto',
                 width: 'auto',
                 close: function() {
                     $(this).dialog("destroy");
