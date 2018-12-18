@@ -25,6 +25,13 @@ public class LoginController {
         }
     }
 
+    public static void getUserId(Context ctx) {
+        if (!Auth.ensureLoggedIn(ctx)) return;
+        
+        ctx.json(ctx.sessionAttribute("current_user"));
+        ctx.status(200);
+    }
+
     public static void login(Context ctx) throws SQLException {
         try {
             ensureLoginParamsValid(ctx);
