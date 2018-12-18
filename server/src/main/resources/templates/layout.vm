@@ -16,6 +16,7 @@
     <link rel="stylesheet" media="print" href="/fullcalendar.print.min.css">
     <script src='/js/moment.min.js'></script>
     <script src='/js/fullcalendar.js'></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     $javascript
     <title> Calendue </title>
