@@ -32,7 +32,7 @@ public class CoursesRepository {
         int gradeScope_id = course.getGradeScopeId();
 
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id, gradescope_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        var statement = connection.prepareStatement("INSERT INTO courses (title, term_id, gradeScope_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, title);
         statement.setInt(2, term_id);
         statement.setInt(3, gradeScope_id);
@@ -81,6 +81,20 @@ public class CoursesRepository {
         statement.setInt(1, course_id);
         ResultSet rs = statement.executeQuery();
         if (!rs.next()) throw new CoursesRepository.NonExistingCourseException();
+        Course course = new Course(rs.getInt("id"), rs.getString("title"), rs.getInt("term_id"), rs.getInt("gradeScope_id"));
+        statement.close();
+        connection.close();
+
+        return course;
+    }
+
+
+    public Course getCourseByGradescopeId(int gradescopeId) throws SQLException, NonExistingCourseException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT id, title, term_id, gradeScope_id FROM courses WHERE courses.gradeScope_id = ?");
+        statement.setInt(1, gradescopeId);
+        ResultSet rs = statement.executeQuery();
+        if (!rs.next()) throw new NonExistingCourseException();
         Course course = new Course(rs.getInt("id"), rs.getString("title"), rs.getInt("term_id"), rs.getInt("gradeScope_id"));
         statement.close();
         connection.close();
