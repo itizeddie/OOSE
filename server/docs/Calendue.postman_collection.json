@@ -1599,7 +1599,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "43331da8-ab40-4498-98fe-1a723d089a14",
+								"id": "864bd887-770c-433b-8a21-e2bb1f03d93c",
 								"exec": [
 									"request = {",
 									"    url:`${pm.variables.get(\"host\")}/term`,",
@@ -1645,7 +1645,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dbdfc1a8-927a-4277-9ef3-5687173401d9",
+								"id": "1c5ba44b-fcc5-49e6-bf30-44244d5d56a2",
 								"exec": [
 									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
 									"",
@@ -1680,6 +1680,11 @@
 									"key": "due_date",
 									"value": "2018-09-16",
 									"type": "text"
+								},
+								{
+									"key": "grade",
+									"value": "90/100",
+									"type": "text"
 								}
 							]
 						},
@@ -1704,34 +1709,9 @@
 					"name": "Success",
 					"event": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "70e21b2b-142b-4de6-8728-dfdcb92d5162",
-								"exec": [
-									"/*{",
-									"\t\"<date>\": [<assignment>],",
-									"\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],",
-									"\t...",
-									"}*/",
-									"",
-									"//pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
-									"",
-									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
-									"",
-									"request = {",
-									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
-									"    method: 'DELETE'",
-									"};",
-									"",
-									"pm.sendRequest(request);"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
 							"listen": "prerequest",
 							"script": {
-								"id": "30e94b85-fa71-4044-96bd-fa32930c81db",
+								"id": "1b604d67-1157-4e50-b440-886df44c5393",
 								"exec": [
 									"request = {",
 									"    url:`${pm.variables.get(\"host\")}/login`,",
@@ -1788,7 +1768,8 @@
 									"                            formdata: [",
 									"                                {key: 'due_date', value: \"2018-09-16\", description: {content: \"\", type: \"text/plain\"}},",
 									"                                {key: 'course_id', value: pm.environment.get(\"COURSE_ID\"), description: {content: \"\", type: \"text/plain\"}},",
-									"                                {key: 'title', value: 'Assignment 1', description: {content: \"\", type: \"text/plain\"}}",
+									"                                {key: 'title', value: 'Assignment 1', description: {content: \"\", type: \"text/plain\"}},",
+									"                                {key: 'grade', value: '20/30', description: {content: \"\", type: \"text/plain\"}}",
 									"                            ]",
 									"                        }",
 									"                    }",
@@ -1799,6 +1780,31 @@
 									"        }",
 									"    });",
 									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "afdcc510-9fab-41c6-93bf-6be08ec077cb",
+								"exec": [
+									"/*{",
+									"\t\"<date>\": [<assignment>],",
+									"\t\"2018-10-10\": [{\"name\": 'Assignment 1', \"uuid\": <assignment UUID>}],",
+									"\t...",
+									"}*/",
+									"",
+									"//pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"",
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);"
 								],
 								"type": "text/javascript"
 							}
@@ -1961,6 +1967,105 @@
 			"item": [
 				{
 					"name": "Success",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "27b9ffed-bbb1-4123-9c37-e07102481672",
+								"exec": [
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/login`,",
+									"    method: 'POST',",
+									"    body: {",
+									"        mode: 'formdata',",
+									"        formdata: [",
+									"            {key: 'username', value: 'test_user', description: {content: \"\", type: \"text/plain\"}},",
+									"            {key: 'password', value: '12345', description: {content: \"\", type: \"text/plain\"}},",
+									"        ]",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(request, function(err, response) {",
+									"    request = {",
+									"        url:`${pm.variables.get(\"host\")}/term`,",
+									"        method: 'POST',",
+									"        body: {",
+									"            mode: 'formdata',",
+									"            formdata: [",
+									"                {key: 'start_date', value: '2018-10-10', description: {content: \"\", type: \"text/plain\"}},",
+									"                {key: 'end_date', value: '2018-12-20', description: {content: \"\", type: \"text/plain\"}},",
+									"                {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}}",
+									"            ]",
+									"        }",
+									"    };",
+									"    ",
+									"    pm.sendRequest(request, function (err, response) {",
+									"        if (response.code == 201) {",
+									"            pm.environment.set(\"TERM_ID\", response.text());",
+									"                ",
+									"            request = {",
+									"                url:`${pm.variables.get(\"host\")}/course`,",
+									"                method: 'POST',",
+									"                body: {",
+									"                    mode: 'formdata',",
+									"                    formdata: [",
+									"                        {key: 'term_id', value: pm.environment.get(\"TERM_ID\"), description: {content: \"\", type: \"text/plain\"}},",
+									"                        {key: 'title', value: 'Fall 2018', description: {content: \"\", type: \"text/plain\"}},",
+									"                        {key: 'gradeScope_id', value: 255, description: {content: \"\", type: \"text/plain\"}}",
+									"                    ]",
+									"                }",
+									"            };",
+									"        ",
+									"            pm.sendRequest(request, function (err, response) {",
+									"                if (response.code == 201) {",
+									"                    pm.environment.set(\"COURSE_ID\", response.text());",
+									"                    ",
+									"                    request = {",
+									"                        url:`${pm.variables.get(\"host\")}/assignment`,",
+									"                        method: 'POST',",
+									"                        body: {",
+									"                            mode: 'formdata',",
+									"                            formdata: [",
+									"                                {key: 'due_date', value: \"2018-09-16\", description: {content: \"\", type: \"text/plain\"}},",
+									"                                {key: 'course_id', value: pm.environment.get(\"COURSE_ID\"), description: {content: \"\", type: \"text/plain\"}},",
+									"                                {key: 'title', value: 'Assignment 1', description: {content: \"\", type: \"text/plain\"}},",
+									"                                {key: 'grade', value: '20/30', description: {content: \"\", type: \"text/plain\"}}",
+									"                            ]",
+									"                        }",
+									"                    }",
+									"                    ",
+									"                    pm.sendRequest(request, function (err, response) {",
+									"                        if (response.code == 201) {",
+									"                            pm.environment.set(\"ASSIGNMENT_ID\", response.text());",
+									"                        }",
+									"                    });",
+									"                }",
+									"            });",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "23aa34fe-5e88-4d4f-bc6a-6d7293a92058",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"",
+									"request = {",
+									"    url:`${pm.variables.get(\"host\")}/term/${pm.environment.get('TERM_ID')}`,",
+									"    method: 'DELETE'",
+									"};",
+									"",
+									"pm.sendRequest(request);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -1975,13 +2080,13 @@
 							]
 						},
 						"url": {
-							"raw": "{{host}}/assignment/{{assignmentIdentifier}}",
+							"raw": "{{host}}/assignment/{{ASSIGNMENT_ID}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"assignment",
-								"{{assignmentIdentifier}}"
+								"{{ASSIGNMENT_ID}}"
 							]
 						}
 					},
