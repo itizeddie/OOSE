@@ -1,8 +1,8 @@
 package com.github.jhu_oose11.calendue.controllers;
 
 import com.github.jhu_oose11.calendue.controllers.Helpers.Auth;
-import com.github.jhu_oose11.calendue.models.GradescopeScraper;
-import com.github.jhu_oose11.calendue.models.Scraper;
+import com.github.jhu_oose11.calendue.GradescopeScraper;
+import com.github.jhu_oose11.calendue.Scraper;
 import io.javalin.Context;
 
 import java.sql.SQLException;

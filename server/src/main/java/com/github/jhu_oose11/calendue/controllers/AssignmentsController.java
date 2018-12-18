@@ -77,6 +77,18 @@ public class AssignmentsController {
         ctx.status(200);
     }
 
+    public static void getAverages(Context ctx) throws SQLException {
+        if (!Auth.ensureLoggedIn(ctx)) return;
+        int current_user_id = ctx.sessionAttribute("current_user");
+
+        int courseId = Integer.parseInt(ctx.formParam("course_id"));
+
+        var averages = Server.getAssignmentsRepository().getGradeAveragesInCourse(courseId);
+
+        ctx.json(averages);
+        ctx.status(200);
+    }
+
     public static void getAssignment(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
         int assignment_id;
         try {

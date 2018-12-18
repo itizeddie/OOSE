@@ -1,4 +1,4 @@
-package com.github.jhu_oose11.calendue.models;
+package com.github.jhu_oose11.calendue;
 
 import java.sql.SQLException;
 

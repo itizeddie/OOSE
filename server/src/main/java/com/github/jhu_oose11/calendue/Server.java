@@ -44,6 +44,7 @@ public class Server {
                         path(":user_id", () -> delete(AccountsController::deleteAccount));
                     });
                     path("scrape", () -> post(ScrapeController::main));
+                    path("usercheck", () -> get(LoginController::getUserId));
                     path("login", () -> {
                         get(LoginController::loginView);
                         post(LoginController::login);
@@ -59,7 +60,7 @@ public class Server {
                     path("course", () -> post(CoursesController::newCourse));
                     path("assignment", () -> {
                         post(AssignmentsController::newAssignment);
-                        get(AssignmentsController::getUserTimePredictions);
+                        get(AssignmentsController::getAverages);
                         path(":assignment_id", () -> {
                                 get(AssignmentsController::getAssignment);
                                 put(AssignmentsController::markAssignmentComplete);
@@ -70,7 +71,6 @@ public class Server {
                                 get(AssignmentsController::getClassAssignmentScore);
                                 });
                         });
-
                     });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
