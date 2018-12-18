@@ -88,5 +88,19 @@ public class CoursesRepository {
         return course;
     }
 
+
+    public Course getCourseByGradescopeId(int gradescopeId) throws SQLException, NonExistingCourseException {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT id, title, term_id, gradeScope_id FROM courses WHERE courses.gradeScope_id = ?");
+        statement.setInt(1, gradescopeId);
+        ResultSet rs = statement.executeQuery();
+        if (!rs.next()) throw new NonExistingCourseException();
+        Course course = new Course(rs.getInt("id"), rs.getString("title"), rs.getInt("term_id"), rs.getInt("gradeScope_id"));
+        statement.close();
+        connection.close();
+
+        return course;
+    }
+
     public class NonExistingCourseException extends Exception {}
 }
