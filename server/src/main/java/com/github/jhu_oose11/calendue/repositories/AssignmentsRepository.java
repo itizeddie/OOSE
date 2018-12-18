@@ -162,24 +162,25 @@ public class AssignmentsRepository {
 
     private boolean notAddedToStatistics(int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT added_to_statistic FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
         statement.setInt(1, userId);
         statement.setInt(2, assignmentId);
         var rs = statement.executeQuery();
 
         if (!rs.next()) throw new NonExistingAssignmentException();
-        boolean added = rs.getBoolean("added_to_statistic");
+
+        boolean added = rs.getBoolean("added_to_statistics");
 
         statement.close();
         connection.close();
 
-        return added;
+        return !added;
     }
 
     private void markAsAddedToStatistic(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.createStatement();
-        statement.executeUpdate("UPDATE assignments_users set added_to_statistics = 'false' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set added_to_statistics = 'true' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
 
         statement.close();
         connection.close();
@@ -187,11 +188,11 @@ public class AssignmentsRepository {
 
     private double getDoubleFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
         statement.setInt(1, userId);
         statement.setInt(2, assignmentId);
         var rs = statement.executeQuery();
-
+        rs.next();
         double result = rs.getDouble(param);
 
         statement.close();
@@ -200,10 +201,10 @@ public class AssignmentsRepository {
         return result;
     }
 
-    private double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId) throws SQLException {
+    public double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId) throws SQLException {
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT "+param+" FROM assignments_users WHERE assignment_id = ?");
-        statement.setInt(2, assignmentId);
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE assignment_id = ?");
+        statement.setInt(1, assignmentId);
         var rs = statement.executeQuery();
 
         int size = 100;
