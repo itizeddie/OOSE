@@ -18,69 +18,42 @@
 <div id="eventContent" title="Event Details" style="display:none;">
     <div id="eventInfo"></div>
     <form action="/action_page.php">
-      Hours Spent:
-      <input type="text" name="hours" placeholder="Enter a number...">
-      <input type="submit" value="Submit">
+        Hours Spent:
+        <input type="text" name="hours" placeholder="Enter a number...">
+        <input type="submit" value="Submit">
     </form>
-    <p><strong><a id="eventLink" href="" target="_blank">Assignment Statistics</a></strong></p>
+    <p>Statistics</p>
+    <div id="assignmentScores"></div>
+    <div id='classCompareDiv'></div>
+    <div id='classScoresDistributionDiv'></div>
 </div>
-<div id="myDiv"></div>
-<div class="stat">
-    <p id="average"></p>
-</div>
-<div class="stat">
-    <p id="percentile"></p>
-</div>
-<div class="stat">
-    <p id="toc"></p>
-</div>
-<br>
-<div class="stat">
-    <p id="rec"></p>
-</div>
-<br>
-<div id='classCompareDiv'></div>
-<div class='stat'>
-    <p id='variation'></p>
-</div>
-<div id='classScoresDistributionDiv'></div>
-</div>
+
 <script>
-    var events = [];
-    getAssignments("calendar/get")
-  $(document).ready(function() {
+var events = [];
+$(document).ready(function() {
+    getAssignments("calendar/get");
+});
 
-    $('#calendar').fullCalendar({
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,basicWeek,basicDay'
-      },
-      theme: true,
-      defaultDate: getDate(),
-      navLinks: true, // can click day/week names to navigate views
-      editable: false,
-      eventLimit: true, // allow "more" link when too many events
-      events: events,
-      eventRender: function (event, element) {
-        element.attr('href', 'javascript:void(0);');
-        element.click(function() {
-            $("#eventInfo").html(event.description);
-            $("#eventLink").attr('href', event.url);
-            $("#eventContent").dialog({
-                modal: true,
-                title: event.title,
-                height: 'auto',
-                width: 'auto',
-                close: function() {
-                    $(this).dialog("destroy");
-                }
-            });
-        })
-      }
-    });
+    function getAssignments(url) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              loadEvents(this);
+            }
+        };
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
 
-  });
+    function loadEvents(xhttp) {
+        var assignments = JSON.parse(xhttp.responseText);
+        for(const date in assignments) {
+            var name = assignments[date][0].title;
+            events.push({title: name, start: date, description: "<p>(Hours predicted)</p>"});
+        }
+
+        loadCalendar();
+    }
 
     // function to get average of an array
     function getAverage(array) {
@@ -100,134 +73,150 @@
         var yyyy = today.getFullYear();
 
         if(dd<10) {
-            dd = '0'+dd
+            dd = '0'+dd;
         }
-
         if(mm<10) {
-            mm = '0'+mm
+            mm = '0'+mm;
         }
-
         today = yyyy + '/' + mm + '/' + dd;
         return today;
     }
 
-    function getAssignments(url) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              loadEvents(this);
+    function loadCalendar() {
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            theme: true,
+            defaultDate: getDate(),
+            navLinks: true, // can click day/week names to navigate views
+            editable: false,
+            eventLimit: true, // allow "more" link when too many events
+            events: events,
+            eventRender: function (event, element) {
+                element.attr('href', 'javascript:void(0);');
+                element.click(function() {
+                    $("#eventInfo").html(event.description);
+                    $("#eventContent").dialog({
+                        modal: true,
+                        title: event.title,
+                        height: 'auto',
+                        minWidth: 800,
+                        close: function() {
+                            $(this).dialog("destroy");
+                        }
+                    });
+
+                    assignmentScoresGraph(event.title);
+                    classComparisonGraph();
+                    classDistributionGraph();
+                });
+            }
+        });
+    }
+
+    function assignmentScoresGraph(name) {
+        var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
+        avg = getAverage(x);
+        var mean = "Average: " + avg.toString() + "     ";
+        var percentile = "Percentile: 80";
+        var toc = "Avg Completion Time: 3.5 hours";
+        var rec = "Estimated Completion Time: 4.5 hours";
+        var assignmentHistogram = {
+            x: x,
+            type: 'histogram',
+        };
+        var assignmentData = [assignmentHistogram];
+        var layout = {
+            title: name,
+            bargap: 0.1,
+            xaxis: {
+                title: 'Score',
+                range: [0, 50]
+            },
+            yaxis: {
+                title: 'Number of students'
             }
         };
-        xhttp.open("GET", url, true);
-        xhttp.send();
+        Plotly.newPlot('assignmentScores', assignmentData, layout);
     }
 
-    function loadEvents(xhttp) {
-        var assignments = JSON.parse(xhttp.responseText);
-        for(const date in assignments) {
-            var name = assignments[date][0].title;
-            events.push({title: name, start: date, description: "<p>Description</p>", url: "http://www.google.com/"});
+    function classComparisonGraph() {
+        var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3']; // all assignments for a class
+        var userScores = [76, 85, 80]; // user's scores
+        var classAvgScores = [75.23, 82.13, 84.45]; // class average scores
+        var diff = []; // difference from mean
+        var variation; // average deviation from mean
+        for(var i = 0; i < userScores.length; i++) {
+            diff.push(userScores[i] - classAvgScores[i]);
         }
+        variation = "Average Deviation from Mean: " + getAverage(diff).toString() + "%";
+        var userData = {
+            x: assignments,
+            y: userScores,
+            name: 'Your Scores',
+            type: 'bar',
+            text: userScores.map(String),
+            textposition: 'auto'
+        };
+        var classData = {
+            x: assignments,
+            y: classAvgScores,
+            name: 'Class Scores',
+            type: 'bar',
+            text: classAvgScores.map(String),
+            textposition: 'auto'
+        };
+
+        var classCompareData = [userData, classData];
+        var classCompareLayout = {
+            title: 'Assignments Overview',
+            barmode: 'group'
+        };
+        Plotly.newPlot('classCompareDiv', classCompareData, classCompareLayout);
     }
 
-// Assignment score histogram graph
-var x = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
-avg = getAverage(x);
-var mean = "Average: " + avg.toString() + "     ";
-var percentile = "Percentile: 80";
-var toc = "Avg Completion Time: 3.5 hours";
-var rec = "Estimated Completion Time: 4.5 hours";
-var assignmentHistogram = {
-    x: x,
-    type: 'histogram',
-  };
-var assignmentData = [assignmentHistogram];
-var layout = {
-    title: 'Assignment 1 Details',
-    bargap: 0.1,
-    xaxis: {
-        range: [0, 50]
+    function classDistributionGraph() {
+        var assignment1Scores = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
+        var assignment2Scores = [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50];
+        var assignment3Scores = [20, 20, 20, 20, 20, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 42.5, 42.5, 42.5, 45, 45, 45, 50, 50, 50, 50, 50, 50, 50];
+        var classAssignment1Scores = {
+            y: assignment1Scores,
+            name: 'Assignment 1',
+            type: 'box',
+            marker: {
+                color: 'rgb(10,140,208)'
+            },
+                boxmean: 'sd'
+        };
+        var classAssignment2Scores = {
+            y: assignment2Scores,
+            name: 'Assignment 2',
+            type: 'box',
+            marker: {
+                color: 'rgb(100,80,230)'
+            },
+                boxmean: 'sd'
+            };
+        var classAssignment3Scores = {
+            y: assignment3Scores,
+            name: 'Assignment 3',
+            type: 'box',
+            marker: {
+                color: 'rgb(190,100,70)'
+            },
+                boxmean: 'sd'
+        };
+
+        var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores, classAssignment3Scores];
+        var classAssignmentScoresLayout = {
+            title: 'Class Scores By Assignment Distribution'
+        };
+
+        Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
     }
-}
-
-// Class comparison graph
-var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3']; // all assignments for a class
-var userScores = [76, 85, 80]; // user's scores
-var classAvgScores = [75.23, 82.13, 84.45]; // class average scores
-var diff = []; // difference from mean
-var variation; // average deviation from mean
-for(var i = 0; i < userScores.length; i++) {
-    diff.push(userScores[i] - classAvgScores[i]);
-}
-variation = "Average Deviation from Mean: " + getAverage(diff).toString() + "%";
-var userData = {
-    x: assignments,
-    y: userScores,
-    name: 'Your Scores',
-    type: 'bar',
-    text: userScores.map(String),
-    textposition: 'auto'
-};
-var classData = {
-    x: assignments,
-    y: classAvgScores,
-    name: 'Class Scores',
-    type: 'bar',
-    text: classAvgScores.map(String),
-    textposition: 'auto'
-};
-
-var classCompareData = [userData, classData];
-var classCompareLayout = {
-    title: 'Assignments Overview',
-    barmode: 'group'
-};
-
-// Class Scores Distribution Graph
-var classAssignment1Scores = {
-  y: [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50],
-  name: 'Assignment 1',
-  type: 'box',
-  marker: {
-    color: 'rgb(10,140,208)'
-  },
-  boxmean: 'sd'
-};
-var classAssignment2Scores = {
-  y: [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50],
-  name: 'Assignment 2',
-  type: 'box',
-  marker: {
-    color: 'rgb(100,80,230)'
-  },
-  boxmean: 'sd'
-};
-var classAssignment3Scores = {
-  y: [20, 20, 20, 20, 20, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 42.5, 42.5, 42.5, 45, 45, 45, 50, 50, 50, 50, 50, 50, 50],
-  name: 'Assignment 3',
-  type: 'box',
-  marker: {
-    color: 'rgb(190,100,70)'
-  },
-  boxmean: 'sd'
-};
-
-var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores, classAssignment3Scores];
-
-var classAssignmentScoresLayout = {
-  title: 'Class Scores By Assignment Distribution'
-};
-
-Plotly.newPlot('myDiv', assignmentData, layout);
-document.getElementById('average').innerHTML = mean;
-document.getElementById('percentile').innerHTML = percentile;
-document.getElementById('toc').innerHTML = toc;
-document.getElementById('rec').innerHTML = rec;
-
-Plotly.newPlot('classCompareDiv', classCompareData, classCompareLayout);
-document.getElementById('variation').innerHTML = variation;
-
-Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
 
 </script>
 #end

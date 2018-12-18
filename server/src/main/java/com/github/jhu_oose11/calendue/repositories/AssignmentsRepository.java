@@ -151,7 +151,6 @@ public class AssignmentsRepository {
 
         List<Assignment> assignments = new ArrayList<>();
         while (results.next()) {
-            System.out.println(results.getInt("id"));
             LocalDate dueDate = results.getDate("due_date").toLocalDate();
             assignments.add(new Assignment(results.getInt("id"), results.getString("title"), dueDate, results.getInt("course_id"), results.getBoolean("completed")));
         }
