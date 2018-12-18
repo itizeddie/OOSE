@@ -4,7 +4,9 @@ import com.github.jhu_oose11.calendue.Server;
 import com.github.jhu_oose11.calendue.models.Assignment;
 import com.github.jhu_oose11.calendue.models.Course;
 import com.github.jhu_oose11.calendue.models.Term;
+import com.github.jhu_oose11.calendue.repositories.AssignmentsRepository;
 import com.github.jhu_oose11.calendue.repositories.CoursesRepository;
+import com.github.jhu_oose11.calendue.repositories.TermsRepository;
 import io.javalin.BadRequestResponse;
 import io.javalin.Context;
 
@@ -31,28 +33,29 @@ public class ScrapeController {
             String[] assignmentParams;
             int userId = ctx.sessionAttribute("current_user");
 
-            Term term = new Term("Term_Title", formatDate(" Jan 01"), formatDate(" Dec 31"));
-            term = Server.getTermsRepository().create(term);
-            Server.getTermsRepository().addTermForUser(term.getId(), userId);
+            String term_title = "Unknown Term";
+            if (!lines[1].equals("")) term_title = lines[1];
+
+            Term term = getOrCreateTerm(term_title);
+            addUserToTerm(userId, term);
 
             int gradescopeId = 0;
             if (!lines[0].equals(""))
                 gradescopeId = Integer.parseInt(lines[0]);
 
-            Course course = new Course("template", term.getId(), gradescopeId);
-            course = Server.getCoursesRepository().create(course);
-            Server.getCoursesRepository().addCourseForUser(course.getId(),userId);
-
+            Course course = getOrCreateCourse(term, gradescopeId);
+            addUserToCourse(userId, course);
 
             //
             //This for loop is going through each assignment that was parsed and creating
             //assignment objects.
             //
-            for( int i =1; i < lines.length; i++)
+            for( int i =2; i < lines.length; i++)
             {
                 assignmentParams = lines[i].split(",");
                 boolean completed = !assignmentParams[1].equals("0");
                 LocalDate date = formatDate(assignmentParams[3]);
+
                 double grade = 0;
 
                 if (completed) {
@@ -61,9 +64,11 @@ public class ScrapeController {
                     grade = score/total * 100;
                 }
 
-                Assignment assignment = new Assignment(assignmentParams[0], date, course.getId(), completed);
-                assignment = Server.getAssignmentsRepository().create(assignment);
-                Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId, grade, completed);
+                String title = assignmentParams[0];
+
+                Assignment assignment = getOrCreateAssignment(course, date, title);
+                addUserToAssignment(userId, assignment, grade, completed);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,6 +77,66 @@ public class ScrapeController {
             e.printStackTrace();
         }
 
+    }
+
+    private static void addUserToAssignment(int userId, Assignment assignment, double grade, boolean completed) throws SQLException {
+        try {
+            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId, grade, completed);
+        } catch (SQLException e) {
+            // If the user already has the assignment then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Assignment getOrCreateAssignment(Course course, LocalDate date, String title) throws SQLException {
+        Assignment assignment;
+        try {
+            assignment = Server.getAssignmentsRepository().getAssignmentByTitleAndCourse(title, course.getId());
+        } catch (AssignmentsRepository.NonExistingAssignmentException e) {
+            assignment = new Assignment(title, date, course.getId());
+            assignment = Server.getAssignmentsRepository().create(assignment);
+        }
+        return assignment;
+    }
+
+    private static void addUserToCourse(int userId, Course course) throws SQLException {
+        try {
+            Server.getCoursesRepository().addCourseForUser(course.getId(), userId);
+        } catch (SQLException e) {
+            // If the user already has the course then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Course getOrCreateCourse(Term term, int gradescopeId) throws SQLException {
+        Course course;
+        try {
+            course = Server.getCoursesRepository().getCourseByGradescopeId(gradescopeId);
+        } catch (CoursesRepository.NonExistingCourseException e) {
+            course = new Course("template", term.getId(), gradescopeId);
+            course = Server.getCoursesRepository().create(course);
+        }
+        return course;
+    }
+
+    private static void addUserToTerm(int userId, Term term) throws SQLException {
+        try {
+            Server.getTermsRepository().addTermForUser(term.getId(), userId);
+        } catch (SQLException e) {
+            // If the user already has the term then ignore this exception
+            if (!e.getSQLState().equals("23505")) throw e;
+        }
+    }
+
+    private static Term getOrCreateTerm(String term_title) throws SQLException {
+        Term term;
+        try {
+            term = Server.getTermsRepository().getTermByTitle(term_title);
+        } catch(TermsRepository.NonExistingTermException e) {
+            term = new Term(term_title, formatDate(" Jan 01"), formatDate(" Dec 31"));
+            term = Server.getTermsRepository().create(term);
+        }
+        return term;
     }
 
     private static LocalDate formatDate(String stringDate)
@@ -92,7 +157,7 @@ public class ScrapeController {
     //Read STDOUT of perlscript and save output into a string
     //@param    String file: s the input for perl script via STDIN
     private static String runPerl(String file, String perlscript) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("perl", System.getProperty("user.dir")+"\\src\\main\\perl_parsing_scripts\\"+perlscript);
+        ProcessBuilder pb = new ProcessBuilder("perl", System.getProperty("user.dir")+"/src/main/perl_parsing_scripts/"+perlscript);
         StringBuilder returnString = new StringBuilder();
         try {
             Process p=pb.start();

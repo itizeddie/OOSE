@@ -24,6 +24,7 @@ use v5.10;
     #name, grade, release, and due, timeTakeToComplete as values for it. 
     ##
     my $courseId;
+    my $termName;
     my @assignmentNames; 
     my @assignmentGrades;
     my @assignmentRelease; 
@@ -43,8 +44,12 @@ use v5.10;
     $courseId = getCourseId(@allLines);
     print "$courseId\n";
     if($courseId eq $ERROR) { die "Can't read course number: $!";}
-    my $temp;
 
+    $termName = getTermName(@allLines);
+    print "$termName\n";
+    if($termName eq $ERROR) { die "Can't read term name: $!";}
+
+    my $temp;
     foreach my $line (@allLines) {
 
 	    if(($temp =  getAssignment($lineCount, $line, @allLines)) ne $ERROR)
@@ -114,6 +119,27 @@ use v5.10;
 	        }
     	}
 	    return $ERROR;
+    }
+
+    sub getTermName
+    {
+        my @lotsOfLines = @_;
+
+        my $regexPattern = "<div class=\"courseHeader--term\">";
+
+        my $found_match = 0;
+        foreach my $line ( @lotsOfLines )
+        {
+            if ($found_match == 1) {
+                chomp($line);
+                return substr($line, 1, -1);
+            }
+
+            if ($line =~ /$regexPattern/ )
+            {
+                $found_match = 1;
+            }
+        }
     }
 
     ##

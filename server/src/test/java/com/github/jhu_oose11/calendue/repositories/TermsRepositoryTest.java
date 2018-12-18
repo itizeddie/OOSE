@@ -49,6 +49,7 @@ class TermsRepositoryTest {
         testData.put("title", title);
         testData.put("startDate", startDate);
         testData.put("endDate", endDate);
+        testData.put("id", term.getId());
     }
 
     @Test
@@ -122,6 +123,27 @@ class TermsRepositoryTest {
     @Test
     void getTermByIdNonExistent() {
         assertThrows(TermsRepository.NonExistingTermException.class, () -> repo.getTermById(0));
+    }
+
+    @Test
+    void getTermByTitleNonExistent() {
+        assertThrows(TermsRepository.NonExistingTermException.class, () -> repo.getTermByTitle("nonexisting_title"));
+    }
+
+    @Test
+    void getTermByTitle() throws SQLException, TermsRepository.NonExistingTermException {
+        Term term = repo.getTermByTitle((String) testData.get("title"));
+        Term targetTerm = (Term) testData.get("term");
+
+        assertEquals(term.getId(), targetTerm.getId());
+    }
+
+    @Test
+    void getTermById() throws SQLException, TermsRepository.NonExistingTermException {
+        Term term = repo.getTermById((int) testData.get("id"));
+        Term targetTerm = (Term) testData.get("term");
+
+        assertEquals(term.getId(), targetTerm.getId());
     }
 
     @Test
