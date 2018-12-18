@@ -196,7 +196,6 @@ public class AssignmentsRepository {
         return result;
     }
 
-
     private List<Double> getDoubleTimeArrayFromAssmtUsers(String param, int userId) throws SQLException{
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
@@ -213,6 +212,7 @@ public class AssignmentsRepository {
 
         return result;
     }
+
 
     private double average(List<Double> values){
         double sum = 0.0;
@@ -279,7 +279,7 @@ public class AssignmentsRepository {
         connection.close();
     }
 
-    private double getDoubleFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
+    public double getDoubleFromAssmtUsers(String param, int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ? AND assignment_id = ?");
         statement.setInt(1, userId);

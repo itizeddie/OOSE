@@ -11,11 +11,12 @@ import com.github.jhu_oose11.calendue.repositories.AssignmentsRepository;
 import io.javalin.BadRequestResponse;
 import io.javalin.Context;
 import io.javalin.NotFoundResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Objects;
-import java.util.List;
+import java.util.*;
 
 public class AssignmentsController {
     public static void newAssignment(Context ctx) throws SQLException {
@@ -88,7 +89,47 @@ public class AssignmentsController {
         ctx.status(200);
     }
 
-    public void getUserTimePredictions(Context ctx) throws SQLException {
+
+    public static void getUserAssignmentScore(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
+        if(!Auth.ensureLoggedIn(ctx))return;
+        int current_user_id=ctx.sessionAttribute("current_user");
+
+        int assignment_id;
+        try {
+            assignment_id = Integer.parseInt(ctx.pathParam("assignment_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Assignment not found.");
+        }
+        double score = Server.getAssignmentsRepository().getDoubleFromAssmtUsers("grade", assignment_id, current_user_id);
+
+        ctx.result("" + score);
+        ctx.status(200);
+    }
+
+    public static void getClassAssignmentScore(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
+
+        int assignment_id;
+        try {
+            assignment_id = Integer.parseInt(ctx.pathParam("assignment_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Assignment not found.");
+        }
+        List<Double> scores;
+        scores = Server.getAssignmentsRepository().getDoubleArrayFromAssmtUsers("grade", assignment_id);
+
+        ObjectMapper json = new ObjectMapper();
+        try {
+            String results = json.writeValueAsString(scores);
+            ctx.result(results);
+            ctx.status(200);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            ctx.status(404);
+        }
+
+    }
+
+    public static void getUserTimePredictions(Context ctx) throws SQLException {
         if(!Auth.ensureLoggedIn(ctx))return;
         int current_user_id=ctx.sessionAttribute("current_user");
 
@@ -118,5 +159,4 @@ public class AssignmentsController {
         }
 
     }
-
 }

@@ -59,11 +59,18 @@ public class Server {
                     path("course", () -> post(CoursesController::newCourse));
                     path("assignment", () -> {
                         post(AssignmentsController::newAssignment);
-
+                        get(AssignmentsController::getUserTimePredictions);
                         path(":assignment_id", () -> {
                                 get(AssignmentsController::getAssignment);
                                 put(AssignmentsController::markAssignmentComplete);
+                                path("score", () -> {
+                                    get(AssignmentsController::getUserAssignmentScore);
+                                });
+                                path("allscores", () -> {
+                                get(AssignmentsController::getClassAssignmentScore);
+                                });
                         });
+
                     });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
