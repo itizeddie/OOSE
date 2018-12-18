@@ -48,11 +48,18 @@ $(document).ready(function() {
 
     function loadEvents(xhttp) {
         var assignments = JSON.parse(xhttp.responseText);
+        var duplicateIds = [];
         for(const date in assignments) {
             for(var i = 0; i < assignments[date].length; i++) {
                 var name = assignments[date][i].title;
                 var uniqueId = assignments[date][i].id;
-                events.push({title: name, start: date, id: uniqueId, description: "<p>(Hours predicted)</p>"});
+                for(var j = 0; j < duplicateIds.length; j++) {
+                    if(uniqueId == duplicateIds[j]) {uniqueId = 0;}
+                }
+                if(uniqueId != 0) {
+                    duplicateIds.push(uniqueId);
+                    events.push({title: name, start: date, id: uniqueId, description: "<p>(Hours predicted)</p>"});
+                }
             }
         }
         loadCalendar();
