@@ -104,17 +104,17 @@ class AssignmentsRepositoryTest {
 
     @Test
     void getAssignmentById() throws SQLException, AssignmentsRepository.NonExistingAssignmentException {
-        String title = "Test Assignment";
-        int course_id = ((Course) testData.get("course")).getId();
-        LocalDate dueDate = (LocalDate) testData.get("due_date");
-        Assignment assignment = new Assignment(title, dueDate, course_id, false);
-        assignment = repo.create(assignment);
-
+        Assignment assignment = (Assignment) testData.get("assignment");
         Assignment result = repo.getAssignmentById(assignment.getId());
         assertEquals(result.getId(), assignment.getId());
-        repo.deleteAssignment(assignment);
     }
 
+    @Test
+    void getAssignmentByTitleAndCourse() throws SQLException, AssignmentsRepository.NonExistingAssignmentException {
+        Assignment assignment = (Assignment) testData.get("assignment");
+        Assignment result = repo.getAssignmentByTitleAndCourse(assignment.getTitle(), assignment.getCourseId());
+        assertEquals(result.getId(), assignment.getId());
+    }
 
     @Test
     void getAssignmentsForUser() throws SQLException, UsersRepository.NonExistingUserException {
