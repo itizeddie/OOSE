@@ -3,8 +3,10 @@
 #set( $javascript = "<script src='/js/modernizr.js'></script><script src='/js/main.js'></script>")
 #@mainContent($css_name, $javascript)
 <html lang="en" class="no-js">
+<link href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" type="text/css" rel="stylesheet" />
 <div class="topnav">
     <a class="active" href="#home">CALENDUE</a>
+    <a href='/logout'>Logout</a>
     <div class="search-container">
         <form action="/action_page.php">
           <input type="text" placeholder="Search Class..." name="search">
@@ -12,9 +14,11 @@
         </form>
     </div>
 </div>
-<p id='demo'></p>
-<p id='temp'></p>
 <div id='calendar'></div>
+<div id="eventContent" title="Event Details" style="display:none;">
+    <div id="eventInfo"></div>
+    <p><strong><a id="eventLink" href="" target="_blank">Assignment Statistics</a></strong></p>
+</div>
 <div id="myDiv"></div>
 <div class="stat">
     <p id="average"></p>
@@ -47,11 +51,28 @@
         center: 'title',
         right: 'month,basicWeek,basicDay'
       },
+      theme: true,
       defaultDate: getDate(),
       navLinks: true, // can click day/week names to navigate views
       editable: false,
       eventLimit: true, // allow "more" link when too many events
-      events: events
+      events: events,
+      eventRender: function (event, element) {
+        element.attr('href', 'javascript:void(0);');
+        element.click(function() {
+            $("#eventInfo").html(event.description);
+            $("#eventLink").attr('href', event.url);
+            $("#eventContent").dialog({
+                modal: true,
+                title: event.title,
+                height: 500,
+                width: 'auto',
+                close: function() {
+                    $(this).dialog("destroy");
+                }
+            });
+        })
+      }
     });
 
   });
@@ -100,7 +121,7 @@
         var assignments = JSON.parse(xhttp.responseText);
         for(const date in assignments) {
             var name = assignments[date][0].title;
-            events.push({title: name, start: date});
+            events.push({title: name, start: date, description: "<p>Description</p>", url: "http://www.google.com/"});
         }
     }
 

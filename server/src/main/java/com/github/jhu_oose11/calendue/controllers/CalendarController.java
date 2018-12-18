@@ -31,6 +31,12 @@ public class CalendarController {
         ctx.json(mapAssignmentsByDueDate(assignments));
     }
 
+    public static void getStatistics(Context ctx) throws SQLException {
+        Auth.ensureLoggedIn(ctx);
+
+        int userId = ctx.sessionAttribute("current_user");
+    }
+
     private static Map<String, List<Assignment>> mapAssignmentsByDueDate(List<Assignment> assignments) {
         Map<String, List<Assignment>> assignmentList = new HashMap<>();
         for (Assignment assignment : assignments) {
