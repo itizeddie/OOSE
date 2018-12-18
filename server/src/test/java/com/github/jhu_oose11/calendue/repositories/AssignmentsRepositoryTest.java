@@ -322,7 +322,7 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
-    void statisticsHasRightSTD() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+    void oneStatisticsHasRightSTD() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
         String email = "test1234235@testing.com";
         User user = new User(email);
         userRepo.create(user);
@@ -344,6 +344,41 @@ class AssignmentsRepositoryTest {
         assertEquals(std, rs.getDouble("grades_std"));
         repo.deleteStatistic(assignment.getTitle());
         userRepo.deleteUser(user);
+    }
+
+    @Test
+    void twoStatisticsHaveRightSTD() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
+        // User 1
+        String email1 = "test1234235@testing.com";
+        User user1 = new User(email1);
+        userRepo.create(user1);
+        user1 = userRepo.getByEmail(email1);
+
+        // User 2
+        String email2 = "test67890@testing.com";
+        User user2 = new User(email2);
+        userRepo.create(user2);
+        user2 = userRepo.getByEmail(email2);
+
+        Assignment assignment = (Assignment) testData.get("assignment");
+        repo.addAssignmentForUser(assignment.getId(), user1.getId(), 100, true);
+        repo.addAssignmentForUser(assignment.getId(), user2.getId(), 90, true);
+
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user1.getId());
+        repo.addStatistic(assignment.getTitle(), assignment.getId(), user2.getId());
+
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = ?");
+        statement.setString(1, assignment.getTitle());
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+
+        double std = 5;
+
+        assertEquals(std, rs.getDouble("grades_std"));
+        repo.deleteStatistic(assignment.getTitle());
+        userRepo.deleteUser(user1);
+        userRepo.deleteUser(user2);
     }
 
     @Test
