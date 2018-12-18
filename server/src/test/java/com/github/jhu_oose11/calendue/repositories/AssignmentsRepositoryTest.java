@@ -293,7 +293,7 @@ class AssignmentsRepositoryTest {
         userRepo.deleteUser(user2.getId());
     }
 
-/*    @Test
+    @Test
     void statisticsHasRightSTD() throws SQLException, UsersRepository.NonExistingUserException, AssignmentsRepository.NonExistingAssignmentException {
         String email = "test1234235@testing.com";
         User user = new User(email);
@@ -312,15 +312,15 @@ class AssignmentsRepositoryTest {
         rs.next();
 
         double std = 0;
-        double[] blah = repo.getDoubleArrayFromAssmtUsers("grade", assignment.getId());
+        /*double[] blah = repo.getDoubleArrayFromAssmtUsers("grade", assignment.getId());
         double uh = 90.0;
         for (double x : blah) {
             assertEquals(x, uh);
-        }
+        }*/
         assertEquals(std, rs.getDouble("grades_std"));
         repo.deleteStatistic(assignment.getTitle());
-        //userRepo.deleteUser(user);
-    }*/
+        userRepo.deleteUser(user);
+    }
 
     private int countAssignmentUsers(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();

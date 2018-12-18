@@ -124,11 +124,11 @@ public class AssignmentsRepository {
         // Prepare variables
         int numSubmissions = rs.getInt("num_submissions") + 1;
         double sumGrades = rs.getDouble("sum_of_grades") + grade;
-        double[] grades = getDoubleArrayFromAssmtUsers("grade", assignmentId);
+        List<Double> grades = getDoubleArrayFromAssmtUsers("grade", assignmentId);
         double gradesSTD = stdDev(grades);
         double numCompTime = rs.getDouble("num_comp_time") + 1;
         double sumCompTime = rs.getDouble("sum_comp_time") + compTime;
-        double[] compTimes = getDoubleArrayFromAssmtUsers("completion_time", assignmentId);
+        List<Double> compTimes = getDoubleArrayFromAssmtUsers("completion_time", assignmentId);
         double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
@@ -144,7 +144,7 @@ public class AssignmentsRepository {
         markAsAddedToStatistic(assignmentId, userId);
     }
 
-    private double stdDev(double[] values) {
+    private double stdDev(List<Double> values) {
         double mean = 0.0;
         double num = 0.0;
         for (double value : values) {
@@ -201,24 +201,15 @@ public class AssignmentsRepository {
         return result;
     }
 
-    public double[] getDoubleArrayFromAssmtUsers(String param, int assignmentId) throws SQLException {
+    public List<Double> getDoubleArrayFromAssmtUsers(String param, int assignmentId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE assignment_id = ?");
         statement.setInt(1, assignmentId);
         var rs = statement.executeQuery();
 
-        int size = 100;
-        int counter = 0;
-        double[] result = new double[size];
-
+        List<Double> result = new ArrayList<>();
         while(rs.next()) {
-            result[counter++] = rs.getDouble(param);
-            if (counter >= size) {
-                double[] temp = new double[size*2];
-                System.arraycopy(result, 0, temp, 0, size);
-                size *= 2;
-                result = temp;
-            }
+            result.add(rs.getDouble(param));
         }
 
         statement.close();
