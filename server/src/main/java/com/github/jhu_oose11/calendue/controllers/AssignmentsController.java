@@ -25,6 +25,10 @@ public class AssignmentsController {
 
         String title = ctx.formParam("title");
         LocalDate dueDate = LocalDate.parse(Objects.requireNonNull(ctx.formParam("due_date")));
+        String gradeString = ctx.formParam("grade");
+        double score = Integer.parseInt(gradeString.split("/")[0]);
+        double total = Integer.parseInt(gradeString.split("/")[1]);
+        double grade = score/total * 100;
 
         int course_id;
         try {
@@ -37,7 +41,7 @@ public class AssignmentsController {
 
         try {
             assignment = Server.getAssignmentsRepository().create(assignment);
-            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), current_user_id);
+            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), current_user_id, grade, false);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23503")) {
                 throw new BadRequestResponse("Course does not exist.");
@@ -48,6 +52,27 @@ public class AssignmentsController {
 
         ctx.status(201);
         ctx.result("" + assignment.getId());
+    }
+
+    public static void markAssignmentComplete(Context ctx) throws SQLException {
+        if (!Auth.ensureLoggedIn(ctx)) return;
+        int current_user_id = ctx.sessionAttribute("current_user");
+
+        int assignment_id;
+        int completion_time;
+        try {
+            assignment_id = Integer.parseInt(ctx.pathParam("assignment_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Assignment not found.");
+        }
+        try {
+            completion_time = Integer.parseInt(ctx.formParam("time_spent"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Completion time must be a valid number.");
+        }
+        Server.getAssignmentsRepository().markAssignmentAsCompleted(assignment_id, current_user_id, completion_time);
+
+        ctx.status(200);
     }
 
     public static void getAssignment(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {

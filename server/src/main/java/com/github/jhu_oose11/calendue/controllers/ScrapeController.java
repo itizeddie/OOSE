@@ -55,10 +55,20 @@ public class ScrapeController {
                 assignmentParams = lines[i].split(",");
                 boolean completed = !assignmentParams[1].equals("0");
                 LocalDate date = formatDate(assignmentParams[3]);
+
+                double grade = 0;
+
+                if (completed) {
+                    double score = Integer.parseInt(assignmentParams[1].split("/")[0]);
+                    double total = Integer.parseInt(assignmentParams[1].split("/")[1]);
+                    grade = score/total * 100;
+                }
+
                 String title = assignmentParams[0];
 
-                Assignment assignment = getOrCreateAssignment(course, completed, date, title);
-                addUserToAssignment(userId, assignment);
+                Assignment assignment = getOrCreateAssignment(course, date, title);
+                addUserToAssignment(userId, assignment, grade, completed);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,21 +79,21 @@ public class ScrapeController {
 
     }
 
-    private static void addUserToAssignment(int userId, Assignment assignment) throws SQLException {
+    private static void addUserToAssignment(int userId, Assignment assignment, double grade, boolean completed) throws SQLException {
         try {
-            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId);
+            Server.getAssignmentsRepository().addAssignmentForUser(assignment.getId(), userId, grade, completed);
         } catch (SQLException e) {
             // If the user already has the assignment then ignore this exception
             if (!e.getSQLState().equals("23505")) throw e;
         }
     }
 
-    private static Assignment getOrCreateAssignment(Course course, boolean completed, LocalDate date, String title) throws SQLException {
+    private static Assignment getOrCreateAssignment(Course course, LocalDate date, String title) throws SQLException {
         Assignment assignment;
         try {
             assignment = Server.getAssignmentsRepository().getAssignmentByTitleAndCourse(title, course.getId());
         } catch (AssignmentsRepository.NonExistingAssignmentException e) {
-            assignment = new Assignment(title, date, course.getId(), completed);
+            assignment = new Assignment(title, date, course.getId());
             assignment = Server.getAssignmentsRepository().create(assignment);
         }
         return assignment;

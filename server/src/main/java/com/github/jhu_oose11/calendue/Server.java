@@ -59,7 +59,11 @@ public class Server {
                     path("course", () -> post(CoursesController::newCourse));
                     path("assignment", () -> {
                         post(AssignmentsController::newAssignment);
-                        path(":assignment_id", () -> get(AssignmentsController::getAssignment));
+
+                        path(":assignment_id", () -> {
+                                get(AssignmentsController::getAssignment);
+                                put(AssignmentsController::markAssignmentComplete);
+                        });
                     });
                 })
                 .event(JavalinEvent.SERVER_STARTING, () -> {
