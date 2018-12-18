@@ -15,6 +15,7 @@ import io.javalin.NotFoundResponse;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.List;
 
 public class AssignmentsController {
     public static void newAssignment(Context ctx) throws SQLException {
@@ -86,6 +87,23 @@ public class AssignmentsController {
         ctx.result("" + assignment.getId());
         ctx.status(200);
     }
+
+    public void getUserTimePredictions(Context ctx) throws SQLException {
+        if(!Auth.ensureLoggedIn(ctx))return;
+        int current_user_id=ctx.sessionAttribute("current_user");
+
+        List<Double> result;
+        try {
+            result = Server.getAssignmentsRepository().getTimePredictions(current_user_id);
+        } catch (SQLException e) {
+            throw e;
+        }
+
+        //mean stddev
+        ctx.result(""+ result.get(0) + " "+ result.get(1));
+        ctx.status(200);
+    }
+
 
     private static void ensureNewParamsValid(Context ctx) {
         String[] fields = {"title", "course_id", "due_date"};

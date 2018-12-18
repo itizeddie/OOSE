@@ -175,6 +175,68 @@ public class AssignmentsRepository {
         markAsAddedToStatistic(assignmentId, userId);
     }
 
+    public List<Double> getTimePredictions(int userId) throws SQLException {
+        var connection=database.getConnection();
+        var statement=connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
+        statement.setInt(1,userId);
+        var rs = statement.executeQuery();
+
+        //get avg and std of a user's assignments
+        List<Double> time = getDoubleTimeArrayFromAssmtUsers("completion_time",userId);
+        double timeSTD = stdDev(time);
+        double timeavg = average(time);
+
+        List<Double> result = new ArrayList<>();
+        result.add(timeavg);
+        result.add(timeSTD);
+
+        statement.close();
+        connection.close();
+
+        return result;
+    }
+
+
+    private List<Double> getDoubleTimeArrayFromAssmtUsers(String param, int userId) throws SQLException{
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
+        statement.setInt(1, userId);
+        var rs=statement.executeQuery();
+
+        List<Double> result = new ArrayList<>();
+        while(rs.next()){
+            result.add(rs.getDouble(param));
+        }
+
+        statement.close();
+        connection.close();
+
+        return result;
+    }
+
+    private double average(List<Double> values){
+        double sum = 0.0;
+        double num = 0.0;
+        for(double value : values){
+            sum += value;
+            num++;
+        }
+        return sum/num;
+    }
+
+
+   /* private double stdDev(List<Double> values) {
+        double num = 0.0;
+        double mean = average(values);
+
+        double sum = 0;
+        for (double value : values) {
+            sum += ((value - mean) * (value - mean));
+        }
+        return Math.sqrt(sum / num);
+    }*/
+
+
     private double stdDev(List<Double> values) {
         double mean = 0.0;
         double num = 0.0;
