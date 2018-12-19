@@ -205,44 +205,36 @@ $(document).ready(function() {
 
     // Class scores for each assignment
     function classDistributionGraph(id) {
-        var assignment1Scores = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
-        var assignment2Scores = [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50];
-        var assignment3Scores = [20, 20, 20, 20, 20, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 42.5, 42.5, 42.5, 45, 45, 45, 50, 50, 50, 50, 50, 50, 50];
-        var classAssignment1Scores = {
-            y: assignment1Scores,
-            name: 'Assignment 1',
+        var assignments = [], assignmentScores = [];
+        for(var i = 0; i < events.length; i++) {
+            if(events[i].courseId == id) {
+                scores = [];
+                assignments.push(events[i].title);
+                loadData(loadAssignmentScores, 'assignment/' + events[i].id + '/allscores');
+                assignmentScores.push(scores);
+            }
+        }
+        var classScores = {
+            y: assignmentScores[0],
+            name: assignments[0],
             type: 'box',
-            marker: {
-                color: 'rgb(10,140,208)'
-            },
-                boxmean: 'sd'
-        };
-        var classAssignment2Scores = {
-            y: assignment2Scores,
-            name: 'Assignment 2',
-            type: 'box',
-            marker: {
-                color: 'rgb(100,80,230)'
-            },
-                boxmean: 'sd'
-        };
-        var classAssignment3Scores = {
-            y: assignment3Scores,
-            name: 'Assignment 3',
-            type: 'box',
-            marker: {
-                color: 'rgb(190,100,70)'
-            },
             boxmean: 'sd'
         };
-
-        var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores];
+        var classAssignmentsData = [classScores];
         var classAssignmentScoresLayout = {
             title: 'Class Scores By Assignment Distribution'
         };
 
         Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
-        Plotly.addTraces('classScoresDistributionDiv', classAssignment3Scores);
+        for(var j = 1; j < assignments.length; j++) {
+            var newClassScores = {
+                y: assignmentScores[j],
+                name: assignments[j],
+                type: 'box',
+                boxmean: 'sd'
+            }
+        Plotly.addTraces('classScoresDistributionDiv', newClassScores);
+        }
     }
 
     // Class scores for each assignment
