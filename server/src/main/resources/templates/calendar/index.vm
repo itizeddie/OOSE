@@ -76,10 +76,11 @@ $(document).ready(function() {
 
     function loadAssignmentScores(xhttp) {
         var scores = [];
-        var arr = JSON.parse(xhttp.responseText);
+        var scores = JSON.parse(xhttp.responseText);
+        console.log(scores);
         if(arr.length > 0) {
-            for(var i = 0; i < arr.length; i++) {
-                scores.push(arr[i]);
+            for(var i = 0; i < scores.length; i++) {
+                scores.push(scores[i]);
             }
         }
         return scores;
@@ -150,7 +151,6 @@ $(document).ready(function() {
     // Specific assignment's class scores
     function assignmentScoresGraph(name, id) {
         var x = loadAssignmentScores('assignment/' + id + '/allscores');
-        avg = getAverage(x);
         var assignmentHistogram = {
             x: x,
             type: 'histogram',
