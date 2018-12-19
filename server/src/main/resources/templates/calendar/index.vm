@@ -30,19 +30,19 @@
 </div>
 <div id='courseClassDistributionDiv'></div>
 <script>
-var events = [];
+var events = [], userScores = [], scores = [];
 $(document).ready(function() {
-    getAssignments("calendar/get");
+    loadData(loadEvents, "calendar/get");
 });
 
-    function getAssignments(url) {
+    function loadData(getData, url) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-              loadEvents(this);
+              getData(this);
             }
         };
-        xhttp.open("GET", url, true);
+        xhttp.open("GET", url, false);
         xhttp.send();
     }
 
@@ -64,26 +64,20 @@ $(document).ready(function() {
             }
         }
         loadCalendar();
-        courseClassDistributionGraph();
     }
 
     function loadUserAssignmentScore(xhttp) {
-        var score;
-        var text = JSON.parse(xhttp.responseText);
-        if(text != null) {score = parseFloat(text);}
-        return score;
+        var score = JSON.parse(xhttp.responseText);
+        if(score != null) {
+            userScores.push(parseFloat(score));
+        }
     }
 
     function loadAssignmentScores(xhttp) {
-        var scores = [];
-        var scores = JSON.parse(xhttp.responseText);
-        console.log(scores);
-        if(arr.length > 0) {
-            for(var i = 0; i < scores.length; i++) {
-                scores.push(scores[i]);
-            }
+        var data = JSON.parse(xhttp.responseText);
+        for(var i = 0; i < data.length; i++) {
+            scores.push(data[i]);
         }
-        return scores;
     }
 
     // function to get average of an array
@@ -150,9 +144,10 @@ $(document).ready(function() {
 
     // Specific assignment's class scores
     function assignmentScoresGraph(name, id) {
-        var x = loadAssignmentScores('assignment/' + id + '/allscores');
+        var url = 'assignment/' + id.toString() + '/allscores';
+        loadData(loadAssignmentScores, url);
         var assignmentHistogram = {
-            x: x,
+            x: scores,
             type: 'histogram',
         };
         var assignmentData = [assignmentHistogram];
@@ -173,15 +168,16 @@ $(document).ready(function() {
 
     // User's scores compared to class average per assignment
     function classComparisonGraph(id) {
-        var assignments = ['Assignment 1', 'Assignment 2', 'Assignment 3'];
-        var userScores = [76, 85, 80];
-        var classAvgScores = [75.23, 82.13, 84.45];
-        var diff = []; // difference from mean
-        var variation; // average deviation from mean
-        for(var i = 0; i < userScores.length; i++) {
-            diff.push(userScores[i] - classAvgScores[i]);
+        var assignments = [], classAvgScores = [];
+        for(var i = 0; i < events.length; i++) {
+            if(events[i].courseId == id) {
+                scores = [];
+                assignments.push(events[i].title);
+                loadData(loadUserAssignmentScore, 'assignment/' + events[i].id + '/score');
+                loadData(loadAssignmentScores, 'assignment/' + events[i].id + '/allscores');
+                classAvgScores.push(getAverage(scores));
+            }
         }
-        variation = "Average Deviation from Mean: " + getAverage(diff).toString() + "%";
         var userData = {
             x: assignments,
             y: userScores,
@@ -209,44 +205,36 @@ $(document).ready(function() {
 
     // Class scores for each assignment
     function classDistributionGraph(id) {
-        var assignment1Scores = [15, 25, 25, 30, 30, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 47.5, 47.5, 47.5, 50, 50];
-        var assignment2Scores = [10, 15, 25, 25, 25, 30, 32.5, 32.5, 37.5, 35, 37.5, 37.5, 42.5, 42.5, 40, 40, 40, 45, 47.5, 47.5, 45, 45, 47.5, 47.5, 47.5, 47.5, 50];
-        var assignment3Scores = [20, 20, 20, 20, 20, 30, 32.5, 35, 35, 35, 37.5, 37.5, 40, 40, 42.5, 42.5, 42.5, 45, 45, 45, 50, 50, 50, 50, 50, 50, 50];
-        var classAssignment1Scores = {
-            y: assignment1Scores,
-            name: 'Assignment 1',
+        var assignments = [], assignmentScores = [];
+        for(var i = 0; i < events.length; i++) {
+            if(events[i].courseId == id) {
+                scores = [];
+                assignments.push(events[i].title);
+                loadData(loadAssignmentScores, 'assignment/' + events[i].id + '/allscores');
+                assignmentScores.push(scores);
+            }
+        }
+        var classScores = {
+            y: assignmentScores[0],
+            name: assignments[0],
             type: 'box',
-            marker: {
-                color: 'rgb(10,140,208)'
-            },
-                boxmean: 'sd'
-        };
-        var classAssignment2Scores = {
-            y: assignment2Scores,
-            name: 'Assignment 2',
-            type: 'box',
-            marker: {
-                color: 'rgb(100,80,230)'
-            },
-                boxmean: 'sd'
-        };
-        var classAssignment3Scores = {
-            y: assignment3Scores,
-            name: 'Assignment 3',
-            type: 'box',
-            marker: {
-                color: 'rgb(190,100,70)'
-            },
             boxmean: 'sd'
         };
-
-        var classAssignmentsData = [classAssignment1Scores, classAssignment2Scores];
+        var classAssignmentsData = [classScores];
         var classAssignmentScoresLayout = {
             title: 'Class Scores By Assignment Distribution'
         };
 
         Plotly.newPlot('classScoresDistributionDiv', classAssignmentsData, classAssignmentScoresLayout);
-        Plotly.addTraces('classScoresDistributionDiv', classAssignment3Scores);
+        for(var j = 1; j < assignments.length; j++) {
+            var newClassScores = {
+                y: assignmentScores[j],
+                name: assignments[j],
+                type: 'box',
+                boxmean: 'sd'
+            }
+        Plotly.addTraces('classScoresDistributionDiv', newClassScores);
+        }
     }
 
     // Class scores for each assignment

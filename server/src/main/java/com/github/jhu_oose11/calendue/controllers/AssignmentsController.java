@@ -132,7 +132,7 @@ public class AssignmentsController {
         ObjectMapper json = new ObjectMapper();
         try {
             String results = json.writeValueAsString(scores);
-            ctx.result(results);
+            ctx.json(scores);
             ctx.status(200);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
