@@ -89,9 +89,11 @@ public class AssignmentsRepository {
 
 
     public void addStatistic(String title, int assignmentId, int userId) throws SQLException, NonExistingAssignmentException {
-        if (!isCompletedAssignment(assignmentId, userId)) {return;}
+        if (!isCompletedAssignment(assignmentId, userId)) {
+            return;
+        }
         var connection = database.getConnection();
-        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = " + "'" + title + "'");
         var rs = statement.executeQuery();
 
         if (!rs.next()) { // checks if row in statistics already exists
@@ -108,8 +110,8 @@ public class AssignmentsRepository {
     public void markAssignmentAsCompleted(int assignmentId, int userId, double completionTime) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.createStatement();
-        statement.executeUpdate("UPDATE assignments_users set completed = 'true' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
-        statement.executeUpdate("UPDATE assignments_users set completion_time = "+completionTime+" WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set completed = 'true' WHERE user_id = " + userId + " AND assignment_id = " + assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set completion_time = " + completionTime + " WHERE user_id = " + userId + " AND assignment_id = " + assignmentId);
 
         statement.close();
         connection.close();
@@ -144,7 +146,7 @@ public class AssignmentsRepository {
     private void updateStatistics(Connection connection, String title, int assignmentId, int userId) throws SQLException {
         // note: still need to check if assignment was already added
         // currently this code assumes it was not added
-        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = "+"'"+title+"'");
+        var statement = connection.prepareStatement("SELECT * FROM statistics WHERE title = " + "'" + title + "'");
         var rs = statement.executeQuery();
         rs.next();
 
@@ -162,12 +164,12 @@ public class AssignmentsRepository {
         double compTimeSTD = stdDev(compTimes);
 
         var stm = connection.createStatement();
-        stm.executeUpdate("UPDATE statistics set num_submissions = "+numSubmissions+"WHERE title="+"'"+title+"'");
-        stm.executeUpdate("UPDATE statistics set sum_of_grades = "+sumGrades+"WHERE title="+"'"+title+"'");
-        stm.executeUpdate("UPDATE statistics set grades_std = "+gradesSTD+"WHERE title="+"'"+title+"'");
-        stm.executeUpdate("UPDATE statistics set num_comp_time = "+numCompTime+"WHERE title="+"'"+title+"'");
-        stm.executeUpdate("UPDATE statistics set sum_comp_time = "+sumCompTime+"WHERE title="+"'"+title+"'");
-        stm.executeUpdate("UPDATE statistics set comp_time_std = "+compTimeSTD+"WHERE title="+"'"+title+"'");
+        stm.executeUpdate("UPDATE statistics set num_submissions = " + numSubmissions + "WHERE title=" + "'" + title + "'");
+        stm.executeUpdate("UPDATE statistics set sum_of_grades = " + sumGrades + "WHERE title=" + "'" + title + "'");
+        stm.executeUpdate("UPDATE statistics set grades_std = " + gradesSTD + "WHERE title=" + "'" + title + "'");
+        stm.executeUpdate("UPDATE statistics set num_comp_time = " + numCompTime + "WHERE title=" + "'" + title + "'");
+        stm.executeUpdate("UPDATE statistics set sum_comp_time = " + sumCompTime + "WHERE title=" + "'" + title + "'");
+        stm.executeUpdate("UPDATE statistics set comp_time_std = " + compTimeSTD + "WHERE title=" + "'" + title + "'");
 
         stm.close();
 
@@ -175,13 +177,13 @@ public class AssignmentsRepository {
     }
 
     public List<Double> getTimePredictions(int userId) throws SQLException {
-        var connection=database.getConnection();
-        var statement=connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
-        statement.setInt(1,userId);
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
+        statement.setInt(1, userId);
         var rs = statement.executeQuery();
 
         //get avg and std of a user's assignments
-        List<Double> time = getDoubleTimeArrayFromAssmtUsers("completion_time",userId);
+        List<Double> time = getDoubleTimeArrayFromAssmtUsers("completion_time", userId);
         double timeSTD = stdDev(time);
         double timeavg = average(time);
 
@@ -195,14 +197,14 @@ public class AssignmentsRepository {
         return result;
     }
 
-    private List<Double> getDoubleTimeArrayFromAssmtUsers(String param, int userId) throws SQLException{
+    private List<Double> getDoubleTimeArrayFromAssmtUsers(String param, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.prepareStatement("SELECT * FROM assignments_users WHERE user_id = ?");
         statement.setInt(1, userId);
-        var rs=statement.executeQuery();
+        var rs = statement.executeQuery();
 
         List<Double> result = new ArrayList<>();
-        while(rs.next()){
+        while (rs.next()) {
             result.add(rs.getDouble(param));
         }
 
@@ -213,14 +215,14 @@ public class AssignmentsRepository {
     }
 
 
-    private double average(List<Double> values){
+    private double average(List<Double> values) {
         double sum = 0.0;
         double num = 0.0;
-        for(double value : values){
+        for (double value : values) {
             sum += value;
             num++;
         }
-        return sum/num;
+        return sum / num;
     }
 
 
@@ -260,7 +262,7 @@ public class AssignmentsRepository {
     private void markAsAddedToStatistic(int assignmentId, int userId) throws SQLException {
         var connection = database.getConnection();
         var statement = connection.createStatement();
-        statement.executeUpdate("UPDATE assignments_users set added_to_statistics = 'true' WHERE user_id = "+userId+" AND assignment_id = "+assignmentId);
+        statement.executeUpdate("UPDATE assignments_users set added_to_statistics = 'true' WHERE user_id = " + userId + " AND assignment_id = " + assignmentId);
 
         statement.close();
         connection.close();
@@ -288,7 +290,7 @@ public class AssignmentsRepository {
         var rs = statement.executeQuery();
 
         List<Double> result = new ArrayList<>();
-        while(rs.next()) {
+        while (rs.next()) {
             result.add(rs.getDouble(param));
         }
 
@@ -305,7 +307,7 @@ public class AssignmentsRepository {
         var rs = statement.executeQuery();
 
         Map<Integer, Double> result = new HashMap<>();
-        while(rs.next()) {
+        while (rs.next()) {
             result.put(rs.getInt("user_id"), rs.getDouble("avg_grade"));
         }
 
@@ -318,51 +320,64 @@ public class AssignmentsRepository {
     public Map<Integer, Double> getGradeAveragesPerAssignmentInCourse(int courseId) throws SQLException {
         var connection = database.getConnection();
 
-        var statement = connection.prepareStatement("SELECT id FROM assignments WHERE course_id = ?");
-
-        //var statement = connection.prepareStatement("SELECT AVG(au.grade) AS avg_grade, assignment_id FROM assignments_users au INNER JOIN assignments a ON a.id = au.assignment_id AND a.course_id = ? GROUP BY au.assignment_id");
-        statement.setInt(1, courseId);
-        var rs = statement.executeQuery();
+        Set<Integer> AssignmentIDs = getAssignmentListFromCourse(courseId);
 
         Map<Integer, Double> result = new HashMap<>();
-        /*while(rs.next()) {
-            //if (rs.getInt("course_id") == courseId) {
-            //    result.put(rs.getInt("assignment_id"), rs.getDouble("avg_grade"));
-            //}
-        }*/
-
-        Set<Integer> AssignmentIDs = new HashSet<>();
-        while(rs.next()) {
-            AssignmentIDs.add(rs.getInt("id"));
-        }
-
-        System.out.println("set is" + AssignmentIDs);
-
-        Map<Integer, Double> result2 = new HashMap<>();
 
         for (Integer assign_id : AssignmentIDs) {
             var statement2 = connection.prepareStatement("SELECT grade FROM assignments_users WHERE assignment_id = ?");
             statement2.setInt(1, assign_id);
             var rs2 = statement2.executeQuery();
             List<Double> val = new ArrayList<>();
-            while(rs2.next()) {
+            while (rs2.next()) {
                 val.add(rs2.getDouble("grade"));
             }
             if (!val.isEmpty()) {
                 double avg = average(val);
                 result.put(assign_id, avg);
             }
-            //result.put(assign_id, rs2.getDouble("Average"));
-            //System.out.println("assign_id " + assign_id + " " + avg);
-
+            statement2.close();
         }
-
-        System.out.println("result" + result );//
-        statement.close();
         connection.close();
 
         return result;
     }
+
+    public Map<Integer, Double> getUserGradePerAssignmentInCourse(int courseId, int userId) throws SQLException {
+        var connection = database.getConnection();
+
+        Set<Integer> AssignmentIDs = getAssignmentListFromCourse(courseId);
+
+        Map<Integer, Double> result = new HashMap<>();
+
+        for (Integer assign_id : AssignmentIDs) {
+            var statement2 = connection.prepareStatement("SELECT grade FROM assignments_users WHERE assignment_id = ? AND user_id = ?");
+            statement2.setInt(1, assign_id);
+            statement2.setInt(2, userId);
+            var rs2 = statement2.executeQuery();
+            while (rs2.next()) {
+                result.put(assign_id, rs2.getDouble("grade"));
+            }
+            statement2.close();
+        }
+        connection.close();
+
+        return result;
+    }
+
+    private Set<Integer> getAssignmentListFromCourse(int courseId) throws SQLException  {
+        var connection = database.getConnection();
+        var statement = connection.prepareStatement("SELECT id FROM assignments WHERE course_id = ?");
+        statement.setInt(1, courseId);
+        var rs = statement.executeQuery();
+
+        Set<Integer> AssignmentIDs = new HashSet<>();
+        while (rs.next()) {
+            AssignmentIDs.add(rs.getInt("id"));
+        }
+        return AssignmentIDs;
+    }
+
 
     public List<Assignment> getAssignmentsForUser(int userId) throws SQLException {
         var connection = database.getConnection();

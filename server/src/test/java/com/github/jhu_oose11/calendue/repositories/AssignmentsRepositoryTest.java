@@ -132,7 +132,7 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
-    void getGradeAveragesInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+    void getGradeAveragesInCourseTest() throws SQLException, UsersRepository.NonExistingUserException {
         String title2 = "Test Course";
         LocalDate dueDate2 = LocalDate.now();
         Assignment assignment2 = new Assignment(2, title2, dueDate2, ((Course) testData.get("course")).getId());
@@ -173,15 +173,11 @@ class AssignmentsRepositoryTest {
     }
 
     @Test
-    void getGradeAveragesPerAssignmentInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+    void getGradeAveragesPerAssignmentInCourseTest() throws SQLException, UsersRepository.NonExistingUserException {
         String title2 = "Test Course2";
         LocalDate dueDate2 = LocalDate.now();
         Assignment assignment2 = new Assignment(2, title2, dueDate2, ((Course) testData.get("course")).getId());
         assignment2 = repo.create(assignment2);
-
-        //testData.put("assignment", assignment2);
-        //testData.put("title", title2);
-       // testData.put("due_date", dueDate2);
 
         // User 1
         String email1 = "test1234235@testing.com";
@@ -195,7 +191,6 @@ class AssignmentsRepositoryTest {
         userRepo.create(user2);
         user2 = userRepo.getByEmail(email2);
 
-        //System.out.println("adding " + assignment2.getTitle() + " " + assignment2.getCourseId() + " " + assignment2.getId());//
         repo.addAssignmentForUser(assignment2.getId(), user1.getId(), 90, true);
         repo.addAssignmentForUser(assignment2.getId(), user2.getId(), 70, true);
 
@@ -208,7 +203,50 @@ class AssignmentsRepositoryTest {
 
         try {
             repo.deleteAssignment(assignment2);
+        }
+        catch(SQLException ignored) {}
+    }
+
+    @Test
+    void getUserGradePerAssignmentInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+        String title2 = "Test Course2";
+        LocalDate dueDate2 = LocalDate.now();
+        Assignment assignment2 = new Assignment(2, title2, dueDate2, ((Course) testData.get("course")).getId());
+        assignment2 = repo.create(assignment2);
+
+        String title3 = "Test Course3";
+        LocalDate dueDate3 = LocalDate.now();
+        Assignment assignment3 = new Assignment(3, title3, dueDate3, ((Course) testData.get("course")).getId());
+        assignment3 = repo.create(assignment3);
+
+        // User 1
+        String email1 = "test1234235@testing.com";
+        User user1 = new User(email1);
+        userRepo.create(user1);
+        user1 = userRepo.getByEmail(email1);
+
+        // User 2
+        String email2 = "test67890@testing.com";
+        User user2 = new User(email2);
+        userRepo.create(user2);
+        user2 = userRepo.getByEmail(email2);
+
+        repo.addAssignmentForUser(assignment2.getId(), user1.getId(), 90, true);
+        repo.addAssignmentForUser(assignment2.getId(), user2.getId(), 70, true);
+
+        repo.addAssignmentForUser(assignment3.getId(), user1.getId(), 88, true);
+        repo.addAssignmentForUser(assignment3.getId(), user2.getId(), 77, true);
+
+        Map<Integer, Double> result = repo.getUserGradePerAssignmentInCourse(((Course) testData.get("course")).getId(), user2.getId());
+
+        assertEquals(result.size(), 2);
+
+        userRepo.deleteUser(user1);
+        userRepo.deleteUser(user2);
+
+        try {
             repo.deleteAssignment(assignment2);
+            repo.deleteAssignment(assignment3);
         }
         catch(SQLException ignored) {}
     }
