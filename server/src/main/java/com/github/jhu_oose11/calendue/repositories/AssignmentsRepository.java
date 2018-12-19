@@ -12,10 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AssignmentsRepository {
     private DataSource database;
@@ -227,18 +224,6 @@ public class AssignmentsRepository {
     }
 
 
-   /* private double stdDev(List<Double> values) {
-        double num = 0.0;
-        double mean = average(values);
-
-        double sum = 0;
-        for (double value : values) {
-            sum += ((value - mean) * (value - mean));
-        }
-        return Math.sqrt(sum / num);
-    }*/
-
-
     private double stdDev(List<Double> values) {
         double mean = 0.0;
         double num = 0.0;
@@ -324,6 +309,55 @@ public class AssignmentsRepository {
             result.put(rs.getInt("user_id"), rs.getDouble("avg_grade"));
         }
 
+        statement.close();
+        connection.close();
+
+        return result;
+    }
+
+    public Map<Integer, Double> getGradeAveragesPerAssignmentInCourse(int courseId) throws SQLException {
+        var connection = database.getConnection();
+
+        var statement = connection.prepareStatement("SELECT id FROM assignments WHERE course_id = ?");
+
+        //var statement = connection.prepareStatement("SELECT AVG(au.grade) AS avg_grade, assignment_id FROM assignments_users au INNER JOIN assignments a ON a.id = au.assignment_id AND a.course_id = ? GROUP BY au.assignment_id");
+        statement.setInt(1, courseId);
+        var rs = statement.executeQuery();
+
+        Map<Integer, Double> result = new HashMap<>();
+        /*while(rs.next()) {
+            //if (rs.getInt("course_id") == courseId) {
+            //    result.put(rs.getInt("assignment_id"), rs.getDouble("avg_grade"));
+            //}
+        }*/
+
+        Set<Integer> AssignmentIDs = new HashSet<>();
+        while(rs.next()) {
+            AssignmentIDs.add(rs.getInt("id"));
+        }
+
+        System.out.println("set is" + AssignmentIDs);
+
+        Map<Integer, Double> result2 = new HashMap<>();
+
+        for (Integer assign_id : AssignmentIDs) {
+            var statement2 = connection.prepareStatement("SELECT grade FROM assignments_users WHERE assignment_id = ?");
+            statement2.setInt(1, assign_id);
+            var rs2 = statement2.executeQuery();
+            List<Double> val = new ArrayList<>();
+            while(rs2.next()) {
+                val.add(rs2.getDouble("grade"));
+            }
+            if (!val.isEmpty()) {
+                double avg = average(val);
+                result.put(assign_id, avg);
+            }
+            //result.put(assign_id, rs2.getDouble("Average"));
+            //System.out.println("assign_id " + assign_id + " " + avg);
+
+        }
+
+        System.out.println("result" + result );//
         statement.close();
         connection.close();
 

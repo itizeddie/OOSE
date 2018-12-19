@@ -56,6 +56,7 @@ class AssignmentsRepositoryTest {
         testData.put("assignment", assignment);
         testData.put("title", title);
         testData.put("due_date", dueDate);
+        System.out.println("a1 course id=" + assignment.getCourseId() + " " + assignment.getId() );
     }
 
     @AfterEach
@@ -157,9 +158,6 @@ class AssignmentsRepositoryTest {
         repo.addAssignmentForUser(assignment.getId(), user1.getId(), 90, true);
         repo.addAssignmentForUser(assignment.getId(), user2.getId(), 70, true);
 
-        /*repo.addAssignmentForUser(assignment2.getId(), user1.getId(), 70, true);
-        repo.addAssignmentForUser(assignment2.getId(), user2.getId(), 90, true);*/
-
         Map<Integer, Double> result = repo.getGradeAveragesInCourse(((Course) testData.get("course")).getId());
 
         System.out.println(result);
@@ -169,6 +167,47 @@ class AssignmentsRepositoryTest {
         userRepo.deleteUser(user2);
 
         try {
+            repo.deleteAssignment(assignment2);
+        }
+        catch(SQLException ignored) {}
+    }
+
+    @Test
+    void getGradeAveragesPerAssignmentInCourse() throws SQLException, UsersRepository.NonExistingUserException {
+        String title2 = "Test Course2";
+        LocalDate dueDate2 = LocalDate.now();
+        Assignment assignment2 = new Assignment(2, title2, dueDate2, ((Course) testData.get("course")).getId());
+        assignment2 = repo.create(assignment2);
+
+        //testData.put("assignment", assignment2);
+        //testData.put("title", title2);
+       // testData.put("due_date", dueDate2);
+
+        // User 1
+        String email1 = "test1234235@testing.com";
+        User user1 = new User(email1);
+        userRepo.create(user1);
+        user1 = userRepo.getByEmail(email1);
+
+        // User 2
+        String email2 = "test67890@testing.com";
+        User user2 = new User(email2);
+        userRepo.create(user2);
+        user2 = userRepo.getByEmail(email2);
+
+        //System.out.println("adding " + assignment2.getTitle() + " " + assignment2.getCourseId() + " " + assignment2.getId());//
+        repo.addAssignmentForUser(assignment2.getId(), user1.getId(), 90, true);
+        repo.addAssignmentForUser(assignment2.getId(), user2.getId(), 70, true);
+
+        Map<Integer, Double> result = repo.getGradeAveragesPerAssignmentInCourse(((Course) testData.get("course")).getId());
+
+        assertEquals(result.size(), 1);
+
+        userRepo.deleteUser(user1);
+        userRepo.deleteUser(user2);
+
+        try {
+            repo.deleteAssignment(assignment2);
             repo.deleteAssignment(assignment2);
         }
         catch(SQLException ignored) {}
