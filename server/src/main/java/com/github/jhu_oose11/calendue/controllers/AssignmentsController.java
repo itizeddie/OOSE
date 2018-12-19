@@ -141,6 +141,35 @@ public class AssignmentsController {
 
     }
 
+    public static void getUserScorePerAssignment(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
+        if(!Auth.ensureLoggedIn(ctx))return;
+        int current_user_id=ctx.sessionAttribute("current_user");
+
+        int course_id;
+        try {
+            course_id = Integer.parseInt(ctx.pathParam("course_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Course not found.");
+        }
+        Map<Integer, Double> scores = Server.getAssignmentsRepository().getUserGradePerAssignmentInCourse(course_id, current_user_id);
+
+        ctx.json(scores);
+        ctx.status(200);
+    }
+
+    public static void getClassScorePerAssignment(Context ctx) throws AssignmentsRepository.NonExistingAssignmentException, SQLException {
+        int course_id;
+        try {
+            course_id = Integer.parseInt(ctx.pathParam("course_id"));
+        } catch(NumberFormatException e) {
+            throw new NotFoundResponse("Course not found.");
+        }
+        Map<Integer, Double> scores = Server.getAssignmentsRepository().getGradeAveragesPerAssignmentInCourse(course_id);
+
+        ctx.json(scores);
+        ctx.status(200);
+    }
+
     public static void getUserTimePredictions(Context ctx) throws SQLException {
         if(!Auth.ensureLoggedIn(ctx))return;
         int current_user_id=ctx.sessionAttribute("current_user");
