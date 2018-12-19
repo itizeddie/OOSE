@@ -238,7 +238,6 @@ class AssignmentsRepositoryTest {
         repo.addAssignmentForUser(assignment3.getId(), user2.getId(), 77, true);
 
         Map<Integer, Double> result = repo.getUserGradePerAssignmentInCourse(((Course) testData.get("course")).getId(), user2.getId());
-
         assertEquals(result.size(), 2);
 
         userRepo.deleteUser(user1);
