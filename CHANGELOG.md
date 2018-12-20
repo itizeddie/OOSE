@@ -51,6 +51,9 @@ All notable changes to this project will be documented in this file.
 - Retrieve existing assignments when scraping
 - Add statistics tables
 - Add methods for populating/updating statistics
-- Add assignment details and popup page
-- Add assignment graphs
+- Add assignment details to popup
+- Add assignment graphs to popup
+- Add input hours to popup
 - Load assignment analytics from database onto graphs
+- Added database handling for marking completed assignment
+- Added database analytics for hours
