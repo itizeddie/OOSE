@@ -51,3 +51,6 @@ All notable changes to this project will be documented in this file.
 - Retrieve existing assignments when scraping
 - Add statistics tables
 - Add methods for populating/updating statistics
+- Add assignment details and popup page
+- Add assignment graphs
+- Load assignment analytics from database onto graphs
